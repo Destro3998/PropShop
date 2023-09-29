@@ -3,13 +3,19 @@ const router = express.Router();
 const path = require("path")
 
 router.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "..", "views", "index.html"));
-	//res.render("index");
+	res.render("index.handlebars", {name:"Index Page"});
 });
 
-router.get("/dashboard", (req, res) => {
-	res.sendFile(path.join(__dirname, "..", "views", "dashboard.html"));
-	//res.render("index");
+router.get("/about", (req, res) => {
+	res.render("about.handlebars", {name:"About Page"});
+});
+
+router.get("/contact", (req, res) => {
+	res.render("contact.handlebars", {name:"Contact Page"});
+});
+
+router.get("/store", (req, res) => {
+	res.render("store.handlebars", {name:"store Page"});
 });
 
 module.exports = router;

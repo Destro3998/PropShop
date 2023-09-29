@@ -1,0 +1,67 @@
+:root{
+    --background-color: rgb(231 237 242);
+    --alternate-color: rgb(187 194 200);
+    --font-color: white;
+}
+
+.html{
+    margin: 0;
+}
+
+body{
+    background-color: var(--background-color);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+}
+
+a:visited{
+    color: initial;
+    text-decoration: none;
+}
+
+a{
+    text-decoration: none;
+    color: initial;
+}
+
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    padding: 2em;
+    background-color: var(--alternate-color);
+}
+
+.navbar-actions{
+
+}
+
+.navbar-links{
+    
+}
+
+.nav-link{
+    margin: 0 1em;
+}
+
+.navbar-account-actions{
+
+}
+
+.footer{
+    display: flex;
+    padding: 4em;
+    justify-content: space-around;
+    background-color: var(--alternate-color);
+}
+
+.footer-logo{
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0;
+}
+
+.footer-links{
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0;
+}
