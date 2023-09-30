@@ -13,6 +13,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/dashboard", indexRouter);
+app.use("/proppage", indexRouter);
 
 
 app.listen(PORT, () => {

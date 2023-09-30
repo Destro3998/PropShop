@@ -12,4 +12,9 @@ router.get("/dashboard", (req, res) => {
 	//res.render("index");
 });
 
+router.get("/proppage", (req, res) => {
+	res.sendFile(path.join(__dirname, "..", "views", "proppage.html"));
+	//res.render("index");
+});
+
 module.exports = router;

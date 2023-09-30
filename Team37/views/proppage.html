@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team 37</title>
+    <link rel="stylesheet" href="/styles/output.css">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+</head>
+<body class="bg-gray-200">
+<header class="bg-white">
+    <nav class="mx-auto flex flex-row justify-between p-5">
+        <div><a href="/">Logo</a></div>
+        <div class="flex flex-row-reverse space-x-5 space-x-reverse">
+            <a href="" class="">Home</a>
+            <a href="" class="">About</a>
+            <a href="" class="">Shop</a>
+            <a href="" class="">Contact</a>
+        </div>
+        <div class="flex flex-row space-x-5">
+            <a href="" class="">Sign Up</a>
+            <a href="" class="">Log In</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <p>this will become a individual catalog item page (testing 3d model rendering for now)</p>
+</main>
+<!-- src is the 3d model as a glb file
+    poster is the preview image (this displays if the 3d model is missing) 
+    setting loading to "eager" means the poster will be displayed until the glb file is loaded-->
+<model-viewer src="/3dmodels/chair.glb" loading="eager" ar ar-modes="webxr scene-viewer quick-look" camera-controls poster="3dmodels/chair.jpg" shadow-intensity="1">
+</model-viewer>
+
+</body>
+</html>
