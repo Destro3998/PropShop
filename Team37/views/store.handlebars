@@ -1,1 +1,11 @@
-<h1>{{name}}</h1>
+<div>
+    <h1>{{name}}</h1>
+    <div>
+        {{#each props}}
+        <div class="store-prop">
+            <a href="" class="prop">{{this.image}}</a>
+            <a href="" class="prop">{{this.name}}</a>
+        </div>
+        {{/each}}
+    </div>
+</div>

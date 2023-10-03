@@ -12,17 +12,17 @@
         <label for="client-search" class="search-label">Search for a client</label>
         <form action="" class="search-form">
             <input type="search" name="client-search" id="client-search" class="item-search-box"
-                   placeholder="Search For Something">
+                placeholder="Search For Something">
             <input type="submit" value="Search" class="item-search-button">
         </form>
 
         <div class="item-area">
             {{#each clients}}
-                <a href="" class="client">{{this}}</a>
+            <a href="" class="client">{{this}}</a>
             {{/each}}
         </div>
         <div class="item-toolbar">
-            <button type="button">Add</button>
+            <a href="/admin/add-client">Add</a>
             <button type="button">Remove</button>
             <button type="button">Update</button>
         </div>
@@ -33,13 +33,13 @@
             <label for="prop-search" class="search-label">Search for an item</label>
             <form action="" class="search-form">
                 <input type="search" name="prop-search" id="prop-search" class="item-search-box"
-                       placeholder="Search For Something">
+                    placeholder="Search For Something">
                 <input type="submit" value="Search" class="item-search-button">
             </form>
         </div>
         <div class="item-area">
             {{#each props}}
-                <a href="" class="prop">{{this}}</a>
+            <a href="" class="prop">{{this}}</a>
             {{/each}}
         </div>
         <div class="item-toolbar">

@@ -15,7 +15,8 @@ body {
     margin: 2em;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     outline: none;
 }
 
@@ -37,21 +38,15 @@ a {
     border-radius: var(--border-radius);
 }
 
-.navbar-actions {
+.navbar-actions {}
 
-}
-
-.navbar-links {
-
-}
+.navbar-links {}
 
 .nav-link {
     margin: 0 1em;
 }
 
-.navbar-account-actions {
-
-}
+.navbar-account-actions {}
 
 .footer {
     display: flex;
@@ -86,9 +81,9 @@ a {
     gap: 1em;
     grid-auto-flow: row;
     grid-template-areas:
-      "sidebar dashboard-header dashboard-header dashboard-header"
-      "sidebar clients props props"
-      "sidebar clients props props";
+        "sidebar dashboard-header dashboard-header dashboard-header"
+        "sidebar clients props props"
+        "sidebar clients props props";
     margin: 1em 0;
 }
 
@@ -175,4 +170,14 @@ a {
     overflow-y: auto;
 }
 
-  
+.store-prop {
+    grid-area: props;
+    padding: 2em;
+    margin: 1em;
+    display: flex;
+    justify-content: space-between;
+    border-radius: var(--border-radius);
+    background-color: var(--alternate-color);
+    flex-direction: column;
+    flex-flow: column wrap;
+}
