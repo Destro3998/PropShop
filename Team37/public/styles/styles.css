@@ -1,8 +1,10 @@
+/** These are variables that will be used throughout the styles */
 :root {
     --background-color: rgb(231 237 242);
     --alternate-color: rgb(187 194 200);
     --font-color: white;
     --border-radius: 0.5em;
+    --box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
 .html {
@@ -105,29 +107,32 @@ a {
 .dashboard-header {
     background-color: var(--alternate-color);
     grid-area: dashboard-header;
-    padding: 2em;
+    gap: 1em;
+    padding: 1em;
+    display: flex;
     border-radius: var(--border-radius);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.clients, .props {
+    padding: 2em;
+    display: flex;
+    justify-content: space-between;
+    border-radius: var(--border-radius);
+    background-color: var(--alternate-color);
+    flex-direction: column;
+    gap: 1em;
 }
 
 .clients {
     grid-area: clients;
-    padding: 2em;
-    border-radius: var(--border-radius);
-    background-color: var(--alternate-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+
 }
 
 .props {
     grid-area: props;
-    padding: 2em;
-    display: flex;
-    justify-content: space-between;
-    border-radius: var(--border-radius);
-    background-color: var(--alternate-color);
-    flex-direction: column;
-    /* height: 90%; */
 }
 
 .search-form {
@@ -135,7 +140,7 @@ a {
     justify-content: space-between;
     align-items: center;
     gap: 1em;
-    margin: 0.5em 0;
+    margin: 0.75em 0;
 }
 
 .search-label {
@@ -147,16 +152,17 @@ a {
 .item-search-box {
     padding: 0.5em;
     border-radius: var(--border-radius);
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
     border: none;
     width: -webkit-fill-available;
+    /* This forces the search box to fill up all available space */
 }
 
 
 .item-search-button {
     padding: 0.5em;
     border-radius: var(--border-radius);
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--box-shadow);
     border: none;
     cursor: pointer;
 }
@@ -171,8 +177,77 @@ a {
 .item-area {
     display: flex;
     flex-direction: column;
-    max-height: 50vh;
     overflow-y: auto;
+    max-height: 40rem;
+    padding: 1em;
 }
 
-  
+
+.button {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 0.5rem;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.vertical-form {
+    margin: 1em 0;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+textarea, input {
+    padding: 1em;
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    font: inherit;
+}
+
+.prop {
+    background: white;
+    padding: 0.5em;
+    border-radius: var(--border-radius);
+    margin: 0.25em 0;
+}
+
+.inner-item-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.item-info {
+}
+
+/* This selects p tags within the item-info class */
+.item-info > p {
+    margin: 0.5rem 0;
+}
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.header-info {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 0.75em;
+    text-align: center;
+}
+
+.client {
+    background: white;
+    padding: 0.5em;
+    border-radius: var(--border-radius);
+    margin: 0.25em 0;
+}

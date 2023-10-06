@@ -1,0 +1,10 @@
+<form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
+    <label for="name">Prop Name</label>
+    <input type="text" name="name" id="prop-name" placeholder="Prop Name" value="{{prop.name}}" required>
+    <label for="description">Prop Description</label>
+    <textarea type="text" name="description" id="prop-description" placeholder="Prop Description" rows="6">{{prop.description}}</textarea>
+    <label for="quantity">Prop Quantity</label>
+    <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" value="{{prop.quantity}}" required>
+
+    <input type="submit" class="button" value="Edit Prop">
+</form>

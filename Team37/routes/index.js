@@ -18,4 +18,5 @@ router.get("/store", (req, res) => {
 	res.render("store.handlebars", {name: "store Page"});
 });
 
+// This allows other files to import the router
 module.exports = router;
