@@ -2,27 +2,8 @@ const express = require("express")
 const router = express.Router();
 const path = require("path");
 const models = require("../utilities/models.js");
-const DisplayProp = require("../utilities/utilities.js");
-
-
-/**
- * This method gets props from the database and turns them into objects of the DisplayProp class.
- * This class is asynchronous - all database operations are asynchronous.
- * @returns {Promise<[]|*[]>}
- */
-async function getProps() {
-	try {
-		let props = await models.Prop.find({});
-		displayProps = [];
-		props.forEach(prop => { // for each prop in teh database make it a displayProp object and add it to the list.
-			displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
-		});
-		return displayProps;
-	} catch (error) {
-		console.log(error)
-		return []
-	}
-}
+const utilities = require("../utilities/utilities.js");
+const getProps = utilities.getProps;
 
 
 router.get("/dashboard", async (req, res) => {

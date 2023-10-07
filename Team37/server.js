@@ -7,10 +7,10 @@ const indexRouter = require("./routes/index");
 const accountsRouter = require("./routes/accounts");
 const propsRouter = require("./routes/props");
 const adminRouter = require("./routes/admin");
-const models = require("./utilities/models");
-const utils = require("./utilities/utilities");
+const { configDotenv } = require("dotenv");
+require("dotenv").config();
 
-const uri = "mongodb+srv://admin:admin@370.16ms14j.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://admin:${process.env.DB_PASSWORD}.16ms14j.mongodb.net/?retryWrites=true&w=majority`;
 
 const PORT = 3000;
 

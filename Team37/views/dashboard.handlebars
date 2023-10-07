@@ -1,10 +1,16 @@
 <div class="dashboard">
-    <div class="sidebar">
-        <p>This is in the sidebar</p>
-        <p>This is also in the sidebar</p>
+    <div class="sidebar container">
+        <div class="sidebar-action container">
+            <h3>Configure your site</h3>
+            <a href="" class="text-svg-link">To Site Config 
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+</svg>
+            </a>
+        </div>
     </div>
 
-    <div class="dashboard-header">
+    <div class="dashboard-header container">
         <div class="header-info">
             <p>No. Clients</p>
             <p>{{ clients.length }}</p>
@@ -15,7 +21,7 @@
         </div>
     </div>
 
-    <div class="clients">
+    <div class="clients container">
         <div class="client-search">
             <label for="client-search" class="search-label"><h2>Clients</h2></label>
             <form action="" class="search-form">
@@ -29,7 +35,7 @@
                 <p>No clients in the system</p>
             {{else}}
             {{#each clients}}
-                <div class="client" id="toClientPage">
+                <div class="client container" id="toClientPage">
                     <div class="inner-item-container">
                         <div class="item-info">
                             <h3><a href="">{{this.name}}</a></h3>
@@ -58,7 +64,7 @@
         </div>
     </div>
 
-    <div class="props">
+    <div class="props container">
         <div class="prop-search">
             <label for="prop-search" class="search-label"><h2>Props</h2></label>
             <form action="" class="search-form">
@@ -72,7 +78,7 @@
                 <p>No props in the system</p>
             {{else}}
             {{#each props}}
-                <div class="prop" id="toPropPage">
+                <div class="prop container" id="toPropPage">
                     <div class="inner-item-container">
                         <div class="item-info">
                             <h3><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>

@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const models = require("../utilities/models.js");
-const DisplayProp = require("../utilities/utilities");
+const utilities = require("../utilities/utilities.js");
+const getProps = utilities.getProps;
+const DisplayProp = utilities.DisplayProp;
 
 
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId

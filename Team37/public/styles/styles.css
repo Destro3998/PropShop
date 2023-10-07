@@ -1,10 +1,31 @@
 /** These are variables that will be used throughout the styles */
 :root {
-    --background-color: rgb(231 237 242);
-    --alternate-color: rgb(187 194 200);
+    --background-color: rgb(254, 255, 255);
+    --alternate-color: rgb(254, 255, 255);
     --font-color: white;
     --border-radius: 0.5em;
     --box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Width of the scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track (the area on the sides of the scrollbar) */
+::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+/* Handle (the draggable part of the scrollbar) */
+::-webkit-scrollbar-thumb {
+    background: rgb(49, 49, 49);
+    border-radius: var(--border-radius);
+}
+
+/* On hover, make the scrollbar handle a lighter color */
+::-webkit-scrollbar-thumb:hover {
+    background: #242323;
 }
 
 .html {
@@ -13,7 +34,8 @@
 
 body {
     background-color: var(--background-color);
-    font-family: 'Montserrat', sans-serif;
+    /* font-family: 'Montserrat', sans-serif; */
+    font-family: 'Noto Sans', sans-serif;
     margin: 2em;
 }
 
@@ -22,7 +44,6 @@ input:focus, textarea:focus {
 }
 
 a:visited {
-    color: initial;
     text-decoration: none;
 }
 
@@ -34,9 +55,21 @@ a {
 .navbar {
     display: flex;
     justify-content: space-between;
-    padding: 2em;
+    padding: 1em;
     background-color: var(--alternate-color);
     border-radius: var(--border-radius);
+    align-items: center;
+}
+
+.active{
+    background-color: #242323;
+    color: #ffffff;
+    border-radius: var(--border-radius);
+}
+
+.logo{
+    
+height: 52px;
 }
 
 .navbar-actions {
@@ -48,7 +81,8 @@ a {
 }
 
 .nav-link {
-    margin: 0 1em;
+    margin: 0 0.25em;
+    padding: 0.75em;
 }
 
 .navbar-account-actions {
@@ -80,17 +114,24 @@ a {
     margin: 1em 0;
 }
 
+.container{
+    box-shadow: var(--box-shadow);
+}
+
 /* Dashboard Styles */
 .dashboard {
     display: grid;
-    grid-template-columns: 1fr 1.8fr 1.5fr;
-    grid-template-rows: 0.5fr repeat(2, 1fr);
+    grid-template-columns: 0.5fr 1fr 1fr;
+    grid-template-rows: 0.5fr repeat(5, 1fr);
     gap: 1em;
     grid-auto-flow: row;
     grid-template-areas:
-      "sidebar dashboard-header dashboard-header dashboard-header"
-      "sidebar clients props props"
-      "sidebar clients props props";
+      "sidebar dashboard-header dashboard-header"
+      "sidebar clients props"
+      "sidebar clients props"
+      "sidebar clients props"
+      "sidebar clients props"
+      "sidebar clients props";
     margin: 1em 0;
 }
 
@@ -100,20 +141,21 @@ a {
     background-color: var(--alternate-color);
     border-radius: var(--border-radius);
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 1em;
 }
 
 .dashboard-header {
     background-color: var(--alternate-color);
     grid-area: dashboard-header;
-    gap: 1em;
+    gap: 2em;
     padding: 1em;
     display: flex;
     border-radius: var(--border-radius);
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-around;
+    justify-content: start;
 }
 
 .clients, .props {
@@ -150,7 +192,7 @@ a {
 }
 
 .item-search-box {
-    padding: 0.5em;
+    padding: 0.75em;
     border-radius: var(--border-radius);
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
     border: none;
@@ -160,9 +202,10 @@ a {
 
 
 .item-search-button {
-    padding: 0.5em;
+    padding: 0.75em;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+    background-color: var(--background-color);
     border: none;
     cursor: pointer;
 }
@@ -247,7 +290,52 @@ textarea, input {
 
 .client {
     background: white;
-    padding: 0.5em;
+    padding: 0.75em;
     border-radius: var(--border-radius);
-    margin: 0.25em 0;
+    margin: 0.5em 0;
+}
+
+.store-inner{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
+    gap: 2em;
+    border-radius: var(--border-radius);
+    margin: 2.5em 0;
+}
+
+.store-card{
+    padding: 2em;
+    border-radius: var(--border-radius);
+
+}
+
+.title-text{
+    font-size: 5rem;
+    text-align: center;
+    margin-block-end: 0;
+    font-weight: normal;
+}
+
+.subtitle-text{
+    font-size: 1em;
+    text-align: center;
+    color: dimgray;
+}
+
+.title-group{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.sidebar-action{
+    padding: 1em;
+    border-radius: var(--border-radius);
+}
+
+.text-svg-link{
+    display: flex;
+    justify-content: space-between;
+    text-decoration: underline;
 }

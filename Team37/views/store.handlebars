@@ -1,1 +1,18 @@
-<h1>{{name}}</h1>
+<div class="title-group">
+    <h1 class="title-text">{{name}}</h1>
+    <h3 class="subtitle-text">Find the prop that's right for you.</h3>
+</div>
+<div>
+    <div>
+        <div class="store-inner">
+            {{#each props}}
+                <div class="store-card container">
+                    <a href="/prop/{{this.propId}}">{{ this.name }}</a>
+                    <p>{{ this.description }}</p>
+                    <small>Quantity: {{ this.quantity }}</small>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
