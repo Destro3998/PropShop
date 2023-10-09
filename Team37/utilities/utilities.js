@@ -34,6 +34,6 @@ async function getProps() {
 
 // Exporting the displayProp class
 module.exports = {
-	DisplayProp:DisplayProp,
-	getProps:getProps
+	DisplayProp: DisplayProp,
+	getProps: getProps
 };

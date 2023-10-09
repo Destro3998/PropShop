@@ -7,7 +7,7 @@ const indexRouter = require("./routes/index");
 const accountsRouter = require("./routes/accounts");
 const propsRouter = require("./routes/props");
 const adminRouter = require("./routes/admin");
-const { configDotenv } = require("dotenv");
+const {configDotenv} = require("dotenv");
 require("dotenv").config();
 
 const uri = `mongodb+srv://admin:${process.env.DB_PASSWORD}.16ms14j.mongodb.net/?retryWrites=true&w=majority`;
