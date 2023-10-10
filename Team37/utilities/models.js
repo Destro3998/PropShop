@@ -1,6 +1,4 @@
-// TODO: Connections
 const mongoose = require("mongoose");
-
 
 const employeeSchema = new mongoose.Schema({
     name: {type: String, required: true},
@@ -17,6 +15,7 @@ const propInstanceSchema = new mongoose.Schema({
 const propSchema = new mongoose.Schema({
     name: {type: String, required: true},
     description: String,
+    image: String,
     quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
     instance: [propInstanceSchema]
 });
@@ -25,6 +24,7 @@ const clientSchema = new mongoose.Schema({
     email: String,
     phone: Number,
     address: String,
+    isBlacklisted: Boolean,
 	rentHistory: propSchema,
     password: String
 });
