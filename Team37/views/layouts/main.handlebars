@@ -8,27 +8,63 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&family=Noto+Sans:wght@100;300&display=swap" rel="stylesheet">
+    <script src="/scripts/script.js"></script>
 </head>
 <body>
     <header>
-        <nav class="navbar">
+        <nav class="navbar container">
             <div class="navbar-logo">
-                <a href="/">Logo</a>
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo" class="logo">
+                </a>
             </div>
             <div class="navbar-links">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/about" class="nav-link">About</a>
-                <a href="/contact" class="nav-link">Contact</a>
-                <a href="/store" class="nav-link">Store</a>
+                {{#if homeActive}}
+                    <a href="/" class="nav-link active">Home</a>
+                {{else}}
+                    <a href="/" class="nav-link">Home</a>
+                {{/if}}
+
+                {{#if aboutActive}}
+                    <a href="/about" class="nav-link active">About</a>
+                {{else}}
+                    <a href="/about" class="nav-link">About</a>
+                {{/if}}
+
+                {{#if contactActive}}
+                    <a href="/contact" class="nav-link active">Contact</a>
+                {{else}}
+                    <a href="/contact" class="nav-link">Contact</a>
+                {{/if}}
+
+                {{#if storeActive}}
+                    <a href="/store" class="nav-link active">Catalogue</a>
+                {{else}}
+                    <a href="/store" class="nav-link">Catalogue</a>
+                {{/if}}
+                
             </div>
             <div class="navbar-account-actions">
-                <a href="/accounts/login" class="nav-link">Login</a>
-                <a href="/accounts/register" class="nav-link">Register</a>
+
+                {{#if loginActive}}
+                    <a href="/accounts/login" class="nav-link active">Login</a>
+                {{else}}
+                    <a href="/accounts/login" class="nav-link">Login</a>
+                {{/if}}
+
+                {{#if registerActive}}
+                    <a href="/accounts/register" class="nav-link active">Register</a>
+                {{else}}
+                    <a href="/accounts/register" class="nav-link">Register</a>
+                {{/if}}
             </div>
         </nav>
     </header>
-    {{{body}}}
-    <footer class="footer">
+    <main>
+        {{{body}}}
+    </main>
+    <footer class="footer container">
         <div class="footer-logo">
             <p>Logo</p>
         </div>
