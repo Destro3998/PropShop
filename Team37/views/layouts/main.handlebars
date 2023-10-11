@@ -46,8 +46,18 @@
                 
             </div>
             <div class="navbar-account-actions">
-                <a href="/accounts/login" class="nav-link">Login</a>
-                <a href="/accounts/register" class="nav-link">Register</a>
+
+                {{#if loginActive}}
+                    <a href="/accounts/login" class="nav-link active">Login</a>
+                {{else}}
+                    <a href="/accounts/login" class="nav-link">Login</a>
+                {{/if}}
+
+                {{#if registerActive}}
+                    <a href="/accounts/register" class="nav-link active">Register</a>
+                {{else}}
+                    <a href="/accounts/register" class="nav-link">Register</a>
+                {{/if}}
             </div>
         </nav>
     </header>
