@@ -5,6 +5,20 @@ const models = require("../utilities/models.js");
 const utilities = require("../utilities/utilities.js");
 const getProps = utilities.getProps;
 
+const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
+const fs = require("fs");
+const multer = require("multer"); // for file upload
+var storage = multer.diskStorage({ // setting location for file uploads
+    destination: function (req, file, cb) {
+      cb(null, imagedir)
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + file.originalname)
+    }
+})
+var upload = multer({ storage: storage })
+var getFields = multer()
+
 
 router.get("/dashboard", async (req, res) => {
 	try {
@@ -32,19 +46,31 @@ router.get("/add-prop", (req, res) => {
 
 
 // this is used by the form submission
-router.post("/add-prop", (req, res) => {
+router.post("/add-prop", upload.single('image'), function (req, res) {
+	// req.file holds the image(s)
+	// req.body will hold the text fields
+	filename = req.file.filename//console.log(JSON.stringify(req.file))
 	try {
-		models.Prop.create({ // this creates entries in the database
+		prop = models.Prop.create({ // this creates entries in the database
 			name: req.body.name,
 			description: req.body.description,
 			quantity: req.body.quantity
+		}).then( (prop, req, res) => { 
+			// this renames the file to match the id just created for the prop
+			// (it would probably make more sense to just intially name it after the prop id
+			// on upload, but i could only get the upload function to work before prop creation.
+			// this could maybe be solved better by using serparate html forms for uploading the files
+			// but i am keeping all prop creation within one form submission for now)
+			extension = filename.slice(filename.lastIndexOf(".")) // get file extension of the image
+			fs.rename(imagedir + '/' + filename, imagedir + '/' + prop._id + extension, (err) => {if (err) throw err})
 		});
 	} catch (error) {
 		console.log(error)
 	}
 	res.status(200);
 	res.redirect("/admin/dashboard"); // send the user back to the dashboard -- this assumes that adding props can only be done by admins.
-});
+  }) 
+
 
 // This allows other files to import the router
 module.exports = router;
