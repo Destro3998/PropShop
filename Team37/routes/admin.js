@@ -6,18 +6,18 @@ const utilities = require("../utilities/utilities.js");
 const getProps = utilities.getProps;
 
 const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
-const fs = require("fs");
+const fs = require("fs"); // for editing filenames
 const multer = require("multer"); // for file upload
-var storage = multer.diskStorage({ // setting location for file uploads
+var storage = multer.diskStorage({ // setting up file uploads
     destination: function (req, file, cb) {
       cb(null, imagedir)
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + file.originalname)
+      cb(null, Date.now() + file.originalname) // add date.now() to make uploaded props have unique file names and to not risk getting mixed up in the folder
     }
 })
 var upload = multer({ storage: storage })
-var getFields = multer()
+
 
 
 router.get("/dashboard", async (req, res) => {
@@ -46,23 +46,47 @@ router.get("/add-prop", (req, res) => {
 
 
 // this is used by the form submission
-router.post("/add-prop", upload.single('image'), function (req, res) {
-	// req.file holds the image(s)
+router.post("/add-prop", upload.fields([{name:'image', maxCount : 1}, {name:'model3d', maxCount : 1}]), function (req, res) {
+	// req.files holds the image(s)
 	// req.body will hold the text fields
-	filename = req.file.filename//console.log(JSON.stringify(req.file))
+
+	// CHECK IF IMAGES/3D MODELS WERE UPLOADED FIRST
+	if (req.files.model3d !== undefined) {
+		filename3d = req.files.model3d[0].filename
+	} else {
+		filename3d = null
+	}
+	if (req.files.image !== undefined) {
+		filenameimg = req.files.image[0].filename
+
+	} else {
+		// it would be a good idea later to have a default image to assign to this variable 
+		// like a jpg that says "no image available" stored in the same folder
+		// like this:
+		// filenameimg = "default.jpg"
+		filenameimg = null
+	}
+
 	try {
 		prop = models.Prop.create({ // this creates entries in the database
 			name: req.body.name,
 			description: req.body.description,
 			quantity: req.body.quantity
 		}).then( (prop, req, res) => { 
-			// this renames the file to match the id just created for the prop
+			// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id
 			// on upload, but i could only get the upload function to work before prop creation.
 			// this could maybe be solved better by using serparate html forms for uploading the files
 			// but i am keeping all prop creation within one form submission for now)
-			extension = filename.slice(filename.lastIndexOf(".")) // get file extension of the image
-			fs.rename(imagedir + '/' + filename, imagedir + '/' + prop._id + extension, (err) => {if (err) throw err})
+
+			if (filenameimg !== null) {
+				extension1 = filenameimg.slice(filenameimg.lastIndexOf(".")) // get file extensions (will be useful if/when mutliple file types are accepted)
+				fs.rename(imagedir + '/' + filenameimg, imagedir + '/' + prop._id + extension1, (err) => {if (err) throw err})
+			}
+			if (filename3d !== null) {
+				extension2 = filename3d.slice(filename3d.lastIndexOf("."))
+				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {if (err) throw err})
+			}
 		});
 	} catch (error) {
 		console.log(error)
