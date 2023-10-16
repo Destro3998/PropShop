@@ -44,14 +44,11 @@ router.route("/:propId/edit")
 
 router.route("/:propId/qrcode")
 	.get(async (req, res) => {
-		//let redirectUrl = req.header('referer') || '/';
 		let propId = req.params.propId;
-		let data = {
-			id: propId
-		};
-		let stringData = JSON.stringify(data);
 
-		qrCode.toDataURL(stringData, function(error, url) {
+		const propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/qrcode`;
+
+		qrCode.toDataURL(propUrl, function(error, url) {
     		if(error) {
         		console.log("Error Occured");
         		return;
