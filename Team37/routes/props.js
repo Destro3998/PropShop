@@ -4,7 +4,7 @@ const models = require("../utilities/models.js");
 const utilities = require("../utilities/utilities.js");
 const getProps = utilities.getProps;
 const DisplayProp = utilities.DisplayProp;
-
+const qrCode = require('qrcode');
 
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId
 router.get("/:propId", async (req, res) => {
@@ -40,6 +40,24 @@ router.route("/:propId/edit")
 		}
 		res.status(200); // everything went well
 		res.redirect(redirectUrl);
+	});
+
+router.route("/:propId/qrcode")
+	.get(async (req, res) => {
+		//let redirectUrl = req.header('referer') || '/';
+		let propId = req.params.propId;
+		let data = {
+			id: propId
+		};
+		let stringData = JSON.stringify(data);
+
+		qrCode.toDataURL(stringData, function(error, url) {
+    		if(error) {
+        		console.log("Error Occured");
+        		return;
+    		}
+    		res.render("qrcode.handlebars", { qrCode: url });
+		})
 	});
 
 router.get("/:propId/delete", async (req, res) => {
