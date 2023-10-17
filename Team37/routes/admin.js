@@ -38,7 +38,12 @@ router.get("/add-prop", isAdmin, (req, res) => {
 
 
 // this is used by the form submission
+<<<<<<< Team37/routes/admin.js
+router.post("/add-prop", isAdmin, upload.fields([{name:'image', maxCount : 1}, {name:'model3d', maxCount : 1}]), function (req, res) {
+	authenticated = req.isAuthenticated();
+=======
 router.post("/add-prop", isAdmin, (req, res) => {
+>>>>>>> Team37/routes/admin.js
 	authenticated = req.isAuthenticated();
 	try {
 		models.Prop.create({ // this creates entries in the database
