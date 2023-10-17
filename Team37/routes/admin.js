@@ -46,7 +46,8 @@ router.get("/add-prop", (req, res) => {
 
 
 // this is used by the form submission
-router.post("/add-prop", upload.fields([{name:'image', maxCount : 1}, {name:'model3d', maxCount : 1}]), function (req, res) {
+router.post("/add-prop", isAdmin, upload.fields([{name:'image', maxCount : 1}, {name:'model3d', maxCount : 1}]), function (req, res) {
+	authenticated = req.isAuthenticated();
 	// req.files holds the image(s)
 	// req.body will hold the text fields
 
