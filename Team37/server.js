@@ -10,6 +10,7 @@ const adminRouter = require("./routes/admin");
 const {configDotenv} = require("dotenv");
 require("dotenv").config();
 
+
 const uri = `mongodb+srv://admin:${process.env.DB_PASSWORD}.16ms14j.mongodb.net/?retryWrites=true&w=majority`;
 
 const PORT = 3000;

@@ -18,7 +18,7 @@ const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
 	description: String,
 	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
-	instance: [propInstanceSchema]
+	instance: [propInstanceSchema],
 });
 const clientSchema = new mongoose.Schema({
 	name: {type: String, required: true},
