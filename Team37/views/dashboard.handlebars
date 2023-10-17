@@ -14,8 +14,8 @@
 
     <div class="dashboard-header container">
         <div class="header-info">
-            <p>No. Clients</p>
-            <p>{{ clients.length }}</p>
+            <p>No. Users</p>
+            <p>{{ users.length }}</p>
         </div>
         <div class="header-info">
             <p>No. Props</p>
@@ -25,24 +25,24 @@
 
     <div class="clients container">
         <div class="client-search">
-            <label for="client-search" class="search-label"><h2>Clients</h2></label>
+            <label for="client-search" class="search-label"><h2>Users</h2></label>
             <form action="" class="search-form">
                 <input type="search" name="client-search" id="client-search" class="item-search-box"
-                       placeholder="Search For a client">
+                       placeholder="Search For a User">
                 <input type="submit" value="Search" class="item-search-button">
             </form>
         </div>
         <div class="item-area">
-            {{#unless clients}} <!-- If this is an empty object -->
-                <p>No clients in the system</p>
+            {{#unless users}} <!-- If this is an empty object -->
+                <p>No users in the system</p>
             {{else}}
-                {{#each clients}}
+                {{#each users}}
                     <div class="client container" id="toClientPage">
                         <div class="inner-item-container">
                             <div class="item-info">
-                                <h3><a href="">{{this.name}}</a></h3>
-                                <p>Description:{{this.email}}</p>
-                                <small>Quantity: {{this.hasOrders}}</small>
+                               <h2><a href="">{{ this.fname }}  {{ this.lname }}</a></h2>
+                               <p>Email: {{ this.email }}</p>
+                               <p>Phone Number: {{ this.phone }}</p>
                             </div>
                             <div class="item-controls">
                                 <a href="" class="button">
@@ -92,15 +92,25 @@
                     <div class="prop container" id="toPropPage">
                         <div class="inner-item-container">
                             <div class="item-info">
-                                <h3><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>
+                                <h2><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>
                                 <p>Description:{{this.description}}</p>
-                                <small>Quantity: {{this.quantity}}</small>
+                                <p>Quantity: {{this.quantity}}</p>
                             </div>
                             <div class="item-controls">
                                 <a href="/prop/{{this.propId}}/edit" class="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-pencil-fill" viewBox="0 0 16 16">
                                         <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                                    </svg>
+                                </a>
+                                <a href="" class="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-qr-code" viewBox="0 0 16 16">
+                                        <path d="M2 2h2v2H2V2Z"/>
+                                        <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z"/>
+                                        <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z"/>
+                                        <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z"/>
+                                        <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z"/>
                                     </svg>
                                 </a>
                                 <a href="/prop/{{this.propId}}/delete" class="button">

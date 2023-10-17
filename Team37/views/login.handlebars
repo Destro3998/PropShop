@@ -1,1 +1,14 @@
-<h1>{{name}}</h1>
+<h1 class="title-text">Login</h1>
+<div>
+    <form action="/accounts/login" method="post" class="auth-form">
+        <label for="email">Enter your email address</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="password">Enter your password</label>
+        <input type="password" name="password" id="password" required>
+
+        <input type="submit" value="Login" class="button">
+        <small>New here? <a href="/accounts/register" style="text-decoration: underline;">Register</a></small>
+    </form>
+
+</div>
