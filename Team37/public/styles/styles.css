@@ -113,7 +113,6 @@ a {
     grid-template-rows: 0.5fr repeat(5, 1fr);
     gap: 1em;
     grid-auto-flow: row;
-    /* this creates a grid and defines spaces for the names used in the text */
     grid-template-areas:
       "sidebar dashboard-header dashboard-header"
       "sidebar clients props"
@@ -187,7 +186,6 @@ a {
     border: none;
     width: -webkit-fill-available;
     /* This forces the search box to fill up all available space */
-    /* This probably should not be used */
 }
 
 
@@ -255,6 +253,9 @@ textarea, input {
     flex-wrap: wrap;
 }
 
+.item-info {
+}
+
 /* This selects p tags within the item-info class */
 .item-info > p {
     margin: 0.5rem 0;
@@ -285,7 +286,6 @@ textarea, input {
 
 .store-inner {
     display: grid;
-    /* This makes a repeating grid that auto fills its container. With a minimum with of 35em and a max width of 1 fractional unit of the available space. */
     grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
     gap: 2em;
     border-radius: var(--border-radius);
@@ -306,7 +306,7 @@ textarea, input {
     font-weight: normal;
 }
 
-.head-text {
+.head-text{
     text-align: initial;
     margin-block-end: 0.2em;
     margin-block-start: 0.2em;
@@ -338,7 +338,7 @@ textarea, input {
     text-decoration: underline;
 }
 
-.store-header {
+.store-header{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -346,67 +346,17 @@ textarea, input {
     border-radius: var(--border-radius);
 }
 
-.store-categories {
+.store-categories{
     display: flex;
     gap: 1em;
 }
 
-.store-actions {
+.store-actions{
     display: flex;
     gap: 1.5em;
 }
 
-.bi-cart, .bi-heart {
+.bi-cart, .bi-heart{
     height: 2rem;
     width: 2rem;
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    padding: 1em;
-    gap: 1em;
-    margin: 3em 0;
-}
-
-ul, ol {
-    list-style: none;
-}
-
-.password-rules {
-    padding-inline-start: 0;
-}
-
-.password-rules > li {
-    margin: 0.5em 0;
-}
-
-.alert {
-    padding: 1em;
-    margin-top: 2em;
-    opacity: 1;
-    border: none;
-    border-radius: var(--border-radius);
-    transition: opacity 0.6s ease-in-out;
-}
-
-.alert-danger {
-    background-color: rgba(230, 0, 0, 0.85);
-    color: white;
-    font-weight: bold;
-}
-
-.alert-success {
-    background-color: rgba(34, 170, 0, 0.85);
-    color: white;
-    font-weight: bold;
-}
-
-.alert-box {
-    display: flex;
-    justify-content: center;
-    align-content: center;
 }
