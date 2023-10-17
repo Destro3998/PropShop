@@ -1,25 +1,80 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router();
-const path = require("path")
-const utilities = require("../utilities/utilities.js");
+const utilities = require("../utilities/dbUtilities.js");
 const getProps = utilities.getProps;
 
 
 router.get("/", (req, res) => {
-	res.render("index.handlebars", {name: "Index Page", homeActive: true});
+	authenticated = req.isAuthenticated();
+
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	res.render("index.handlebars", {
+		name: "Index Page",
+		homeActive: true,
+		authenticated: authenticated,
+		userId: userId
+	});
 });
 
+
 router.get("/about", (req, res) => {
-	res.render("about.handlebars", {name: "About Page", aboutActive: true});
+	authenticated = req.isAuthenticated();
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	res.render("about.handlebars", {
+		name: "About Page",
+		aboutActive: true,
+		authenticated: authenticated,
+		userId: userId
+	});
 });
 
 router.get("/contact", (req, res) => {
-	res.render("contact.handlebars", {name: "Contact Page", contactActive: true});
+	authenticated = req.isAuthenticated();
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	res.render("contact.handlebars", {
+		name: "Contact Page",
+		contactActive: true,
+		authenticated: authenticated,
+		userId: userId
+	});
 });
 
+/**
+ * This route is for the store page.
+ * It is async because it has an await statement.
+ * This await gets the props from the database and displays them
+ */
 router.get("/store", async (req, res) => {
+	authenticated = req.isAuthenticated();
 	let props = await getProps();
-	res.render("store.handlebars", {name: "Catalogue", props: props, storeActive: true});
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	res.render("store.handlebars", {
+		name: "Catalogue",
+		props: props,
+		storeActive: true,
+		authenticated: authenticated,
+		userId: userId
+	});
 });
 
 // This allows other files to import the router

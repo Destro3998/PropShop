@@ -1,23 +1,27 @@
 const express = require("express")
 const router = express.Router();
-const path = require("path");
 const models = require("../utilities/models.js");
-const utilities = require("../utilities/utilities.js");
-const getProps = utilities.getProps;
+const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
+const {getProps, getUsers} = require("../utilities/dbUtilities.js")
 
 
-router.get("/dashboard", async (req, res) => {
+/**
+ * isAdmin: This checks whether the user trying to access this route is an admin. if they are not their access is denied
+ * This function is async because we have await statements within in
+ */
+router.get("/dashboard", isAdmin, async (req, res) => {
+	authenticated = req.isAuthenticated();
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
-		let clients = [ // dummy client objects.
-			{name: "Client1", email: "email@email.com", hasOrders: true},
-			{name: "Client2", email: "email@email.ca", hasOrders: false},
-			{name: "Client3", email: "email@email.za", hasOrders: false},
-			{name: "Client4", email: "email@email.us", hasOrders: false},
-			{name: "Client5", email: "email@email.au", hasOrders: false},
-			{name: "Client6", email: "email@email.onion", hasOrders: false},
-		]
-		res.render("dashboard.handlebars", {name: "Dashboard Page", props: props, clients: clients}); // The options are variables that we are passing to our rendering engine (handlebars)
+		let users = await getUsers(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
+		const userId = req.user && req.user._id ? req.user._id : undefined;
+		res.render("dashboard.handlebars", {
+			name: "Dashboard Page",
+			props: props,
+			users: users,
+			authenticated: authenticated
+			, userId: userId
+		}); // The options are variables that we are passing to our rendering engine (handlebars)
 	} catch (error) {
 		console.error(error);
 	}
@@ -26,13 +30,16 @@ router.get("/dashboard", async (req, res) => {
 
 
 // rendering the page
-router.get("/add-prop", (req, res) => {
-	res.render("addProp.handlebars");
+router.get("/add-prop", isAdmin, (req, res) => {
+	authenticated = req.isAuthenticated();
+	const userId = req.user && req.user._id ? req.user._id : undefined;
+	res.render("addProp.handlebars", {authenticated: authenticated, userId: userId});
 });
 
 
 // this is used by the form submission
-router.post("/add-prop", (req, res) => {
+router.post("/add-prop", isAdmin, (req, res) => {
+	authenticated = req.isAuthenticated();
 	try {
 		models.Prop.create({ // this creates entries in the database
 			name: req.body.name,
