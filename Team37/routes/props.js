@@ -57,14 +57,19 @@ router.route("/:propId/qrcode")
 	.get(async (req, res) => {
 		let propId = req.params.propId;
 
-		const propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/qrcode`;
+		// URL the QR code image will link when scanned
+		const propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/edit`;
 
+		// generate a data URL for the QR code image corresponding to the propUrl
 		qrCode.toDataURL(propUrl, function(error, url) {
     		if(error) {
         		console.log("Error Occured");
         		return;
     		}
-    		res.render("qrcode.handlebars", { qrCode: url });
+			// specifies to the client an html file is being sent
+			res.set('Content-Type', 'text/html');
+			// sends a html response to the client consisting of the QR code image and nothing else
+			res.send(`<html><body><img src="${url}" alt="QR Code" style="max-width: 100%; max-height: 100%;" /></body></html>`);
 		})
 	});
 
