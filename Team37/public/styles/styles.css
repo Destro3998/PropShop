@@ -258,11 +258,6 @@ input {
     flex-wrap: wrap;
 }
 
-<<<<<<< Team37/public/styles/styles.css
-.item-info {}
-
-=======
->>>>>>> Team37/public/styles/styles.css
 /* This selects p tags within the item-info class */
 .item-info>p {
     margin: 0.5rem 0;
@@ -363,17 +358,11 @@ input {
     gap: 1.5em;
 }
 
-<<<<<<< Team37/public/styles/styles.css
-.bi-cart,
-.bi-heart {
-=======
 .bi-cart, .bi-heart {
->>>>>>> Team37/public/styles/styles.css
     height: 2rem;
     width: 2rem;
 }
 
-<<<<<<< Team37/public/styles/styles.css
 .contact-inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
@@ -393,7 +382,7 @@ input {
     display: block;
     margin-top: 50px;
     margin-bottom: 50px;
-=======
+}
 .auth-form {
     display: flex;
     flex-direction: column;
@@ -442,7 +431,6 @@ ul, ol {
     display: flex;
     justify-content: center;
     align-content: center;
->>>>>>> Team37/public/styles/styles.css
 }
 
 .contact-inner {
@@ -464,3 +452,4 @@ ul, ol {
     display: block;
     margin-top: 50px;
     margin-bottom: 50px;
+}

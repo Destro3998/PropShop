@@ -2,6 +2,11 @@
 
 const mongoose = require("mongoose");
 
+const cartItemSchema = new mongoose.Schema({
+	itemId: {type: mongoose.Schema.Types.ObjectId, ref: "item", required: true},
+	quantity: {type: Number, default: 1}
+});
+
 const employeeSchema = new mongoose.Schema({
 	name: {type: String, required: true},
 	email: {type: String, required: true},
@@ -16,6 +21,7 @@ const propInstanceSchema = new mongoose.Schema({
 });
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
+	price: {type: Number, required: true},
 	description: String,
 	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
 	instance: [propInstanceSchema]
@@ -30,7 +36,8 @@ const userSchema = new mongoose.Schema({
 	hash: {type: String, require: true},
 	salt: {type: String, require: true},
 	admin: Boolean,
-	blacklisted: Boolean
+	blacklisted: Boolean,
+	cart: [cartItemSchema]
 });
 
 const clientSchema = new mongoose.Schema({
@@ -45,8 +52,9 @@ const clientSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
 	price: Number,
 	datePlaced: Date,
-	status: Number
-})
+	status: Number,
+	items: [cartItemSchema]
+});
 
 
 const User = mongoose.model("User", userSchema);
@@ -55,6 +63,7 @@ const Employee = mongoose.model('Employee', employeeSchema);
 const PropInstance = mongoose.model('PropInstance', propInstanceSchema);
 const Prop = mongoose.model('Prop', propSchema);
 const Client = mongoose.model('Client', clientSchema);
+const CartItem = mongoose.model('CartItem', cartItemSchema);
 
 module.exports = {
 	Employee,
@@ -62,5 +71,6 @@ module.exports = {
 	Prop,
 	Client,
 	User,
-	Order
+	Order,
+	CartItem
 };

@@ -4,7 +4,7 @@
 
 ## Why are we using handlebars?
 
-We are using handlebars because it makes passing variables to our frontend easier than what can be done with only html. 
+We are using handlebars because it makes passing variables to our frontend easier than what can be done with only html.
 Handlebars isn't the only option for such a task but from the options it seems to have the more palatable syntax.
 (Other options: pug (jade), ejs, Mustache. Nunjucks)
 
@@ -18,15 +18,20 @@ be more robust options than what we are using at the moment.
 To pass a variable in from your server place teh variable name in double curly braces.
 
 javaScript file
+
 ```js
 let variable = 5
-app.route("/", {variable:variable});
+app.route("/", {variable: variable});
 ```
+
 .handlebars file
+
 ```handlebars
 <p>{{variable}}</p>>
 ```
+
 Output
+
 ```html
 <p>5</p>
 ```
@@ -38,7 +43,7 @@ There is an opening tag an else tag and a closing tag
 ```handlebars
 {{#if expression }}
     <!--SOME VALID HTML-->
-    {{else}}
+{{else}}
     <!--SOME VALID HTML-->
 {{/if}}
 ```
@@ -48,8 +53,9 @@ There is an opening tag an else tag and a closing tag
 These statements work semantically like inverted if statements.
 
 eg.
+
 ```js
-if (!(expression)){
+if (!(expression)) {
 	// do something
 }
 ```

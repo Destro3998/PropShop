@@ -55,11 +55,39 @@ async function getUsers() {
 	}
 }
 
+async function propExists(propId) {
+	try {
+		let exists = await models.Prop.findById(propId);
+		return exists !== null;
+	} catch (error) {
+		console.log(error)
+		return false;
+	}
+}
+
+async function getProp(propId) {
+	try {
+		let exists = await propExists(propId);
+		if (exists) {
+			let prop = await models.Prop.findOne({_id: propId});
+			return prop;
+		} else {
+			return null;
+		}
+	} catch {
+		console.error(error)
+		return false;
+	}
+}
+
 
 // Exporting the displayProp class
 module.exports = {
 	DisplayProp: DisplayProp,
 	DisplayUser: DisplayUser,
 	getProps: getProps,
-	getUsers: getUsers
+	getUsers: getUsers,
+	propExists: propExists,
+	getProp: getProp
+
 };

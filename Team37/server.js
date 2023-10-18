@@ -98,3 +98,7 @@ mongoose.connect(uri).then(() => {
 // IMPORTANT: TO RUN THE SERVER
 // cd to Team37
 // run the command: "npm start"
+
+
+// If you get this error:MongoParseError: mongodb+srv URI cannot have port number
+// You probably do not have the .env file.

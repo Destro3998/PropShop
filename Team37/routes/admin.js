@@ -8,14 +8,14 @@ const imagedir = './public/3dmodels'; // file location to store/retrieve 3d mode
 const fs = require("fs"); // for editing filenames
 const multer = require("multer"); // for file upload
 var storage = multer.diskStorage({ // setting up file uploads
-    destination: function (req, file, cb) {
-      cb(null, imagedir)
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + file.originalname) // add date.now() to make uploaded props have unique file names and to not risk getting mixed up in the folder
-    }
+	destination: function (req, file, cb) {
+		cb(null, imagedir)
+	},
+	filename: function (req, file, cb) {
+		cb(null, Date.now() + file.originalname) // add date.now() to make uploaded props have unique file names and to not risk getting mixed up in the folder
+	}
 })
-var upload = multer({ storage: storage })
+var upload = multer({storage: storage})
 
 /**
  * isAdmin: This checks whether the user trying to access this route is an admin. if they are not their access is denied
@@ -50,7 +50,10 @@ router.get("/add-prop", isAdmin, (req, res) => {
 
 
 // this is used by the form submission
-router.post("/add-prop", isAdmin, upload.fields([{name:'image', maxCount : 1}, {name:'model3d', maxCount : 1}]), function (req, res) {
+router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
+	name: 'model3d',
+	maxCount: 1
+}]), function (req, res) {
 	authenticated = req.isAuthenticated();
 
 	// req.files holds the image(s)
@@ -77,7 +80,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name:'image', maxCount : 1}, {
 			name: req.body.name,
 			description: req.body.description,
 			quantity: req.body.quantity
-		}).then( (prop, req, res) => { 
+		}).then((prop, req, res) => {
 			// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id
 			// on upload, but i could only get the upload function to work before prop creation.
@@ -86,11 +89,15 @@ router.post("/add-prop", isAdmin, upload.fields([{name:'image', maxCount : 1}, {
 
 			if (filenameimg !== null) {
 				extension1 = filenameimg.slice(filenameimg.lastIndexOf(".")) // get file extensions (will be useful if/when mutliple file types are accepted)
-				fs.rename(imagedir + '/' + filenameimg, imagedir + '/' + prop._id + extension1, (err) => {if (err) throw err})
+				fs.rename(imagedir + '/' + filenameimg, imagedir + '/' + prop._id + extension1, (err) => {
+					if (err) throw err
+				})
 			}
 			if (filename3d !== null) {
 				extension2 = filename3d.slice(filename3d.lastIndexOf("."))
-				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {if (err) throw err})
+				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {
+					if (err) throw err
+				})
 			}
 		});
 	} catch (error) {
