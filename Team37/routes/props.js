@@ -1,30 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const models = require("../utilities/models.js");
-const utilities = require("../utilities/utilities.js");
+const utilities = require("../utilities/dbUtilities.js");
+const {isAdmin} = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const DisplayProp = utilities.DisplayProp;
 const qrCode = require('qrcode');
 
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId
 router.get("/:propId", async (req, res) => {
+	authenticated = req.isAuthenticated();
 	let propId = req.params.propId; // getting the propId from the url
 	let prop_model = await models.Prop.findById(propId);
 	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
-	res.render("prop.handlebars", {prop: prop});
+	const userId = req.user && req.user._id ? req.user._id : undefined;
+	res.render("prop.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
 });
 
 // This route is a combination of the get and post requests.
 // async because it interacts with the database
 router.route("/:propId/edit")
-	.get(async (req, res) => { // rendering the page
+	.get(isAdmin, async (req, res) => { // rendering the page
+		authenticated = req.isAuthenticated();
 		let redirectUrl = req.header('referer') || '/';
 		let propId = req.params.propId;
 		let prop_model = await models.Prop.findById(propId);
 		let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
-		res.render("editProp.handlebars", {prop: prop, propId: propId});
+		let userId;
+		if (req.user && req.user._id) {
+			userId = req.user._id;
+		} else {
+			userId = undefined;
+		}
+		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId});
 	})
-	.post(async (req, res) => { // this is used by the form submission
+	.post(isAdmin, async (req, res) => { // this is used by the form submission
+		authenticated = req.isAuthenticated();
 		let propId = req.params.propId;
 		const redirectUrl = req.redirectUrl || "/admin/dashboard"; // redirect url is either the url that the user has come from or "/admin/dashboard" url
 		try {

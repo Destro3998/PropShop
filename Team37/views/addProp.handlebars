@@ -1,10 +1,17 @@
-<form action="/admin/add-prop" method="post" class="vertical-form">
+<form action="/admin/add-prop" method="post" class="vertical-form" enctype="multipart/form-data">
     <label for="name">Prop Name</label>
     <input type="text" name="name" id="prop-name" placeholder="Prop Name" required>
     <label for="description">Prop Description</label>
     <textarea type="text" name="description" id="prop-description" placeholder="Prop Description" rows="6"></textarea>
     <label for="quantity">Prop Quantity</label>
-    <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" required>
+    <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="1" value="1" required>
+
+    <label for="image">Upload Preview Image (.jpg)</label>
+    <input type="file" name="image" id="prop-image" accept=".jpg">
+
+    <label for="model3d">Upload 3D Model (.glb)</label>
+    <input type="file" name="model3d" id="prop-3d" accept=".glb">
+
 
     <input type="submit" class="button" value="Add Prop">
 </form>
