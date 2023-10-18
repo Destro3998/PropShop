@@ -369,7 +369,6 @@ input {
     gap: 2em;
     border-radius: var(--border-radius);
     margin: 2.5em 0;
-    /*justify-content: center;*/
 }
 
 .contact-card {
