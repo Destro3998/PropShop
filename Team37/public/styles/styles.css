@@ -39,7 +39,8 @@ body {
     margin: 2em;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     outline: none;
 }
 
@@ -115,12 +116,12 @@ a {
     grid-auto-flow: row;
     /* this creates a grid and defines spaces for the names used in the text */
     grid-template-areas:
-      "sidebar dashboard-header dashboard-header"
-      "sidebar clients props"
-      "sidebar clients props"
-      "sidebar clients props"
-      "sidebar clients props"
-      "sidebar clients props";
+        "sidebar dashboard-header dashboard-header"
+        "sidebar clients props"
+        "sidebar clients props"
+        "sidebar clients props"
+        "sidebar clients props"
+        "sidebar clients props";
     margin: 1em 0;
 }
 
@@ -147,7 +148,8 @@ a {
     justify-content: start;
 }
 
-.clients, .props {
+.clients,
+.props {
     padding: 2em;
     display: flex;
     justify-content: space-between;
@@ -234,7 +236,8 @@ a {
     flex-wrap: wrap;
 }
 
-textarea, input {
+textarea,
+input {
     padding: 1em;
     border: none;
     border-radius: var(--border-radius);
@@ -255,8 +258,13 @@ textarea, input {
     flex-wrap: wrap;
 }
 
+<<<<<<< Team37/public/styles/styles.css
+.item-info {}
+
+=======
+>>>>>>> Team37/public/styles/styles.css
 /* This selects p tags within the item-info class */
-.item-info > p {
+.item-info>p {
     margin: 0.5rem 0;
 }
 
@@ -295,7 +303,6 @@ textarea, input {
 .store-card {
     padding: 2em;
     border-radius: var(--border-radius);
-
 }
 
 .title-text {
@@ -356,11 +363,37 @@ textarea, input {
     gap: 1.5em;
 }
 
+<<<<<<< Team37/public/styles/styles.css
+.bi-cart,
+.bi-heart {
+=======
 .bi-cart, .bi-heart {
+>>>>>>> Team37/public/styles/styles.css
     height: 2rem;
     width: 2rem;
 }
 
+<<<<<<< Team37/public/styles/styles.css
+.contact-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+    gap: 2em;
+    border-radius: var(--border-radius);
+    margin: 2.5em 0;
+}
+
+.contact-card {
+    padding: 2em;
+    border-radius: var(--border-radius);
+    text-align: center;
+    justify-content: center;
+}
+
+.sep-line {
+    display: block;
+    margin-top: 50px;
+    margin-bottom: 50px;
+=======
 .auth-form {
     display: flex;
     flex-direction: column;
@@ -409,4 +442,25 @@ ul, ol {
     display: flex;
     justify-content: center;
     align-content: center;
+>>>>>>> Team37/public/styles/styles.css
 }
+
+.contact-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+    gap: 2em;
+    border-radius: var(--border-radius);
+    margin: 2.5em 0;
+}
+
+.contact-card {
+    padding: 2em;
+    border-radius: var(--border-radius);
+    text-align: center;
+    justify-content: center;
+}
+
+.sep-line {
+    display: block;
+    margin-top: 50px;
+    margin-bottom: 50px;
