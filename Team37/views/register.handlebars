@@ -1,0 +1,36 @@
+<h1 class="title-text">Register</h1>
+<div>
+    <form action="/accounts/register" method="post" class="auth-form">
+        <!--The required fields must be entered for the form to be submitted -->
+        <label for="email">Enter your email address</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="fname">Enter Your First Name</label>
+        <input type="text" name="fname" id="fname" required>
+
+        <label for="lname">Enter Your Last Name</label>
+        <input type="text" name="lname" id="lname" required>
+
+        <label for="phone">Enter your phone number</label>
+        <input type="tel" name="phone" id="phone" required>
+
+        <label for="password">Enter a password</label>
+        <input type="password" name="password" id="password" required onkeyup="validatePassword()">
+
+        <label for="passwordReEnter">Verify your password</label>
+        <input type="password" name="passwordReEnter" id="passwordReEnter" required>
+        <!-- the submit button is disabled by default-->
+        <input type="submit" value="Register" class="button" id="submit-button" disabled>
+        <small>Been here before?<a href="/accounts/login" style="text-decoration: underline;">Login</a></small>
+
+        <div id="password-rules">
+            <p>Password must:</p>
+            <ul class="password-rules">
+                <li id="rule-length">Be at least 8 characters long</li>
+                <li id="rule-uppercase">Contain at least 1 uppercase letter</li>
+                <li id="rule-number">Contain at least 1 number</li>
+                <li id="rule-special">Contain at least 1 special character<br>( !, @, #, $, %, ^, &, * )</li>
+            </ul>
+        </div>
+    </form>
+</div>

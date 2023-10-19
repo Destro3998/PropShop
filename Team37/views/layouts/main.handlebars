@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <title>Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&family=Noto+Sans:wght@100;300&display=swap"
+          rel="stylesheet">
+    <script src="/scripts/script.js"></script>
+</head>
+<body>
+<header>
+    <nav class="navbar container">
+        <div class="navbar-logo">
+            <a href="/">
+                <img src="/images/logo.png" alt="Logo" class="logo">
+            </a>
+        </div>
+        <div class="navbar-links">
+            {{#if homeActive}}
+                <a href="/" class="nav-link active">Home</a>
+            {{else}}
+                <a href="/" class="nav-link">Home</a>
+            {{/if}}
+
+            {{#if aboutActive}}
+                <a href="/about" class="nav-link active">About</a>
+            {{else}}
+                <a href="/about" class="nav-link">About</a>
+            {{/if}}
+
+            {{#if contactActive}}
+                <a href="/contact" class="nav-link active">Contact</a>
+            {{else}}
+                <a href="/contact" class="nav-link">Contact</a>
+            {{/if}}
+
+            {{#if storeActive}}
+                <a href="/store" class="nav-link active">Catalogue</a>
+            {{else}}
+                <a href="/store" class="nav-link">Catalogue</a>
+            {{/if}}
+
+        </div>
+        <div class="navbar-account-actions">
+
+            {{#if authenticated}}
+                {{#if accountActive}}
+                    <a href="/accounts/{{userId}}" class="nav-link active">Account</a>
+                {{else}}
+                    <a href="/accounts/{{userId}}" class="nav-link">Account</a>
+                {{/if}}
+
+                <a href="/accounts/logout" class="nav-link">Logout</a>
+
+            {{else}}
+
+                {{#if loginActive}}
+                    <a href="/accounts/login" class="nav-link active">Login</a>
+                {{else}}
+                    <a href="/accounts/login" class="nav-link">Login</a>
+                {{/if}}
+
+
+                {{#if registerActive}}
+                    <a href="/accounts/register" class="nav-link active">Register</a>
+                {{else}}
+                    <a href="/accounts/register" class="nav-link">Register</a>
+                {{/if}}
+
+            {{/if}}
+
+
+        </div>
+    </nav>
+</header>
+<main>
+    <div class="alert-box" id="alert-box">
+        {{#if messages.error}}
+            <div class="alert alert-danger" id="alert-danger">{{messages.error}}</div>
+        {{/if}}
+
+        {{#if messages.success}}
+            <div class="alert alert-success" id="alert-success">{{messages.success}}</div>
+        {{/if}}
+    </div>
+
+    {{{body}}}
+</main>
+<footer class="footer container">
+    <div class="footer-logo">
+        <p>Logo</p>
+    </div>
+    <div class="footer-links">
+        <a href="/" class="footer-link">Home</a>
+        <a href="/about" class="footer-link">About</a>
+        <a href="/contact" class="footer-link">Contact</a>
+        <a href="/store" class="footer-link">Store</a>
+    </div>
+</footer>
+</body>
+</html>
