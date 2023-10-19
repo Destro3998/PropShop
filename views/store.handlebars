@@ -1,0 +1,70 @@
+<div class="title-group">
+    <h1 class="title-text">{{name}}</h1>
+    <h3 class="subtitle-text">Find the prop that's right for you.</h3>
+    <form action="/prop/search" method="GET">
+    <input type="text" name="q" placeholder="Search for a prop...">
+    <input type="submit" value="Search">
+</form>
+</div>
+
+
+<div>
+    <div>
+        <div class="store-inner">
+            {{#each props}}
+                <div class="store-card container">
+                    <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
+                    <p>{{ this.description }}</p>
+                    <small>Quantity: {{ this.quantity }}</small>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+
+<div class="load-more-container">
+    <button id="loadMoreButton">Load More</button>
+</div>
+
+
+<script>
+    document.getElementById("loadMoreButton").addEventListener("click", function() {
+    // Track the number of items already displayed
+    let displayedPropsCount = document.querySelectorAll('.store-card').length;
+
+    fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=6`) // fetch props from server
+    .then(response => response.json())
+    .then(data => {   // Iterate over and display the props
+        let propsContainer = document.querySelector('.store-inner');
+        
+        data.forEach(prop => {
+            let propDiv = document.createElement('div');
+            propDiv.classList.add('store-card', 'container');
+            
+            let propName = document.createElement('h3');
+            propName.classList.add('head-text');
+            propName.innerText = prop.name;
+            propDiv.appendChild(propName);
+
+            let propDescription = document.createElement('p');
+            propDescription.innerText = prop.description;
+            propDiv.appendChild(propDescription);
+
+            let propQuantity = document.createElement('small');
+            propQuantity.innerText = "Quantity: " + prop.quantity;
+            propDiv.appendChild(propQuantity);
+
+            propsContainer.appendChild(propDiv);
+        });
+    })
+    .catch(error => {
+        console.error("There was an error fetching more props:", error);
+    });
+});
+
+</script>
+
+
+
+
