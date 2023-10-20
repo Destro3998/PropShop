@@ -2,9 +2,9 @@
     <h1 class="title-text">{{name}}</h1>
     <h3 class="subtitle-text">Find the prop that's right for you.</h3>
     <form action="/prop/search" method="GET">
-    <input type="text" name="q" placeholder="Search for a prop...">
-    <input type="submit" value="Search">
-</form>
+        <input type="text" name="q" placeholder="Search for a prop...">
+        <input type="submit" value="Search" style="cursor: pointer;">
+    </form>
 
 </div>
 
@@ -16,51 +16,87 @@
                     <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
                     <p>{{ this.description }}</p>
                     <small>Quantity: {{ this.quantity }}</small><br>
-                    <button class="button">Add To Cart</button>
+                    <button class="button" onclick="addToCart('{{this.propId}}')">Add To Cart</button>
                 </div>
             {{/each}}
         </div>
     </div>
 </div>
 
+
 <div class="load-more-container">
-    <button id="loadMoreButton">Load More</button>
+    <button id="loadMoreButton" class="button">Load More</button>
 </div>
 
 
 <script>
-    document.getElementById("loadMoreButton").addEventListener("click", function() {
-    // Track the number of items already displayed
-    let displayedPropsCount = document.querySelectorAll('.store-card').length;
+    document.getElementById("loadMoreButton").addEventListener("click", function () {
+        // Track the number of items already displayed
+        let displayedPropsCount = document.querySelectorAll('.store-card').length;
 
-    fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=6`) // fetch props from server
-    .then(response => response.json())
-    .then(data => {   // Iterate over and display the props
-        let propsContainer = document.querySelector('.store-inner');
-        
-        data.forEach(prop => {
-            let propDiv = document.createElement('div');
-            propDiv.classList.add('store-card', 'container');
-            
-            let propName = document.createElement('h3');
-            propName.classList.add('head-text');
-            propName.innerText = prop.name;
-            propDiv.appendChild(propName);
+        fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=6`) // fetch props from server
+                .then(response => response.json())
+                .then(data => {   // Iterate over and display the props
+                    let propsContainer = document.querySelector('.store-inner');
 
-            let propDescription = document.createElement('p');
-            propDescription.innerText = prop.description;
-            propDiv.appendChild(propDescription);
+                    data.forEach(prop => {
+                        let propDiv = document.createElement('div');
+                        propDiv.classList.add('store-card', 'container');
 
-            let propQuantity = document.createElement('small');
-            propQuantity.innerText = "Quantity: " + prop.quantity;
-            propDiv.appendChild(propQuantity);
+                        propDiv.innerHTML = `
+            <h3 class="head-text">${prop.name}</h3>
+            <p>${prop.description}</p>
+            <small>Quantity: ${prop.quantity}</small><br>
+            <button class="button" onclick="addToCart('${prop.propId}')">Add To Cart</button>
+            `;
 
-            propsContainer.appendChild(propDiv);
-        });
-    })
-    .catch(error => {
-        console.error("There was an error fetching more props:", error);
+                        propsContainer.appendChild(propDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error("There was an error fetching more props:", error);
+                });
     });
-});
 
+    // getting the cart from local storage it is in JSON form
+    const cartJson = localStorage.getItem("cart");
+    // parse teh json back to a list
+    const cart = JSON.parse(cartJson);
+
+    // This function checks if the current user is authenticated
+    function checkAuthentication(callback) {
+        fetch("/api/authenticated", {method: "GET"})
+                .then((response) => response.json())
+                .then((data) => {
+                    const isAuthenticated = data.authenticated;
+                    callback(isAuthenticated); // returns true to the callback function if the user is authenticated. False otherwise.
+                })
+                .catch((error) => {
+                    console.error("Error checking authentication: ", error);
+                    callback(false); // Assume the user is not authenticated if there is an error
+                });
+    }
+
+    function addToCart(propId) {
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                // if the user is authenticated then add the prop to the cart in the db.
+                fetch(`/cart/add/${propId}`, {method: "POST"})
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error("Server-side error");
+                            }
+                            console.log("Added to User cart successfully");
+                        })
+                        .catch((error) => {
+                            console.error("Error adding to cart: ", error);
+                        });
+            }
+            // For both authenticated and non-authenticated users the cart will be stored in local storage.
+            cart.push(propId);
+            let updatedCart = JSON.stringify(cart);
+            localStorage.setItem("cart", updatedCart);
+            console.log("Added to local storage cart successfully");
+        });
+    }
 </script>
