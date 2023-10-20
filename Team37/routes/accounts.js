@@ -113,7 +113,9 @@ router.get("/logout", isAuth, (req, res, next) => {
  */
 router.get("/:userId", isAuth, (req, res, next) => {
 	authenticated = req.isAuthenticated();
-	user = req.user;
+	let user = req.user;
+	let orders = req.user.orders ? req.user.orders : undefined;
+
 	displayUser = new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone); // using a class to display the user's information.
 	// this class is used because handlebars is not allowed to access values from the request by default.
 	// probably for safety reasons
@@ -122,7 +124,8 @@ router.get("/:userId", isAuth, (req, res, next) => {
 		accountActive: true,
 		authenticated: authenticated,
 		userId: userId,
-		displayUser: displayUser
+		displayUser: displayUser,
+		orders: orders
 	});
 });
 
