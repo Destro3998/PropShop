@@ -66,7 +66,7 @@ app.use(passport.session());
 
 // setting up middleware
 app.engine("handlebars", hbs.engine);
-app.set("view-engine", "handlebars");
+app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "./views"));
 
 // These statements register routes

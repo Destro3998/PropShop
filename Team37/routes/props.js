@@ -7,6 +7,52 @@ const getProps = utilities.getProps;
 const DisplayProp = utilities.DisplayProp;
 const qrCode = require('qrcode');
 
+// load-more funtionality
+
+router.get('/loadmore', async (req, res) => {
+    let limit = parseInt(req.query.limit) || 6;  // Default to 6 if not provided
+    let skip = parseInt(req.query.skip) || 0;     // Default to 0 if not provided
+
+    try {
+        let props = await models.Prop.find().skip(skip).limit(limit);
+        
+        let displayProps = [];  // Convert the mongoose documents to Display Prop objects
+        props.forEach(prop => {
+            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
+        });
+
+        res.json(displayProps);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+// search fucntionality from database query
+router.get('/:search', async (req, res) => {
+    const searchQuery = req.query.q; //extract query
+    try {
+        let props = await models.Prop.find({  // Database search
+            $or: [
+                { name: new RegExp(searchQuery, 'i') },
+                { description: new RegExp(searchQuery, 'i') }
+            ]
+        });
+
+        let displayProps = [];  // Convert the mongoose documents to Display Prop objects
+        props.forEach(prop => {
+            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
+        });
+
+        res.render('store', { props: displayProps });  // Render the store template with the search results
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId
 router.get("/:propId", async (req, res) => {
 	authenticated = req.isAuthenticated();

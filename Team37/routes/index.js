@@ -62,23 +62,33 @@ router.get("/contact", (req, res) => {
  * It is async because it has an await statement.
  * This await gets the props from the database and displays them
  */
-router.get("/store", async (req, res) => {
-	authenticated = req.isAuthenticated();
-	let props = await getProps();
-	let userId;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-	} else {
-		userId = undefined;
-	}
-	res.render("store.handlebars", {
-		name: "Catalogue",
-		props: props,
-		storeActive: true,
-		authenticated: authenticated,
-		userId: userId
-	});
+ router.get("/store", async (req, res) => {
+    // Pagination logic from sam branch
+    let skip = parseInt(req.query.skip) || 0;
+    let limit = parseInt(req.query.limit) || 6;
+
+    // Retrieve props using pagination
+    let props = await getProps(skip, limit);
+
+    // Authentication and userId logic from main branch
+    let authenticated = req.isAuthenticated();
+    let userId;
+    if (req.user && req.user._id) {
+        userId = req.user._id;
+    } else {
+        userId = undefined;
+    }
+
+    // Merged render from both branches
+    res.render("store.handlebars", {
+        name: "Catalogue",
+        props: props,
+        storeActive: true,
+        authenticated: authenticated,  // from main branch
+        userId: userId  // from main branch
+    });
 });
+
 
 router.get("/cart/add/:propId/:quantity", async (req, res) => {
 	propId = req.params.propId;

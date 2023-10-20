@@ -27,19 +27,21 @@ class DisplayUser { // This is a class used to display users on the site
  * This class is asynchronous - all database operations are asynchronous.
  * @returns {Promise<[]|*[]>}
  */
-async function getProps() {
+ async function getProps(skip = 0, limit = 6) {
 	try {
-		let props = await models.Prop.find({});
+		let props = await models.Prop.find().skip(skip).limit(limit);
 		displayProps = [];
-		props.forEach(prop => { // for each prop in the database make it a displayProp object and add it to the list.
+		props.forEach(prop => { 
+			// for each prop in the database make it a displayProp object and add it to the list.
 			displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
 		});
 		return displayProps;
 	} catch (error) {
-		console.log(error)
-		return []
+		console.log(error);
+		return [];
 	}
 }
+
 
 async function getUsers() {
 	try {
