@@ -71,7 +71,7 @@
             {{/unless}}
         </div>
         <div class="item-toolbar">
-            <a href="/admin/add-user" class="button">Add User</a>
+            <a href="/admin/add-prop" class="button">Add Prop</a>
         </div>
     </div>
 
@@ -92,7 +92,7 @@
                     <div class="prop container" id="toPropPage">
                         <div class="inner-item-container">
                             <div class="item-info">
-                                <h3><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>
+                                <h2><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>
                                     <p>Description:{{this.description}}</p>
                                     <p>Quantity: {{this.quantity}}</p>
                             </div>
@@ -116,7 +116,7 @@
                                 <script>
                                     function openPopup(propId) {
                                         // prevent anchoring to the top of the page
-                                        event.preventDefault();
+                                        event.preventDefault(); 
                                         // URL the pop up window will have
                                         const propUrl = `${window.location.protocol}//${window.location.host}/prop/${propId}/qrcode`;
                                         const popupWindow = window.open(propUrl, 'popUpWindow', 'height=200,width=200,scrollbars=yes');

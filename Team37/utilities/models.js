@@ -27,13 +27,6 @@ const propSchema = new mongoose.Schema({
 	instance: [propInstanceSchema]
 });
 
-const orderSchema = new mongoose.Schema({
-	price: Number,
-	datePlaced: Date,
-	status: Number,
-	items: [cartItemSchema]
-});
-
 
 const userSchema = new mongoose.Schema({
 	email: {type: String, unique: true, require: true},
@@ -44,8 +37,7 @@ const userSchema = new mongoose.Schema({
 	salt: {type: String, require: true},
 	admin: Boolean,
 	blacklisted: Boolean,
-	cart: [cartItemSchema],
-	orders: [orderSchema]
+	cart: [cartItemSchema]
 });
 
 const clientSchema = new mongoose.Schema({
@@ -55,6 +47,13 @@ const clientSchema = new mongoose.Schema({
 	address: String,
 	rentHistory: propSchema,
 	userAccount: userSchema
+});
+
+const orderSchema = new mongoose.Schema({
+	price: Number,
+	datePlaced: Date,
+	status: Number,
+	items: [cartItemSchema]
 });
 
 
