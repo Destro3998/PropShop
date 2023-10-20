@@ -26,7 +26,7 @@ var upload = multer({storage: storage})
         // Prop Logic from both branches
         let props = await models.Prop.find();
         props = props.map(prop => prop.toObject()); // Convert each Mongoose document to a plain object
-        let totalPropsCount = await models.Prop.countDocuments(); // Fetch total prop count from sam branch
+        let totalPropsCount = await models.Prop.countDocuments(); // Fetch total prop count 
 
         // Users Logic from main branch
         let users = await getUsers();
