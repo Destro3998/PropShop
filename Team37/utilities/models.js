@@ -21,7 +21,7 @@ const propInstanceSchema = new mongoose.Schema({
 });
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
-	price: {type: Number, required: true},
+	price: {type: Number, required: false}, //setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
 	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
 	instance: [propInstanceSchema]

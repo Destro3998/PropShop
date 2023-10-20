@@ -30,7 +30,8 @@ router.get('/loadmore', async (req, res) => {
 
 
 // search fucntionality from database query
-router.get('/:search', async (req, res) => {
+router.get('/search', async (req, res) => {
+	let authenticated = req.isAuthenticated();
     const searchQuery = req.query.q; //extract query
     try {
         let props = await models.Prop.find({  // Database search
@@ -45,7 +46,7 @@ router.get('/:search', async (req, res) => {
             displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
         });
 
-        res.render('store', { props: displayProps });  // Render the store template with the search results
+        res.render('store', { props: displayProps, authenticated: authenticated});  // Render the store template with the search results
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');
@@ -59,7 +60,12 @@ router.get("/:propId", async (req, res) => {
 	let propId = req.params.propId; // getting the propId from the url
 	let prop_model = await models.Prop.findById(propId);
 	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
-	const userId = req.user && req.user._id ? req.user._id : undefined;
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
 	res.render("prop.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
 });
 
@@ -67,6 +73,7 @@ router.get("/:propId", async (req, res) => {
 // async because it interacts with the database
 router.route("/:propId/edit")
 	.get(isAdmin, async (req, res) => { // rendering the page
+		console.log("route get EDIT called")
 		let authenticated = req.isAuthenticated();
 		let redirectUrl = req.header('referer') || '/';
 		let propId = req.params.propId;
