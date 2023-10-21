@@ -21,40 +21,43 @@ var upload = multer({storage: storage})
  * isAdmin: This checks whether the user trying to access this route is an admin. if they are not their access is denied
  * This function is async because we have await statements within in
  */
- router.get("/dashboard", isAdmin, async (req, res) => {
-    try {
-        // Prop Logic from both branches
-        let props = await models.Prop.find();
-        props = props.map(prop => prop.toObject()); // Convert each Mongoose document to a plain object
-        let totalPropsCount = await models.Prop.countDocuments(); // Fetch total prop count 
 
-        // Users Logic from main branch
-        let users = await getUsers();
+router.get("/dashboard", isAdmin, async (req, res) => {
+	authenticated = req.isAuthenticated();
+	try {
+		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
+		let users = await getUsers(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
+		// let props = await models.Prop.find();
+        // props = props.map(prop => prop.toObject()); // Convert each Mongoose document to a plain object
+		
+		const userId = req.user && req.user._id ? req.user._id : undefined;
+		res.render("dashboard.handlebars", {
+			name: "Dashboard Page",
+			props: props,
+			users: users,
+			authenticated: authenticated,
+			userId: userId
+		}); // The options are variables that we are passing to our rendering engine (handlebars)
+	} catch (error) {
+		console.error(error);
+	}
 
-        // Authentication and userId logic from main branch
-        const authenticated = req.isAuthenticated();
-        const userId = req.user && req.user._id ? req.user._id : undefined;
-
-        res.render("dashboard.handlebars", {
-            name: "Dashboard Page",
-            props: props,
-            users: users,  // from main branch
-            totalPropsCount: totalPropsCount, // from sam branch
-            authenticated: authenticated,  // from main branch
-            userId: userId    // from main branch
-        });
-    } catch (error) {
-        console.error(error);
-    }
 });
 
 
 
 // rendering the page
 router.get("/add-prop", isAdmin, (req, res) => {
-	authenticated = req.isAuthenticated();
+	let authenticated = req.isAuthenticated();
 	const userId = req.user && req.user._id ? req.user._id : undefined;
 	res.render("addProp.handlebars", {authenticated: authenticated, userId: userId});
+});
+
+// rendering the page
+router.get("/add-user", isAdmin, (req, res) => {
+	let authenticated = req.isAuthenticated();
+	const userId = req.user && req.user._id ? req.user._id : undefined;
+	res.render("addUser.handlebars", {authenticated: authenticated, userId: userId});
 });
 
 
@@ -88,7 +91,8 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 		models.Prop.create({ // this creates entries in the database
 			name: req.body.name,
 			description: req.body.description,
-			quantity: req.body.quantity
+			quantity: req.body.quantity,
+			price:req.body.price
 		}).then((prop, req, res) => {
 			// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id

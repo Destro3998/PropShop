@@ -30,7 +30,8 @@ router.get('/loadmore', async (req, res) => {
 
 
 // search fucntionality from database query
-router.get('/:search', async (req, res) => {
+router.get('/search', async (req, res) => {
+	let authenticated = req.isAuthenticated();
     const searchQuery = req.query.q; //extract query
     try {
         let props = await models.Prop.find({  // Database search
@@ -45,7 +46,7 @@ router.get('/:search', async (req, res) => {
             displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
         });
 
-        res.render('store', { props: displayProps });  // Render the store template with the search results
+        res.render('store', { props: displayProps, authenticated: authenticated});  // Render the store template with the search results
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');
@@ -55,11 +56,16 @@ router.get('/:search', async (req, res) => {
 
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId
 router.get("/:propId", async (req, res) => {
-	authenticated = req.isAuthenticated();
+	let authenticated = req.isAuthenticated();
 	let propId = req.params.propId; // getting the propId from the url
 	let prop_model = await models.Prop.findById(propId);
 	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
-	const userId = req.user && req.user._id ? req.user._id : undefined;
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
 	res.render("prop.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
 });
 
@@ -67,11 +73,11 @@ router.get("/:propId", async (req, res) => {
 // async because it interacts with the database
 router.route("/:propId/edit")
 	.get(isAdmin, async (req, res) => { // rendering the page
-		authenticated = req.isAuthenticated();
+		let authenticated = req.isAuthenticated();
 		let redirectUrl = req.header('referer') || '/';
 		let propId = req.params.propId;
 		let prop_model = await models.Prop.findById(propId);
-		let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
+		let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price);
 		let userId;
 		if (req.user && req.user._id) {
 			userId = req.user._id;
@@ -81,7 +87,6 @@ router.route("/:propId/edit")
 		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId});
 	})
 	.post(isAdmin, async (req, res) => { // this is used by the form submission
-		authenticated = req.isAuthenticated();
 		let propId = req.params.propId;
 		const redirectUrl = req.redirectUrl || "/admin/dashboard"; // redirect url is either the url that the user has come from or "/admin/dashboard" url
 		try {
@@ -89,7 +94,8 @@ router.route("/:propId/edit")
 			await models.Prop.findByIdAndUpdate(thisProp.id, {
 				name: req.body.name,
 				description: req.body.description,
-				quantity: req.body.quantity
+				quantity: req.body.quantity, 
+				price:req.body.price
 			});
 		} catch (error) {
 			console.error(error);
@@ -100,18 +106,18 @@ router.route("/:propId/edit")
 	});
 
 router.route("/:propId/qrcode")
-	.get(async (req, res) => {
+	.get(isAdmin, async (req, res) => {
 		let propId = req.params.propId;
 
 		// URL the QR code image will link when scanned
 		const propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/edit`;
 
 		// generate a data URL for the QR code image corresponding to the propUrl
-		qrCode.toDataURL(propUrl, function(error, url) {
-    		if(error) {
-        		console.log("Error Occured");
-        		return;
-    		}
+		qrCode.toDataURL(propUrl, function (error, url) {
+			if (error) {
+				console.log("Error Occured");
+				return;
+			}
 			// specifies to the client an html file is being sent
 			res.set('Content-Type', 'text/html');
 			// sends a html response to the client consisting of the QR code image and nothing else
@@ -119,7 +125,7 @@ router.route("/:propId/qrcode")
 		})
 	});
 
-router.get("/:propId/delete", async (req, res) => {
+router.get("/:propId/delete", isAdmin, async (req, res) => {
 	let propId = req.params.propId;
 	let redirectUrl = req.header('referer') || '/'; // redirect url is either the url that the user has come from or the root url
 	try {

@@ -259,7 +259,7 @@ input {
 }
 
 /* This selects p tags within the item-info class */
-.item-info>p {
+.item-info > p {
     margin: 0.5rem 0;
 }
 
@@ -383,6 +383,7 @@ input {
     margin-top: 50px;
     margin-bottom: 50px;
 }
+
 .auth-form {
     display: flex;
     flex-direction: column;
@@ -453,3 +454,151 @@ ul, ol {
     margin-top: 50px;
     margin-bottom: 50px;
 }
+
+.title-text-sm {
+    font-size: 2em;
+    text-align: center;
+}
+
+.account-update {
+    display: flex;
+    gap: 2em;
+    justify-content: space-around;
+}
+
+.password-update {
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    align-items: center;
+    margin-bottom: 2em;
+    border-radius: var(--border-radius);
+}
+
+.password-update > form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+    align-items: center;
+}
+
+
+.user-card {
+    padding: 2em;
+    display: flex;
+    gap: 0.5em;
+    flex-direction: column;
+    /* justify-content: center; */
+    border-radius: var(--border-radius);
+    margin-bottom: 2em;
+    transition: all ease-in-out 250ms;
+}
+
+.user-card:hover {
+    /* Testing basic hover animations. */
+    background-color: rgba(169, 249, 149, 0.572);
+    /* transform: translateY(2em) translateX(3em); */
+}
+
+.p-flex {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75em;
+    align-items: center;
+}
+
+#update-fname-form,
+#update-lname-form,
+#update-email-form,
+#update-phone-form {
+    display: none;
+}
+
+.user-orders {
+    padding: 2em;
+    margin-bottom: 2em;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+}
+
+.load-more-container{
+    margin: 1em 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prop-container {
+    display: flex;
+    padding: 150px 150px;
+    align-items: start;
+    gap: 50px; 
+}
+
+.prop-image {
+    width: 30%; 
+    position: relative; 
+    text-align: center; 
+    height: 250px; 
+}
+
+.prop-details {
+    width: 50%; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+}
+
+h1, button {
+    margin: 0; 
+}
+
+.cart-icon {
+    display: inline-block;
+    width: 40px;   
+    height: 40px;  
+    background-image: url('/images/cart.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: 20px;
+    vertical-align: middle; 
+}
+
+.cart-link {
+    display: inline-block;
+    vertical-align: middle;
+    text-decoration: none; 
+}
+
+.addToCartBtn {
+    background-color: #4CAF50; 
+    border: none;
+    color: white; 
+    padding: 8px 12px; 
+    text-align: center;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px; 
+}
+
+.addToCartBtn:hover {
+    background-color: #45a049; 
+}
+
+
+.model-toggle-note {
+    position: absolute; 
+    bottom: 0;
+    left: 33.33%;
+    transform: translateX(-50%); 
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #FFF; 
+    padding: 5px 10px;
+    border-radius: 5px; 
+    font-size: 12px; 
+}
+

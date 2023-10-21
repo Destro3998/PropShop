@@ -21,10 +21,17 @@ const propInstanceSchema = new mongoose.Schema({
 });
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
-	price: {type: Number, required: true},
+	price: {type: Number, required: true}, //setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
 	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
 	instance: [propInstanceSchema]
+});
+
+const orderSchema = new mongoose.Schema({
+	price: Number,
+	datePlaced: Date,
+	status: Number,
+	items: [cartItemSchema]
 });
 
 
@@ -37,7 +44,8 @@ const userSchema = new mongoose.Schema({
 	salt: {type: String, require: true},
 	admin: Boolean,
 	blacklisted: Boolean,
-	cart: [cartItemSchema]
+	cart: [cartItemSchema],
+	orders: [orderSchema]
 });
 
 const clientSchema = new mongoose.Schema({
@@ -47,13 +55,6 @@ const clientSchema = new mongoose.Schema({
 	address: String,
 	rentHistory: propSchema,
 	userAccount: userSchema
-});
-
-const orderSchema = new mongoose.Schema({
-	price: Number,
-	datePlaced: Date,
-	status: Number,
-	items: [cartItemSchema]
 });
 
 
