@@ -58,6 +58,18 @@
             console.log("Added to local storage cart successfully");
         });
     }
-</script>
 
+
+    function reserve(propId) {
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                // if authenticated, allow user to reserve prop
+                // take to payment processing from here
+                window.location.href=`./${propId}/reserve`
+            } else {
+                window.location.href='/accounts/login'
+            }
+        })
+    }
+</script>
 
