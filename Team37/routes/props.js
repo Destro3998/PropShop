@@ -137,5 +137,16 @@ router.get("/:propId/delete", isAdmin, async (req, res) => {
 	}
 });
 
+/**
+ * for reserving an individual prop
+ * 
+ * could be moved to orders.js if implemented
+ */
+router.get("/:propId/reserve", async (req, res) => {
+	console.log('reserve attempted');
+	let propId = req.params.propId;
+	// edit database entry to show as reserved
+} )
+
 // This allows other files to import the router
 module.exports = router;

@@ -21,6 +21,7 @@ var upload = multer({storage: storage})
  * isAdmin: This checks whether the user trying to access this route is an admin. if they are not their access is denied
  * This function is async because we have await statements within in
  */
+
 router.get("/dashboard", isAdmin, async (req, res) => {
 	authenticated = req.isAuthenticated();
 	try {
