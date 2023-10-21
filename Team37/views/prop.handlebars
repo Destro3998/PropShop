@@ -15,8 +15,60 @@
         <p>Quantity: {{ prop.quantity }}</p><br>
         <p>CA$ {{prop.price}}</p>
     <button class="addToCartBtn" onclick="addToCart('{{prop.propId}}')">Add To Cart</button>
+    <button class="reserveBtn" onclick="reserve('{{prop.propId}}')">Reserve</button>
 </div>
 </div>
 
 
+<script>
+    // This function checks if the current user is authenticated
+    // copied from store.handlebars
+    function checkAuthentication(callback) {
+        fetch("/api/authenticated", {method: "GET"})
+                .then((response) => response.json())
+                .then((data) => {
+                    const isAuthenticated = data.authenticated;
+                    callback(isAuthenticated); // returns true to the callback function if the user is authenticated. False otherwise.
+                })
+                .catch((error) => {
+                    console.error("Error checking authentication: ", error);
+                    callback(false); // Assume the user is not authenticated if there is an error
+                });
+    }
 
+    // copied from store.handlebars
+    function addToCart(propId) {
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                // if the user is authenticated then add the prop to the cart in the db.
+                fetch(`/cart/add/${propId}`, {method: "POST"})
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error("Server-side error");
+                            }
+                            console.log("Added to User cart successfully");
+                        })
+                        .catch((error) => {
+                            console.error("Error adding to cart: ", error);
+                        });
+            }
+            // For both authenticated and non-authenticated users the cart will be stored in local storage.
+            cart.push(propId);
+            let updatedCart = JSON.stringify(cart);
+            localStorage.setItem("cart", updatedCart);
+            console.log("Added to local storage cart successfully");
+        });
+    }
+
+    function reserve(propId) {
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                // if authenticated, allow user to reserve prop
+                // take to payment processing from here
+                window.location.href=`./${propId}/reserve`
+            } else {
+                window.location.href='/accounts/login'
+            }
+        })
+    }
+</script>

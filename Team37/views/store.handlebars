@@ -45,7 +45,7 @@
                         propDiv.classList.add('store-card', 'container');
 
                         propDiv.innerHTML = `
-            <h3 class="head-text">${prop.name}</h3>
+            <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3>
             <p>${prop.description}</p>
             <small>Quantity: ${prop.quantity}</small><br>
             <button class="button" onclick="addToCart('${prop.propId}')">Add To Cart</button>
