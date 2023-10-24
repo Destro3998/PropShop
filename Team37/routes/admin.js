@@ -23,7 +23,7 @@ var upload = multer({storage: storage})
  */
 
 router.get("/dashboard", isAdmin, async (req, res) => {
-	authenticated = req.isAuthenticated();
+	let authenticated = req.isAuthenticated();
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
 		let users = await getUsers(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
@@ -32,7 +32,6 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 		
 		const userId = req.user && req.user._id ? req.user._id : undefined;
 		res.render("dashboard.handlebars", {
-			name: "Dashboard Page",
 			props: props,
 			users: users,
 			authenticated: authenticated,
@@ -42,6 +41,20 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 		console.error(error);
 	}
 
+});
+
+router.get("/dashboard/config", isAdmin, (req, res) => {
+	let authenticated = req.isAuthenticated();
+	const userId = req.user && req.user._id ? req.user._id : undefined;
+	res.render("config.handlebars", {
+		authenticated:authenticated,
+		userId:userId
+		});
+});
+
+router.post("/dashboard/config", isAdmin, (req, res) => {
+	req.flash("success", "Setting successfully updated");
+	res.redirect("/admin/dashboard/config");
 });
 
 

@@ -77,6 +77,8 @@ app.use("/accounts", accountsRouter);
 app.use("/prop", propsRouter);
 app.use("/admin", adminRouter);
 
+app.use(express.json());
+
 // app.use(errorHandler);
 // Will be used for handling errors
 

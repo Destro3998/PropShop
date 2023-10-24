@@ -126,13 +126,17 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 });
 
 
-router.get('/api/authenticated', (req, res) => {
+router.get("/api/authenticated", (req, res) => {
 	if (req.isAuthenticated()) {
 		res.json({authenticated: true});
 	} else {
 		res.json({authenticated: false});
 	}
 });
+
+router.get("/api/get-userId", isAuth, (req, res) =>{
+	res.json({id:req.user._id});
+})
 
 // This allows other files to import the router
 module.exports = router;

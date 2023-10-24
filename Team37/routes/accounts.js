@@ -7,12 +7,14 @@ const User = require("../utilities/models").User;
 
 const router = express.Router();
 
+router.use(express.json());
+
 
 /**
  * This is a route for registering users
  */
 router.get("/register", (req, res, next) => {
-	authenticated = req.isAuthenticated(); // This method checks if there is an authenticated user on the site at the moment
+	let authenticated = req.isAuthenticated(); // This method checks if there is an authenticated user on the site at the moment
 	if (authenticated) { // if the user is authenticated they should not be able to register.
 		res.redirect("/");
 	}
@@ -50,10 +52,7 @@ router.post("/register", async (req, res, next) => {
 					admin: true
 				});
 
-				newUser.save() // saving the user to the database (using a promise)
-					.then((user) => {
-						console.log(user);
-					});
+				newUser.save(); // saving the user to the database (using a promise)
 				req.flash("success", "Registered Successfully");
 				res.redirect("/accounts/login")
 
@@ -80,7 +79,7 @@ router.post("/register", async (req, res, next) => {
  * This is a route for logging users in
  */
 router.get("/login", (req, res, next) => {
-	authenticated = req.isAuthenticated();
+	let authenticated = req.isAuthenticated();
 	if (authenticated) { // If the user is already authenticated they should not be able to visit the login page
 		res.redirect("/");
 	}
@@ -112,11 +111,11 @@ router.get("/logout", isAuth, (req, res, next) => {
  * This method is used to get the user's account page based on their user id
  */
 router.get("/:userId", isAuth, (req, res, next) => {
-	authenticated = req.isAuthenticated();
+	let authenticated = req.isAuthenticated();
 	let user = req.user;
 	let orders = req.user.orders ? req.user.orders : undefined;
 
-	displayUser = new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone); // using a class to display the user's information.
+	let displayUser = new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone); // using a class to display the user's information.
 	// this class is used because handlebars is not allowed to access values from the request by default.
 	// probably for safety reasons
 	const userId = req.user && req.user._id ? req.user._id : undefined;
@@ -128,6 +127,52 @@ router.get("/:userId", isAuth, (req, res, next) => {
 		orders: orders
 	});
 });
+
+router.post("/:userId/update-password", isAuth, async (req, res) => {
+	const password = req.body.newPassword;
+	const passwordReEnter = req.body.newPasswordReEnter;
+
+	try {
+		if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*]/.test(password)) {
+			if (password === passwordReEnter) {
+				const saltHash = generatePassword(password);
+				const salt = saltHash.salt;
+				const hash = saltHash.hash;
+
+				await User.findOneAndUpdate({_id: req.user._id}, {hash: hash, salt: salt});
+				req.flash("success", "Password updated successfully");
+				res.status(200).json({message: "Password updated successfully"});
+			} else {
+				res.status(400).json({message: "Failed to update password"});
+			}
+		} else {
+			req.flash("error", "Password does not meet requirements");
+			res.status(400).json({error: "Passwords do not match"});
+		}
+
+	} catch (error) {
+		console.error("Error: ", error);
+	}
+
+	req.flash("success", "Password updated successfully.");
+});
+
+router.post("/:userId/update-fname", isAuth, (req, res) => {
+	req.flash("success", "First Name updated successfully");
+});
+
+router.post("/:userId/update-lname", isAuth, (req, res) => {
+	req.flash("success", "Last Name updated successfully");
+});
+
+router.post("/:userId/update-email", isAuth, (req, res) => {
+	req.flash("success", "Email updated successfully");
+});
+
+router.post("/:userId/update-phone", isAuth, (req, res) => {
+	req.flash("success", "Phone Number updated successfully");
+});
+
 
 // This allows other files to import the router
 module.exports = router;

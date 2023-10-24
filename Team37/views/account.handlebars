@@ -3,7 +3,9 @@
     <div class="user-card container">
         <h3 class="head-text">Update your info</h3>
         <p class="p-flex">First Name: {{displayUser.fname}}
-            <button class="button" id="update-fname-button" onclick="updateFNameClicked()">Update</button>
+            <button class="button" id="update-fname-button"
+                    onclick="toggleUpdateForm('update-fname-form', 'update-fname-button')">Update
+            </button>
         </p>
         <form action="" method="post" id="update-fname-form">
             <label for="fname"></label>
@@ -12,7 +14,9 @@
         </form>
 
         <p class="p-flex">Last Name: {{displayUser.lname}}
-            <button class="button" id="update-lname-button" onclick="updateLNameClicked()">Update</button>
+            <button class="button" id="update-lname-button"
+                    onclick="toggleUpdateForm('update-lname-form', 'update-lname-button')">Update
+            </button>
         </p>
         <form action="" method="post" id="update-lname-form">
             <label for="lname"></label>
@@ -21,7 +25,9 @@
         </form>
 
         <p class="p-flex">Email Address: {{displayUser.email}}
-            <button class="button" id="update-email-button" onclick="updateEmailClicked()">Update</button>
+            <button class="button" id="update-email-button"
+                    onclick="toggleUpdateForm('update-email-form', 'update-email-button')">Update
+            </button>
         </p>
         <form action="" method="post" id="update-email-form">
             <label for="email"></label>
@@ -30,7 +36,9 @@
         </form>
 
         <p class="p-flex">Phone Number: {{displayUser.phone}}
-            <button class="button" id="update-phone-button" onclick="updatePhoneClicked()">Update</button>
+            <button class="button" id="update-phone-button"
+                    onclick="toggleUpdateForm('update-phone-form', 'update-phone-button')">Update
+            </button>
         </p>
         <form action="" method="post" id="update-phone-form">
             <label for="phone"></label>
@@ -39,8 +47,9 @@
         </form>
     </div>
     <div class="password-update container">
+        <p style="display: none;" id="updated">Updated</p>
         <h3 class="head-text">Update your password</h3>
-        <form action="">
+        <form action="" method="post" id="update-password">
             <label for="password">Enter a new password</label>
             <input type="password" name="password" id="password" required onkeyup="validatePassword()">
 
@@ -81,57 +90,60 @@
 </div>
 
 <script>
+    function toggleUpdateForm(formId, formButtonId) {
+        let updateForm = document.getElementById(formId);
+        let updateButton = document.getElementById(formButtonId);
 
-    let updateFName = document.getElementById("update-fname-form");
-    let updateLName = document.getElementById("update-lname-form");
-    let updateEmail = document.getElementById("update-email-form");
-    let updatePhone = document.getElementById("update-phone-form");
-    let updateFNameButton = document.getElementById("update-fname-button");
-    let updateLNameButton = document.getElementById("update-lname-button");
-    let updateEmailButton = document.getElementById("update-email-button");
-    let updatePhoneButton = document.getElementById("update-phone-button");
-
-    // The code above gets all the elements that will be edited below
-    // This code is very repetitive and should be optimized. 
-    // The code below changes button states based on whether the buttons have been clicked or not.
-
-    function updateFNameClicked() {
-        if (updateFName.style.display === "block") {
-            updateFName.style.display = "none";
-            updateFNameButton.innerText = "Update";
+        if (updateForm.style.display === "block") {
+            updateForm.style.display = "none";
+            updateButton.innerText = "Update";
         } else {
-            updateFNameButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
-            updateFName.style.display = "block";
+            updateButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
+            updateForm.style.display = "block";
         }
     }
 
-    function updateLNameClicked() {
-        if (updateLName.style.display === "block") {
-            updateLName.style.display = "none";
-            updateLNameButton.innerText = "Update";
-        } else {
-            updateLNameButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
-            updateLName.style.display = "block";
-        }
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("update-password").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-    function updateEmailClicked() {
-        if (updateEmail.style.display === "block") {
-            updateEmail.style.display = "none";
-            updateEmailButton.innerText = "Update";
-        } else {
-            updateEmailButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
-            updateEmail.style.display = "block";
-        }
-    }
+            const newPassword = document.getElementById("password").value;
+            const newPasswordReEnter = document.getElementById("passwordReEnter").value;
+            const passwordData = {
+                newPassword: newPassword,
+                newPasswordReEnter: newPasswordReEnter,
+            };
 
-    function updatePhoneClicked() {
-        if (updatePhone.style.display === "block") {
-            updatePhone.style.display = "none";
-            updatePhoneButton.innerText = "Update";
-        } else {
-            updatePhoneButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
-            updatePhone.style.display = "block";
-        }
-    }
+            let userId = await fetch("/api/get-userId")
+                    .then(response => response.json())
+                    .then(data => {
+                        return data
+                    })
+                    .catch(error => {
+                        return 1
+                    });
+
+            try {
+                const response = await fetch(`/accounts/${userId}/update-password`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(passwordData),
+                });
+                if (response.ok) {
+                    let data = await response.json();
+                    console.log(data.message);
+                    document.getElementById("updated").style.display = "block";
+                } else {
+                    console.error("Password update failed");
+                    document.getElementById("updated").innerHTML = "Update Failed"
+                    document.getElementById("updated").style.display = "block";
+                }
+            } catch (error) {
+                console.error("error: ", error);
+            }
+        });
+    });
+
 </script>
