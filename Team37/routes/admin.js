@@ -120,5 +120,19 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 	res.redirect("/admin/dashboard"); // send the user back to the dashboard -- this assumes that adding props can only be done by admins.
 });
 
+router.get("/dashboard/config", isAdmin, (req, res) => {
+    let authenticated = req.isAuthenticated();
+    const userId = req.user && req.user._id ? req.user._id : undefined;
+    res.render("config.handlebars", {
+        authenticated:authenticated,
+        userId:userId
+        });
+});
+
+router.post("/dashboard/config", isAdmin, (req, res) => {
+    req.flash("success", "Setting successfully updated");
+    res.redirect("/admin/dashboard/config");
+});
+
 // This allows other files to import the router
 module.exports = router;

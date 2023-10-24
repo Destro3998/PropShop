@@ -1,0 +1,30 @@
+<form action="/admin/dashboard/config" method="post">
+    <fieldset style="display: flex; flex-direction:column">
+        <legend>General Settings</legend>
+        <label for="site-name">Site Name</label>
+        <input type="text" name="site-name" id="site-name">
+
+        <label for="site-description">Site Description</label>
+        <input type="text" name="site-description" id="site-description">
+
+        <label for="company-email">Company Email</label>
+        <input type="text" name="company-email" id="company-email">
+
+        <label for="company-phone">Company Phone</label>
+        <input type="text" name="company-phone" id="company-phone">
+    </fieldset>
+
+    <fieldset style="display: flex; flex-direction:column">
+        <legend>Visual Customization</legend>
+        <label for="main-color">Main Color</label>
+        <input type="color" name="main-color" id="main-color">
+
+        <label for="background-color">Background Color</label>
+        <input type="color" name="background-color" id="background-color">
+
+        <label for="accent-color">Accent Color</label>
+        <input type="color" name="accent-color" id="accent-color">
+    </fieldset>
+
+    <input type="submit" class="button">
+</form>
