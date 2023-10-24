@@ -24,7 +24,9 @@ const propSchema = new mongoose.Schema({
 	price: {type: Number, required: true}, //setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
 	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
-	instance: [propInstanceSchema]
+	instance: [propInstanceSchema],
+	status: { type: String, default: 'available'} // adding this for basic reservation functionality, can be altered/moved to propInstanceSchema
+												// general idea is 3 states: available, reserved, or checked out
 });
 
 const orderSchema = new mongoose.Schema({

@@ -59,13 +59,14 @@ router.get("/:propId", async (req, res) => {
 	let authenticated = req.isAuthenticated();
 	let propId = req.params.propId; // getting the propId from the url
 	let prop_model = await models.Prop.findById(propId);
-	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity);
+	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price, prop_model.status);
 	let userId;
 	if (req.user && req.user._id) {
 		userId = req.user._id;
 	} else {
 		userId = undefined;
 	}
+	console.log(prop)
 	res.render("prop.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
 });
 
@@ -146,6 +147,33 @@ router.get("/:propId/reserve", async (req, res) => {
 	console.log('reserve attempted');
 	let propId = req.params.propId;
 	// edit database entry to show as reserved
+	try {
+		let thisProp = await models.Prop.findById(propId);
+		console.log(thisProp.status)
+		
+		if (thisProp.status === "available"){ // first check if prop is available
+			if (thisProp.quantity > 1) { // if there is more than 1 of this prop available
+				await models.Prop.findByIdAndUpdate(thisProp.id, {
+					quantity: thisProp.quantity-1 // just lower the number of available props
+				});
+				console.log("reserved one instance, more available");
+				res.status(205);
+			} else { // if there is only 1 instance of this prop available
+				await models.Prop.findByIdAndUpdate(thisProp.id, { // set to reserved status
+					quantity: 0,
+					status: "reserved"
+				});
+				console.log("reserved only instance in stock");
+				res.status(205);
+			}	
+		}	else { // if not available don't reserve it
+			console.log("item is not available to reserve");
+			res.status(500);
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(500);
+	}
 } )
 
 // This allows other files to import the router

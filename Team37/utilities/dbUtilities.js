@@ -3,12 +3,13 @@ models = require("./models");
 // This file should have database utility functions
 
 class DisplayProp {  // This is a class used to display props on the site
-	constructor(propId, name, description, quantity, price) {
+	constructor(propId, name, description, quantity, price, status) {
 		this.propId = propId;
 		this.name = name;
 		this.description = description;
 		this.quantity = quantity;
 		this.price = price;
+		this.status = status;
 	}
 }
 

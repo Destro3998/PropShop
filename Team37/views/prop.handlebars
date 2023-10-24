@@ -12,8 +12,9 @@
     <div class="prop-details">
         <h1>{{prop.name}}</h1>
         <p>Description: {{prop.description}}</p>
+        <p>Status: {{prop.status}}</p>
         <p>Quantity: {{ prop.quantity }}</p><br>
-        <p>CA$ {{prop.price}}</p>
+        <p>CA$ {{prop.price}}/day</p>
     <button class="addToCartBtn" onclick="addToCart('{{prop.propId}}')">Add To Cart</button>
     <button class="reserveBtn" onclick="reserve('{{prop.propId}}')">Reserve</button>
 </div>
