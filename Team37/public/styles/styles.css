@@ -474,6 +474,7 @@ ul, ol {
     align-items: center;
     margin-bottom: 2em;
     border-radius: var(--border-radius);
+    width: 20%;
 }
 
 .password-update > form {
@@ -485,14 +486,14 @@ ul, ol {
 
 
 .user-card {
-    padding: 2em;
+    padding: 1.5em;
     display: flex;
     gap: 0.5em;
     flex-direction: column;
-    /* justify-content: center; */
     border-radius: var(--border-radius);
     margin-bottom: 2em;
     transition: all ease-in-out 250ms;
+    width: 20%;
 }
 
 .user-card:hover {
@@ -513,6 +514,7 @@ ul, ol {
 #update-email-form,
 #update-phone-form {
     display: none;
+    justify-content: space-between;
 }
 
 .user-orders {
@@ -521,6 +523,7 @@ ul, ol {
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
+    width: 20%;
 }
 
 .load-more-container{
@@ -600,5 +603,9 @@ h1, button {
     padding: 5px 10px;
     border-radius: 5px; 
     font-size: 12px; 
+}
+
+.clickable{
+    cursor: pointer;
 }
 

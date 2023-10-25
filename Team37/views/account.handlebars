@@ -1,4 +1,5 @@
 <h2 class="title-text-sm">Welcome, {{displayUser.fname}} {{displayUser.lname}}</h2>
+<h4 style="display: none;" id="updated">Updated</h4>
 <div class="account-update">
     <div class="user-card container">
         <h3 class="head-text">Update your info</h3>
@@ -7,10 +8,10 @@
                     onclick="toggleUpdateForm('update-fname-form', 'update-fname-button')">Update
             </button>
         </p>
+        <label for="update-fname"></label>
         <form action="" method="post" id="update-fname-form">
-            <label for="fname"></label>
-            <input type="text" name="fname" value="{{displayUser.fname}}">
-            <input type="submit" value="Update">
+            <input type="text" name="fname" value="{{displayUser.fname}}" id="update-fname">
+            <input type="submit" value="Update" class="clickable">
         </form>
 
         <p class="p-flex">Last Name: {{displayUser.lname}}
@@ -18,10 +19,10 @@
                     onclick="toggleUpdateForm('update-lname-form', 'update-lname-button')">Update
             </button>
         </p>
+        <label for="update-lname"></label>
         <form action="" method="post" id="update-lname-form">
-            <label for="lname"></label>
-            <input type="text" name="lname" value="{{displayUser.lname}}">
-            <input type="submit" value="Update">
+            <input type="text" name="lname" value="{{displayUser.lname}}" id="update-lname">
+            <input type="submit" value="Update" class="clickable">
         </form>
 
         <p class="p-flex">Email Address: {{displayUser.email}}
@@ -29,10 +30,10 @@
                     onclick="toggleUpdateForm('update-email-form', 'update-email-button')">Update
             </button>
         </p>
+        <label for="update-email"></label>
         <form action="" method="post" id="update-email-form">
-            <label for="email"></label>
-            <input type="text" name="email" value="{{displayUser.email}}">
-            <input type="submit" value="Update">
+            <input type="text" name="email" value="{{displayUser.email}}" id="update-email">
+            <input type="submit" value="Update" class="clickable">
         </form>
 
         <p class="p-flex">Phone Number: {{displayUser.phone}}
@@ -40,14 +41,13 @@
                     onclick="toggleUpdateForm('update-phone-form', 'update-phone-button')">Update
             </button>
         </p>
+        <label for="update-phone"></label>
         <form action="" method="post" id="update-phone-form">
-            <label for="phone"></label>
-            <input type="text" name="phone" value="{{displayUser.phone}}">
-            <input type="submit" value="Update">
+            <input type="text" name="phone" value="{{displayUser.phone}}" id="update-phone">
+            <input type="submit" value="Update" class="clickable">
         </form>
     </div>
     <div class="password-update container">
-        <p style="display: none;" id="updated">Updated</p>
         <h3 class="head-text">Update your password</h3>
         <form action="" method="post" id="update-password">
             <label for="password">Enter a new password</label>
@@ -94,50 +94,178 @@
         let updateForm = document.getElementById(formId);
         let updateButton = document.getElementById(formButtonId);
 
-        if (updateForm.style.display === "block") {
+        if (updateForm.style.display === "flex") {
             updateForm.style.display = "none";
             updateButton.innerText = "Update";
         } else {
             updateButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-lg' viewBox='0 0 16 16'><path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/></svg>"
-            updateForm.style.display = "block";
+            updateForm.style.display = "flex";
         }
     }
 
+    // This event listener ensures that the entire page is loaded first
     document.addEventListener("DOMContentLoaded", () => {
+        // Adding an event listener to the submit action of the form.
         document.getElementById("update-password").addEventListener("submit", async function (event) {
+            // This prevents the form from submitting and trying to access the route.
             event.preventDefault();
 
             const newPassword = document.getElementById("password").value;
             const newPasswordReEnter = document.getElementById("passwordReEnter").value;
+            // Creating an object
             const passwordData = {
                 newPassword: newPassword,
                 newPasswordReEnter: newPasswordReEnter,
             };
 
-            let userId = await fetch("/api/get-userId")
-                    .then(response => response.json())
-                    .then(data => {
-                        return data
-                    })
-                    .catch(error => {
-                        return 1
-                    });
-
             try {
-                const response = await fetch(`/accounts/${userId}/update-password`, {
+                // sending the data back to the server
+                const response = await fetch("/accounts/{{userId}}/update-password", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(passwordData),
                 });
+                // Checking the status of the server's response.
                 if (response.ok) {
-                    let data = await response.json();
-                    console.log(data.message);
-                    document.getElementById("updated").style.display = "block";
+                    // let data = await response.json();
+                    location.reload();
                 } else {
                     console.error("Password update failed");
                     document.getElementById("updated").innerHTML = "Update Failed"
+                    document.getElementById("updated").style.display = "block";
+                }
+            } catch (error) {
+                console.error("error: ", error);
+            }
+        });
+        // Adding an event listener to the submit action of the form.
+        document.getElementById("update-fname-form").addEventListener("submit", async function (event) {
+            // This prevents the form from submitting and trying to access the route.
+            event.preventDefault();
+            const newFname = document.getElementById("update-fname").value;
+            // Creating an object
+            const fnameData = {
+                fname: newFname
+            };
+            try {
+                // sending the data back to the server
+                const response = await fetch("/accounts/{{userId}}/update-fname", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(fnameData),
+                });
+                // Checking the status of the server's response.
+                if (response.ok) {
+                    // let data = await response.json();
+                    toggleUpdateForm('update-fname-form', 'update-fname-button');
+                    location.reload();
+                } else {
+                    console.error("Password update failed");
+                    document.getElementById("updated").innerHTML = "Update Failed"
+                    document.getElementById("updated").style.display = "block";
+                }
+            } catch (error) {
+                console.error("error: ", error);
+            }
+
+        });
+
+        // Adding an event listener to the submit action of the form.
+        document.getElementById("update-lname-form").addEventListener("submit", async function (event) {
+            // This prevents the form from submitting and trying to access the route.
+            event.preventDefault();
+            const newLname = document.getElementById("update-lname").value;
+            // Creating an object
+            let lnameData = {
+                lname: newLname
+            }
+            try {
+                // sending the data back to the server
+                const response = await fetch("/accounts/{{userId}}/update-lname", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(lnameData),
+                });
+                // Checking the status of the server's response.
+                if (response.ok) {
+                    let data = await response.json();
+                    document.getElementById("updated").innerHTML = data.message;
+                    toggleUpdateForm('update-lname-form', 'update-lname-button');
+                    location.reload();
+                } else {
+                    console.error("Password update failed");
+                    document.getElementById("updated").innerHTML = "Update Failed"
+                    document.getElementById("updated").style.display = "block";
+                }
+            } catch (error) {
+                console.error("error: ", error);
+            }
+        });
+        // Adding an event listener to the submit action of the form.
+        document.getElementById("update-email-form").addEventListener("submit", async function (event) {
+            // This prevents the form from submitting and trying to access the route.
+            event.preventDefault();
+            const newEmail = document.getElementById("update-email").value;
+            // Creating an object
+            let emailData = {
+                email: newEmail
+            }
+            try {
+                // sending the data back to the server
+                const response = await fetch("/accounts/{{userId}}/update-email", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(emailData),
+                });
+
+                // Checking the status of the server's response.
+                if (response.ok) {
+                    // let data = await response.json();
+                    toggleUpdateForm('update-email-form', 'update-email-button');
+                    location.reload();
+                } else {
+                    console.error("Email update failed");
+                    document.getElementById("updated").innerHTML = "Email Update Failed"
+                    document.getElementById("updated").style.display = "block";
+                }
+            } catch (error) {
+                console.error("error: ", error);
+            }
+        });
+        // Adding an event listener to the submit action of the form.
+        document.getElementById("update-phone-form").addEventListener("submit", async function (event) {
+            // This prevents the form from submitting and trying to access the route.
+            event.preventDefault();
+            const newPhone = document.getElementById("update-phone").value;
+            // Creating an object
+            let phoneData = {
+                phone: newPhone
+            };
+            try {
+                // sending the data back to the server
+                const response = await fetch("/accounts/{{userId}}/update-phone", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(phoneData),
+                });
+                // Checking the status of the server's response.
+                if (response.ok) {
+                    // let data = await response.json();
+                    toggleUpdateForm('update-phone-form', 'update-phone-button');
+                    location.reload();
+                } else {
+                    console.error("phone number update failed");
+                    document.getElementById("updated").innerHTML = "Phone Number Update Failed"
                     document.getElementById("updated").style.display = "block";
                 }
             } catch (error) {

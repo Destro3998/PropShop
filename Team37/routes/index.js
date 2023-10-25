@@ -17,12 +17,14 @@ router.get("/", (req, res) => {
 	} else {
 		userId = undefined;
 	}
-	res.render("index.handlebars", {
-		name: "Index Page",
-		homeActive: true,
-		authenticated: authenticated,
-		userId: userId
-	});
+	// res.render("index.handlebars", {
+	// 	name: "Index Page",
+	// 	homeActive: true,
+	// 	authenticated: authenticated,
+	// 	userId: userId
+	// });
+
+	res.redirect("/store")
 });
 
 
@@ -45,16 +47,20 @@ router.get("/about", (req, res) => {
 router.get("/contact", (req, res) => {
 	let authenticated = req.isAuthenticated();
 	let userId;
+	let admin;
 	if (req.user && req.user._id) {
 		userId = req.user._id;
+		admin = req.user.admin;
 	} else {
 		userId = undefined;
+		admin = false;
 	}
 	res.render("contact.handlebars", {
 		name: "Contact Page",
 		contactActive: true,
 		authenticated: authenticated,
-		userId: userId
+		userId: userId,
+		admin:admin
 	});
 });
 
@@ -74,10 +80,13 @@ router.get("/store", async (req, res) => {
 	// Authentication and userId logic from main branch
 	let authenticated = req.isAuthenticated();
 	let userId;
+	let admin;
 	if (req.user && req.user._id) {
 		userId = req.user._id;
+		admin = req.user.admin;
 	} else {
 		userId = undefined;
+		admin = false;
 	}
 
 	// Merged render from both branches
@@ -85,8 +94,9 @@ router.get("/store", async (req, res) => {
 		name: "Catalogue",
 		props: props,
 		storeActive: true,
-		authenticated: authenticated,  // from main branch
-		userId: userId  // from main branch
+		authenticated: authenticated,
+		userId: userId,
+		admin: admin
 	});
 });
 

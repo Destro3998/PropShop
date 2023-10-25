@@ -7,8 +7,8 @@ const getProps = utilities.getProps;
 const DisplayProp = utilities.DisplayProp;
 const qrCode = require('qrcode');
 
-// load-more funtionality
 
+// load-more functionality
 router.get('/loadmore', async (req, res) => {
     let limit = parseInt(req.query.limit) || 6;  // Default to 6 if not provided
     let skip = parseInt(req.query.skip) || 0;     // Default to 0 if not provided
@@ -29,7 +29,7 @@ router.get('/loadmore', async (req, res) => {
 });
 
 
-// search fucntionality from database query
+// search functionality from database query
 router.get('/search', async (req, res) => {
 	let authenticated = req.isAuthenticated();
     const searchQuery = req.query.q; //extract query
@@ -80,12 +80,13 @@ router.route("/:propId/edit")
 		let prop_model = await models.Prop.findById(propId);
 		let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price);
 		let userId;
+		let admin = req.user && req.user.admin ? req.user.admin : false;
 		if (req.user && req.user._id) {
 			userId = req.user._id;
 		} else {
 			userId = undefined;
 		}
-		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId});
+		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId, admin: admin});
 	})
 	.post(isAdmin, async (req, res) => { // this is used by the form submission
 		let propId = req.params.propId;

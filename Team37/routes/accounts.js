@@ -13,7 +13,7 @@ router.use(express.json());
 /**
  * This is a route for registering users
  */
-router.get("/register", (req, res, next) => {
+router.get("/register", (req, res) => {
 	let authenticated = req.isAuthenticated(); // This method checks if there is an authenticated user on the site at the moment
 	if (authenticated) { // if the user is authenticated they should not be able to register.
 		res.redirect("/");
@@ -21,7 +21,7 @@ router.get("/register", (req, res, next) => {
 	res.render("register.handlebars", {name: "Register Page", registerActive: true, authenticated: authenticated});
 });
 
-router.post("/register", async (req, res, next) => {
+router.post("/register", async (req, res) => {
 	const password = req.body.password;
 	const passwordReEnter = req.body.passwordReEnter;
 	const email = req.body.email;
@@ -52,7 +52,7 @@ router.post("/register", async (req, res, next) => {
 					admin: true
 				});
 
-				newUser.save(); // saving the user to the database (using a promise)
+				await newUser.save(); // saving the user to the database (using a promise)
 				req.flash("success", "Registered Successfully");
 				res.redirect("/accounts/login")
 
@@ -78,7 +78,7 @@ router.post("/register", async (req, res, next) => {
 /**
  * This is a route for logging users in
  */
-router.get("/login", (req, res, next) => {
+router.get("/login", (req, res) => {
 	let authenticated = req.isAuthenticated();
 	if (authenticated) { // If the user is already authenticated they should not be able to visit the login page
 		res.redirect("/");
@@ -110,7 +110,7 @@ router.get("/logout", isAuth, (req, res, next) => {
 /**
  * This method is used to get the user's account page based on their user id
  */
-router.get("/:userId", isAuth, (req, res, next) => {
+router.get("/:userId", isAuth, (req, res) => {
 	let authenticated = req.isAuthenticated();
 	let user = req.user;
 	let orders = req.user.orders ? req.user.orders : undefined;
@@ -131,6 +131,8 @@ router.get("/:userId", isAuth, (req, res, next) => {
 router.post("/:userId/update-password", isAuth, async (req, res) => {
 	const password = req.body.newPassword;
 	const passwordReEnter = req.body.newPasswordReEnter;
+
+	// TODO: Make the user enter their current password. And only allow the user to change their password of they give their current password.
 
 	try {
 		if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*]/.test(password)) {
@@ -157,20 +159,54 @@ router.post("/:userId/update-password", isAuth, async (req, res) => {
 	req.flash("success", "Password updated successfully.");
 });
 
-router.post("/:userId/update-fname", isAuth, (req, res) => {
-	req.flash("success", "First Name updated successfully");
+router.post("/:userId/update-fname", isAuth, async (req, res) => {
+	let newFname = req.body.fname;
+	try {
+		if (newFname === "") throw new Error("Updated Name Cannot be empty");
+		await User.findOneAndUpdate({_id: req.user._id}, {fname: newFname});
+		req.flash("success", "First Name updated successfully");
+		res.status(200).json({message: "First Name updated successfully"});
+	} catch (error) {
+		res.status(400).json({error: error.message});
+	}
 });
 
-router.post("/:userId/update-lname", isAuth, (req, res) => {
-	req.flash("success", "Last Name updated successfully");
+router.post("/:userId/update-lname", isAuth, async (req, res) => {
+	let newLname = req.body.lname;
+	try {
+		if (newLname === "") throw new Error("Updated Name Cannot be empty");
+		await User.findOneAndUpdate({_id: req.user._id}, {lname: newLname});
+		req.flash("success", "Last Name updated successfully");
+		res.status(200).json({message: "Last Name updated successfully"});
+	} catch (error) {
+		res.status(400).json({error: error.message});
+	}
 });
 
-router.post("/:userId/update-email", isAuth, (req, res) => {
-	req.flash("success", "Email updated successfully");
+router.post("/:userId/update-email", isAuth, async (req, res) => {
+	let newEmail = req.body.email;
+	// TODO: Check if a user with the same email exists. If yes, do not allow the user to change their email.
+	// TODO: Validate the new password.
+	try {
+		if (newEmail === "") throw new Error("Updated Name Cannot be empty");
+		await User.findOneAndUpdate({_id: req.user._id}, {email: newEmail});
+		req.flash("success", "Email updated successfully");
+		res.status(200).json({message: "Email updated successfully"});
+	} catch (error) {
+		res.status(400).json({error: error.message});
+	}
 });
 
-router.post("/:userId/update-phone", isAuth, (req, res) => {
-	req.flash("success", "Phone Number updated successfully");
+router.post("/:userId/update-phone", isAuth, async (req, res) => {
+	let newPhone = req.body.phone;
+	try {
+		if (newPhone === "") throw new Error("Updated Name Cannot be empty");
+		await User.findOneAndUpdate({_id: req.user._id}, {phone: newPhone});
+		req.flash("success", "Phone Number updated successfully");
+		res.status(200).json({message: "Phone Number updated successfully"});
+	} catch (error) {
+		res.status(400).json({error: error.message});
+	}
 });
 
 

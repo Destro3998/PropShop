@@ -43,34 +43,40 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 
 });
 
-router.get("/dashboard/config", isAdmin, (req, res) => {
-	let authenticated = req.isAuthenticated();
-	const userId = req.user && req.user._id ? req.user._id : undefined;
-	res.render("config.handlebars", {
-		authenticated:authenticated,
-		userId:userId
-		});
-});
-
-router.post("/dashboard/config", isAdmin, (req, res) => {
-	req.flash("success", "Setting successfully updated");
-	res.redirect("/admin/dashboard/config");
-});
-
-
-
 // rendering the page
 router.get("/add-prop", isAdmin, (req, res) => {
 	let authenticated = req.isAuthenticated();
-	const userId = req.user && req.user._id ? req.user._id : undefined;
-	res.render("addProp.handlebars", {authenticated: authenticated, userId: userId});
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	let admin;
+	if (req.user && req.user.admin) {
+		admin = req.user.admin;
+	} else {
+		admin = false;
+	}
+	res.render("addProp.handlebars", {authenticated: authenticated, userId: userId, admin: admin});
 });
 
 // rendering the page
 router.get("/add-user", isAdmin, (req, res) => {
 	let authenticated = req.isAuthenticated();
-	const userId = req.user && req.user._id ? req.user._id : undefined;
-	res.render("addUser.handlebars", {authenticated: authenticated, userId: userId});
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	let admin;
+	if (req.user && req.user.admin) {
+		admin = req.user.admin;
+	} else {
+		admin = false;
+	}
+	res.render("addUser.handlebars", {authenticated: authenticated, userId: userId, admin:admin});
 });
 
 
@@ -135,10 +141,22 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 
 router.get("/dashboard/config", isAdmin, (req, res) => {
     let authenticated = req.isAuthenticated();
-    const userId = req.user && req.user._id ? req.user._id : undefined;
+    let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	let admin;
+	if (req.user && req.user.admin) {
+		admin = req.user.admin;
+	} else {
+		admin = false;
+	}
     res.render("config.handlebars", {
         authenticated:authenticated,
-        userId:userId
+        userId:userId,
+		admin: admin
         });
 });
 
