@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router();
 const models = require("../utilities/models.js");
-const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
+const {isAdmin, isAuth, isBlacklisted} = require("../utilities/authMiddleware.js");
 const {getProps, getUsers, getOrders, searchProps} = require("../utilities/dbUtilities.js")
 const { Configuration } = require('../utilities/models'); 
 
@@ -9,7 +9,8 @@ const { Configuration } = require('../utilities/models');
 
 const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
 const fs = require("fs"); // for editing filenames
-const multer = require("multer"); // for file upload
+const multer = require("multer");
+const {User} = require("../utilities/models"); // for file upload
 var storage = multer.diskStorage({ // setting up file uploads
 	destination: function (req, file, cb) {
 		cb(null, imagedir)
@@ -25,7 +26,7 @@ var upload = multer({storage: storage})
  * This function is async because we have await statements within in
  */
 
-router.get("/dashboard", isAdmin, async (req, res) => {
+router.get("/dashboard", isBlacklisted, isAdmin, async (req, res) => {
 	let authenticated = req.isAuthenticated();
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)

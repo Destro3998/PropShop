@@ -17,12 +17,14 @@ class DisplayProp {  // This is a class used to display props on the site
 }
 
 class DisplayUser { // This is a class used to display users on the site
-	constructor(userId, email, fname, lname, phone) {
+	constructor(userId, email, fname, lname, phone, blacklisted, admin) {
 		this.userId = userId;
 		this.email = email;
 		this.fname = fname;
 		this.lname = lname;
 		this.phone = phone;
+		this.blacklisted = blacklisted;
+		this.admin = admin;
 	}
 }
 
@@ -113,7 +115,7 @@ async function getDisplayUsers() {
 		let users = await models.User.find({});
 		let displayUsers = [];
 		users.forEach(user => { // for each user in the database make it a displayUser object and add it to the list.
-			displayUsers.push(new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone));
+			displayUsers.push(new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone, user.blacklisted, user.admin));
 		});
 		return displayUsers;
 	} catch (error) {

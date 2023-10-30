@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const {isAuth} = require("../utilities/authMiddleware");
+const {isAuth, isBlacklisted} = require("../utilities/authMiddleware");
 const {DisplayUser} = require("../utilities/dbUtilities");
 const generatePassword = require("../utilities/password").generatePassword;
 const User = require("../utilities/models").User;
@@ -111,7 +111,7 @@ router.get("/logout", isAuth, (req, res, next) => {
 /**
  * This method is used to get the user's account page based on their user id
  */
-router.get("/:userId", isAuth, (req, res) => {
+router.get("/:userId", isAuth, isBlacklisted, (req, res) => {
 	let authenticated = req.isAuthenticated();
 	let user = req.user;
 	let orders = req.user.orders ? req.user.orders : undefined;
