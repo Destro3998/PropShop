@@ -1,10 +1,10 @@
 // Middleware: functions that are executed when the request is made, but before it gets to the server...(not a dictionary definition)
 /**
- * Middleware used to authenticate and authorise users.
+ * Middleware used to authenticate and authorize users.
  */
 
 /**
- * This function checks if there is an authenticated user
+ * This function checks if there is an authenticated user.
  * @param req the request
  * @param res the response
  * @param next the next middleware in the chain
@@ -17,7 +17,7 @@ module.exports.isAuth = (req, res, next) => {
 	}
 }
 /**
- * This function checks if the user is an admin
+ * This function checks if the user is an admin.
  * @param req the request
  * @param res the response
  * @param next the next middleware in the chain
@@ -27,5 +27,21 @@ module.exports.isAdmin = (req, res, next) => {
 		next();
 	} else {
 		res.status(401).json({message: "You must be authenticated to view this resource. You must be an Admin to view this resource."});
+	}
+}
+
+/**
+ * This function checks if the user is blacklisted.
+ * @param req the request
+ * @param res the response
+ * @param next the next middleware in the chain
+ */
+module.exports.isBlacklisted = (req, res, next) =>{
+	if (req.isAuthenticated()){
+		if (!req.user.blacklisted){
+			next();
+		}else{
+			res.status(401).json({message:"You are blacklisted and cannot view this resource."});
+		}
 	}
 }

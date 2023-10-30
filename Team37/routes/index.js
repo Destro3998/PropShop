@@ -108,7 +108,7 @@ router.post("/contact", (req, res) => {
 router.get("/store", async (req, res) => {
 	// Pagination logic from sam branch
 	let skip = parseInt(req.query.skip) || 0;
-	let limit = parseInt(req.query.limit) || 6;
+	let limit = parseInt(req.query.limit) || 8;
 
 	// Retrieve props using pagination
 	let props = await getProps(skip, limit);

@@ -13,11 +13,17 @@
         <div class="store-inner">
             {{#each props}}
                 <div class="store-card container">
-                    <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
-                    <p>{{ this.description }}</p>
-                    <small>Quantity: {{ this.quantity }}</small><br>
-                    <p>CA$ {{this.price}}</p>
-                        <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
+                    <a href="/prop/{{this.propId}}">
+                        <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image">
+                    </a>
+                    <div class="store-item-info">
+                        <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
+                        <p>{{ this.description }}</p>
+                        <small>Quantity: {{ this.quantity }}</small><br>
+                        <p>CA$ {{this.price}}</p>
+                        <button class="button" onclick="addToCart('{{this.propId}}')">Add To Cart</button>
+                    </div>
+
                 </div>
             {{/each}}
         </div>
@@ -31,11 +37,20 @@
 
 
 <script>
+
+    let images = document.querySelectorAll(".store-item-image");
+    images.forEach(image => {
+        image.addEventListener("error", function () {
+            image.src = "images/default.jpg"
+            // The default image must be changed.
+        });
+    });
+
     document.getElementById("loadMoreButton").addEventListener("click", function () {
         // Track the number of items already displayed
         let displayedPropsCount = document.querySelectorAll('.store-card').length;
 
-        fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=6`) // fetch props from server
+        fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=8`) // fetch props from server
                 .then(response => response.json())
                 .then(data => {   // Iterate over and display the props
                     let propsContainer = document.querySelector('.store-inner');
@@ -45,12 +60,17 @@
                         propDiv.classList.add('store-card', 'container');
 
                         propDiv.innerHTML = `
-                        <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3></a>
-                        <p>${prop.description}</p>
-                        <small>Quantity: ${prop.quantity}</small><br>
-                        <button class="button" onclick="addToCart(event, '${prop.propId}')">Add To Cart</button>
-                    `;
-
+                            <a href="/prop/${prop.propId}">
+                                <img src="/3dmodels/${prop.propId}.jpg" alt="The prop's image" class="store-item-image">
+                            </a>
+                            <div class="store-item-info">
+                                <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3></a>
+                                <p>${prop.description}</p>
+                                <small>Quantity: ${prop.quantity}</small><br>
+                                <p>CA$ ${prop.price}</p>
+                                <button class="button" onclick="addToCart('${prop.propId}')">Add To Cart</button>
+                            </div>
+            `;
 
                         propsContainer.appendChild(propDiv);
                     });

@@ -289,15 +289,35 @@ input {
 .store-inner {
     display: grid;
     /* This makes a repeating grid that auto fills its container. With a minimum with of 35em and a max width of 1 fractional unit of the available space. */
-    grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(25em, 1fr));
     gap: 2em;
     border-radius: var(--border-radius);
     margin: 2.5em 0;
 }
 
 .store-card {
-    padding: 2em;
-    border-radius: var(--border-radius);
+    width: 22rem;
+    height: 40rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.store-item-image{
+    height: 22rem;
+    width: 100%;
+    object-fit: fill;
+    min-height: 22rem;
+}
+
+
+
+.store-item-info{
+    padding: 1em;
+}
+
+.alt-text{
+    font-weight: bold;
+    color: #FF0000;
 }
 
 .title-text {
