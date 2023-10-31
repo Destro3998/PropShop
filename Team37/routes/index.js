@@ -136,7 +136,7 @@ router.get("/store", async (req, res) => {
 	});
 });
 
-
+// add to cart
 router.post("/cart/add/:propId", isAuth, async (req, res) => {
 	let propId = req.params.propId;
 	let quantity = 1;
@@ -183,6 +183,65 @@ router.get("/api/authenticated", (req, res) => {
 router.get("/api/get-userId", isAuth, (req, res) => {
 	res.json({ id: req.user._id });
 })
+
+
+// get item stored in cart
+
+router.get("/cart", isAuth, async (req, res) => {
+    let authenticated = req.isAuthenticated();
+    let userId;
+    let admin;
+
+    if (req.user && req.user._id) {
+        userId = req.user._id;
+        admin = req.user.admin;
+    } else {
+        // If there's no user object, the user isn't authenticated. Redirect them.
+        return res.redirect("/login"); // Redirect to login or some other page as per your setup
+    }
+
+    try {
+        let userCart = req.user.cart; // Assuming cart is an array in the user model
+        
+        // If you want detailed cart items instead of just references:
+        let detailedCart = [];
+        for (let item of userCart) {
+            let prop = await getProp(item.itemId);
+            detailedCart.push({
+                item: prop,
+                quantity: item.quantity
+            });
+        }
+
+        res.render("cart.handlebars", {
+            name: "My Cart",
+            cartItems: detailedCart,
+            cartActive: true, 
+            authenticated: authenticated,
+            userId: userId,
+            admin: admin
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/api/getProp/:propId", async (req, res) => {
+    try {
+        const propId = req.params.propId;
+        const prop = await getProp(propId);
+        if (prop) {
+            res.json(prop);
+        } else {
+            res.status(404).send('Prop not found');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 // This allows other files to import the router
 module.exports = router;

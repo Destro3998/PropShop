@@ -17,7 +17,7 @@
                     <p>{{ this.description }}</p>
                     <small>Quantity: {{ this.quantity }}</small><br>
                     <p>CA$ {{this.price}}</p>
-                    <button class="button" onclick="addToCart('{{this.propId}}')">Add To Cart</button>
+                        <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
                 </div>
             {{/each}}
         </div>
@@ -45,11 +45,12 @@
                         propDiv.classList.add('store-card', 'container');
 
                         propDiv.innerHTML = `
-            <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3>
-            <p>${prop.description}</p>
-            <small>Quantity: ${prop.quantity}</small><br>
-            <button class="button" onclick="addToCart('${prop.propId}')">Add To Cart</button>
-            `;
+                        <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3></a>
+                        <p>${prop.description}</p>
+                        <small>Quantity: ${prop.quantity}</small><br>
+                        <button class="button" onclick="addToCart(event, '${prop.propId}')">Add To Cart</button>
+                    `;
+
 
                         propsContainer.appendChild(propDiv);
                     });
@@ -63,7 +64,7 @@
     // getting the cart from local storage it is in JSON form
     const cartJson = localStorage.getItem("cart");
     // parse teh json back to a list
-    const cart = JSON.parse(cartJson);
+    const cart = cartJson ? JSON.parse(cartJson) : [];
 
     // This function checks if the current user is authenticated
     function checkAuthentication(callback) {
@@ -79,26 +80,30 @@
                 });
     }
 
-    function addToCart(propId) {
-        checkAuthentication((isAuthenticated) => {
-            if (isAuthenticated) {
-                // if the user is authenticated then add the prop to the cart in the db.
-                fetch(`/cart/add/${propId}`, {method: "POST"})
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error("Server-side error");
-                            }
-                            console.log("Added to User cart successfully");
-                        })
-                        .catch((error) => {
-                            console.error("Error adding to cart: ", error);
-                        });
-            }
-            // For both authenticated and non-authenticated users the cart will be stored in local storage.
-            cart.push(propId);
-            let updatedCart = JSON.stringify(cart);
-            localStorage.setItem("cart", updatedCart);
-            console.log("Added to local storage cart successfully");
-        });
-    }
+    // add to cart
+
+    function addToCart(event, propId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    checkAuthentication((isAuthenticated) => {
+        if (isAuthenticated) {
+            fetch(`/cart/add/${propId}`, {method: "POST"})
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Server-side error");
+                        }
+                        console.log("Added to User cart successfully");
+                    })
+                    .catch((error) => {
+                        console.error("Error adding to cart: ", error);
+                    });
+        }
+        cart.push(propId);
+        let updatedCart = JSON.stringify(cart);
+        localStorage.setItem("cart", updatedCart);
+        console.log("Added to local storage cart successfully");
+    });
+}
+
 </script>

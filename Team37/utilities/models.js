@@ -14,20 +14,36 @@ const employeeSchema = new mongoose.Schema({
 	address: String,
 	password: {type: String, required: true},
 });
-const propInstanceSchema = new mongoose.Schema({
-	available: {type: Boolean, required: true},
-	location: {type: String, required: true},
-	rentHistory: String
-});
+
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
 	price: {type: Number, required: true}, //setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
-	quantity: {type: Number, required: true}, //Ensure to update quantity when adding/removing instances of a prop
-	instance: [propInstanceSchema],
-	status: { type: String, default: 'available'} // adding this for basic reservation functionality, can be altered/moved to propInstanceSchema
-												// general idea is 3 states: available, reserved, or checked out
+	quantity: {type: Number, required: true},
+	category: [String],
+	instance: [ // each prop has children that share prop fields but have unique fields
+		{
+			status: { // using enum behaviour to restrict possible values
+				type: String,
+				enum: ["available", "reserved", "checked out"], 
+				required: true
+		  	}, 
+			location: {type: String, required: true},
+			rentHistory: [String]
+		}
+	]
 });
+// pre-hook trigger before saving to propSchema
+propSchema.pre('save', function(next) {
+	const prop = this;
+	if (prop.isNew) { // set each prop instance id to be (prop id)-(instance array location)
+	  prop.instance.forEach((instance, index) => {
+		instance._id = `${prop._id}-${index}`;
+	  });
+	}
+	prop.quantity = prop.instance.length + 1; // set quantity to number of instances plus one
+	next(); // allow rest of the operation to continue
+  });
 
 const orderSchema = new mongoose.Schema({
 	price: Number,
@@ -35,7 +51,6 @@ const orderSchema = new mongoose.Schema({
 	status: Number,
 	items: [cartItemSchema]
 });
-
 
 const userSchema = new mongoose.Schema({
 	email: {type: String, unique: true, require: true},
@@ -63,14 +78,12 @@ const clientSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
 const Employee = mongoose.model('Employee', employeeSchema);
-const PropInstance = mongoose.model('PropInstance', propInstanceSchema);
 const Prop = mongoose.model('Prop', propSchema);
 const Client = mongoose.model('Client', clientSchema);
 const CartItem = mongoose.model('CartItem', cartItemSchema);
 
 module.exports = {
 	Employee,
-	PropInstance,
 	Prop,
 	Client,
 	User,
