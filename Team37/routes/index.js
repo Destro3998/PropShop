@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const utilities = require("../utilities/dbUtilities.js");
-const {CartItem} = require("../utilities/models.js");
-const {isAuth} = require("../utilities/authMiddleware.js");
+const { CartItem } = require("../utilities/models.js");
+const { isAuth } = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
+const sgMail = require('@sendgrid/mail');
+require('dotenv').config();
 
 
 router.get("/", (req, res) => {
@@ -60,8 +62,42 @@ router.get("/contact", (req, res) => {
 		contactActive: true,
 		authenticated: authenticated,
 		userId: userId,
-		admin:admin
+		admin: admin
 	});
+});
+
+router.post("/contact", (req, res) => {
+
+	sgMail.setApiKey(process.env.SENDGRID_KEY);
+
+	// Creates email message and info (other "from" emails must be verifies in SendGrid before they can be used)
+	const msg = {
+		to: 'team37db@gmail.com',
+		from: 'team37db@gmail.com',
+		subject: 'Message from Customer',
+		text: `Name: ${req.body.name}\nEmail: ${req.body.email}\nBusiness: ${req.body.business}\nMessage:\n${req.body.message}`,
+		html:
+			`
+		<p><strong>Name:<\strong> ${req.body.name}</p>
+		<p><strong>Email:<\strong> ${req.body.email}</p>
+		<p><strong>Business:<\strong> ${req.body.business}</p>
+		<p><strong>Message:<\strong></p>
+		<p>${req.body.message}</p>
+		`,
+	};
+
+	// Sends the email
+	sgMail.send(msg)
+		.then(() => {
+			console.log('Email sent successfully!');
+			req.flash("success", "Message sent");
+			res.redirect("/contact");
+		})
+		.catch((error) => {
+			console.error('Error sending email:', error);
+			req.flash("error", "Error: failed to send message")
+			res.redirect("/contact");
+		})
 });
 
 /**
@@ -138,14 +174,14 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 
 router.get("/api/authenticated", (req, res) => {
 	if (req.isAuthenticated()) {
-		res.json({authenticated: true});
+		res.json({ authenticated: true });
 	} else {
-		res.json({authenticated: false});
+		res.json({ authenticated: false });
 	}
 });
 
-router.get("/api/get-userId", isAuth, (req, res) =>{
-	res.json({id:req.user._id});
+router.get("/api/get-userId", isAuth, (req, res) => {
+	res.json({ id: req.user._id });
 })
 
 // This allows other files to import the router
