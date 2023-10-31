@@ -96,6 +96,8 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 	// req.files holds the image(s)
 	// req.body will hold the text fields
 
+	console.log(req.files)
+
 	// CHECK IF IMAGES/3D MODELS WERE UPLOADED FIRST
 	if (req.files.model3d !== undefined) {
 		filename3d = req.files.model3d[0].filename
@@ -109,8 +111,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 		// it would be a good idea later to have a default image to assign to this variable 
 		// like a jpg that says "no image available" stored in the same folder
 		// like this:
-		// filenameimg = "default.jpg"
-		filenameimg = null
+		filenameimg = "default.jpg"
 	}
 	try {
 		models.Prop.create({ // this creates entries in the database
@@ -120,7 +121,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 			status: "available", // TESTING -- REMOVE THIS LATER
 			price: req.body.price,
 		}).then((prop, req, res) => {
-			// this renames the files to match the id just created for the prop
+			/*// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id
 			// on upload, but i could only get the upload function to work before prop creation.
 			// this could maybe be solved better by using serparate html forms for uploading the files
@@ -137,7 +138,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {
 					if (err) throw err
 				})
-			}
+			}*/
 		});
 	} catch (error) {
 		console.log(error)
