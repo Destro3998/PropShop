@@ -14,7 +14,8 @@
             {{#each props}}
                 <div class="store-card container">
                     <a href="/prop/{{this.propId}}">
-                        <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image">
+                        <img src="/3dmodels/{{this.image}}" alt="The prop's image" class="store-item-image"
+                        onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
                     </a>
                     <div class="store-item-info">
                         <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
@@ -38,13 +39,13 @@
 
 <script>
 
-    let images = document.querySelectorAll(".store-item-image");
+    /*let images = document.querySelectorAll(".store-item-image");
     images.forEach(image => {
         image.addEventListener("error", function () {
             image.src = "images/default.jpg"
             // The default image must be changed.
         });
-    });
+    });*/
 
     document.getElementById("loadMoreButton").addEventListener("click", function () {
         // Track the number of items already displayed
@@ -61,7 +62,8 @@
 
                         propDiv.innerHTML = `
                             <a href="/prop/${prop.propId}">
-                                <img src="/3dmodels/${prop.propId}.jpg" alt="The prop's image" class="store-item-image">
+                                <img src="/3dmodels/${prop.image}" alt="The prop's image" class="store-item-image"
+                                onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
                             </a>
                             <div class="store-item-info">
                                 <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3></a>

@@ -14,7 +14,18 @@ const employeeSchema = new mongoose.Schema({
 	address: String,
 	password: {type: String, required: true},
 });
+const propInstanceSchema = new mongoose.Schema({
+	available: {type: Boolean, required: true},
+	location: {type: String, required: true},
+	rentHistory: String
+});
 
+/** changes to prop schema also require changes to 
+ * DisplayProp in dbUtilities, 
+ * store.handlebars, 
+ * prop.handlebars, 
+ * props.js (get/edit/load/search functions) 
+ * admin.js (add prop function)*/
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
 	price: {type: Number, required: true}, //setting this to false for now until the server/frontend is setup to handle this value

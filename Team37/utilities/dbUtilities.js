@@ -2,14 +2,20 @@ models = require("./models");
 
 // This file should have database utility functions
 
+/** we should find a way to simplify the constructor 
+ * to pull all of the attributes from the database entry,
+ * instead of having to pass the individual prop attributes to the constructor 
+ * (can we make the constructor take one parameter, the prop id?)*/
 class DisplayProp {  // This is a class used to display props on the site
-	constructor(propId, name, description, quantity, price, status) {
+	constructor(propId, name, description, quantity, price, status, image, model3d) {
 		this.propId = propId;
 		this.name = name;
 		this.description = description;
 		this.quantity = quantity;
 		this.price = price;
 		this.status = status;
+		this.image = image === "old" ? propId + ".jpg" : image // temporarily uses prop id still for old props
+		this.model3d = model3d === "old" ? propId + ".glb" : model3d 
 	}
 }
 
