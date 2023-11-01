@@ -1,5 +1,6 @@
 models = require("./models");
 
+
 // This file should have database utility functions
 
 class DisplayProp {  // This is a class used to display props on the site
