@@ -33,10 +33,18 @@
 }
 
 body {
-    /* background-color: var(--background-color); */
+    /* background-color: var(--background-color); /* config page changes */
     /* font-family: 'Montserrat', sans-serif; */
     font-family: 'Noto Sans', sans-serif;
     margin: 2em;
+}
+
+.main-theme {
+    color: var(--main-color);
+}
+
+.accent-theme {
+    border-color: var(--accent-color);
 }
 
 input:focus,
