@@ -9,7 +9,6 @@ const propsRouter = require("./routes/props");
 const adminRouter = require("./routes/admin");
 const flash = require("connect-flash");
 require("dotenv").config();
-const contactRoutes = require('./routes/contact');
 
 
 
@@ -86,11 +85,6 @@ app.use(express.json());
 
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
-app.use('/', contactRoutes);
-
-
-
-
 // This starts the server
 mongoose.connect(uri).then(() => {
 	console.log("Connected to Database.");

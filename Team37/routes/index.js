@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const utilities = require("../utilities/dbUtilities.js");
-const {CartItem} = require("../utilities/models.js");
+const {CartItem, Configuration} = require("../utilities/models.js");
 const {isAuth} = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
@@ -44,24 +44,51 @@ router.get("/about", (req, res) => {
 	});
 });
 
-router.get("/contact", (req, res) => {
-	let authenticated = req.isAuthenticated();
-	let userId;
-	let admin;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-		admin = req.user.admin;
-	} else {
-		userId = undefined;
-		admin = false;
+router.get("/contact", async (req, res) => {
+	class Company{
+
+		constructor(address, email, phone, message) {
+			this.address = address;
+			this.email = email;
+			this.phone = phone;
+			this.message = message;
+		}
 	}
-	res.render("contact.handlebars", {
-		name: "Contact Page",
-		contactActive: true,
-		authenticated: authenticated,
-		userId: userId,
-		admin:admin
-	});
+
+	try{
+		let authenticated = req.isAuthenticated();
+		let userId;
+		let admin;
+		if (req.user && req.user._id) {
+			userId = req.user._id;
+			admin = req.user.admin;
+		} else {
+			userId = undefined;
+			admin = false;
+		}
+		let config = await Configuration.findOne();
+        console.log(config);
+        let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
+        if (!config) {
+            console.error("No configuration found in the database");
+            return res.status(404).send("Configuration not found");
+        }
+		console.log(company);
+		res.render("contact.handlebars", {
+			name: "Contact Page",
+			contactActive: true,
+			authenticated: authenticated,
+			userId: userId,
+			admin:admin, 
+			config:company
+		});
+	} catch (error){
+		console.log(error);
+		res.status(500).json({message:"Internal server error"});
+		res.redirect("/")
+	}
+
+	
 });
 
 /**
