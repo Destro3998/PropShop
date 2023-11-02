@@ -6,6 +6,8 @@ const {isAuth} = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
+const sgMail = require('@sendgrid/mail');
+require('dotenv').config();
 
 
 
@@ -45,51 +47,58 @@ router.get("/about", (req, res) => {
 	});
 });
 
-router.get("/contact", async (req, res) => {
-	class Company{
-
-		constructor(address, email, phone, message) {
-			this.address = address;
-			this.email = email;
-			this.phone = phone;
-			this.message = message;
-		}
+router.get("/contact", (req, res) => {
+	let authenticated = req.isAuthenticated();
+	let userId;
+	let admin;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+		admin = req.user.admin;
+	} else {
+		userId = undefined;
+		admin = false;
 	}
+	res.render("contact.handlebars", {
+		name: "Contact Page",
+		contactActive: true,
+		authenticated: authenticated,
+		userId: userId,
+		admin:admin
+	});
+});
 
-	try{
-		let authenticated = req.isAuthenticated();
-		let userId;
-		let admin;
-		if (req.user && req.user._id) {
-			userId = req.user._id;
-			admin = req.user.admin;
-		} else {
-			userId = undefined;
-			admin = false;
-		}
-		let config = await Configuration.findOne();
-        console.log(config);
-        let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
-        if (!config) {
-            console.error("No configuration found in the database");
-            return res.status(404).send("Configuration not found");
-        }
-		console.log(company);
-		res.render("contact.handlebars", {
-			name: "Contact Page",
-			contactActive: true,
-			authenticated: authenticated,
-			userId: userId,
-			admin:admin, 
-			config:company
-		});
-	} catch (error){
-		console.log(error);
-		res.status(500).json({message:"Internal server error"});
-		res.redirect("/")
-	}
+router.post("/contact", (req, res) => {
 
-	
+	sgMail.setApiKey(process.env.SENDGRID_KEY);
+
+	// Creates email message and info (other "from" emails must be verifies in SendGrid before they can be used)
+	const msg = {
+		to: 'team37db@gmail.com',
+		from: 'team37db@gmail.com',
+		subject: 'Message from Customer',
+		text: `Name: ${req.body.name}\nEmail: ${req.body.email}\nBusiness: ${req.body.business}\nMessage:\n${req.body.message}`,
+		html:
+			`
+		<p><strong>Name:<\strong> ${req.body.name}</p>
+		<p><strong>Email:<\strong> ${req.body.email}</p>
+		<p><strong>Business:<\strong> ${req.body.business}</p>
+		<p><strong>Message:<\strong></p>
+		<p>${req.body.message}</p>
+		`,
+	};
+
+	// Sends the email
+	sgMail.send(msg)
+		.then(() => {
+			console.log('Email sent successfully!');
+			req.flash("success", "Message sent");
+			res.redirect("/contact");
+		})
+		.catch((error) => {
+			console.error('Error sending email:', error);
+			req.flash("error", "Error: failed to send message")
+			res.redirect("/contact");
+		})
 });
 
 /**
@@ -166,14 +175,14 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 
 router.get("/api/authenticated", (req, res) => {
 	if (req.isAuthenticated()) {
-		res.json({authenticated: true});
+		res.json({ authenticated: true });
 	} else {
-		res.json({authenticated: false});
+		res.json({ authenticated: false });
 	}
 });
 
-router.get("/api/get-userId", isAuth, (req, res) =>{
-	res.json({id:req.user._id});
+router.get("/api/get-userId", isAuth, (req, res) => {
+	res.json({ id: req.user._id });
 })
 
 

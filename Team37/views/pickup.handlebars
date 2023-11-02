@@ -1,0 +1,26 @@
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+
+
+<div class="prop-details">
+        <h3 class="head-text">{{ prop.name }}</h3>
+        <img src="{{prop.propId}}.jpg">
+        <p>{{ prop.description }}</p>
+        <small>Quantity: {{ prop.quantity }}</small><br>
+        <p>CA$ {{prop.price}}</p>
+        <p>Status: {{prop.status}}</p>
+</div>
+
+<form action="/prop/pickup" method="post" class="vertical-form">
+    <label for="order">For order:</label>
+    <select id="order" required>
+        <option selected>Placeholder 1</option>
+        <option>Placeholder 2</option>
+        <option>Placeholder 3</option>
+        <option>Start new order</option>
+    </select>
+
+    <label for="description">Current condition of prop:</label>
+    <textarea type="text" name="description" id="prop-description" placeholder="Prop Description" rows="6"></textarea>
+
+    <input type="submit" class="button" value="Complete pickup">
+</form>

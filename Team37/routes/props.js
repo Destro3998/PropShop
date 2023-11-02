@@ -177,5 +177,20 @@ router.get("/:propId/reserve", async (req, res) => {
 	}
 } )
 
+router.get("/:propId/pickup", isAdmin, async (req, res) => {
+	let authenticated = req.isAuthenticated();
+	let propId = req.params.propId; // getting the propId from the url
+	let prop_model = await models.Prop.findById(propId);
+	let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price, prop_model.status);
+	let userId;
+	if (req.user && req.user._id) {
+		userId = req.user._id;
+	} else {
+		userId = undefined;
+	}
+	console.log(prop)
+	res.render("pickup.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
+});
+
 // This allows other files to import the router
 module.exports = router;
