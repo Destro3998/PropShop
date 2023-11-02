@@ -101,6 +101,57 @@ async function getProp(propId) {
 }
 
 
+async function getUsers(searchTerm_1 = "") {
+    try {
+        let query = {};
+        if (searchTerm_1) {
+            query = {
+                $or: [
+                    { fname: new RegExp(searchTerm_1, "i") },
+                    { lname: new RegExp(searchTerm_1, "i") },
+                    { email: new RegExp(searchTerm_1, "i") }
+                ]
+            };
+        }
+        let users = await models.User.find(query);
+        let displayUsers = [];
+        users.forEach(user => {
+            displayUsers.push(new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone));
+        });
+        return displayUsers;
+    } catch (error) {
+        console.log(error)
+        return [];
+    }
+}
+
+
+async function searchProps(searchTerm_2) {
+    try {
+        const regex = new RegExp(searchTerm_2, 'i');  // Case insensitive search
+        const props = await models.Prop.find({ 
+            name: regex  // Assuming name is the field you want to search on. Modify as needed.
+        });
+        
+        console.log("DB returned props:", props);
+        
+        let displayProps = [];
+        props.forEach(prop => {
+            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity, prop.price));
+        });
+        
+        return displayProps;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database Error: Failed to search props.');
+    }
+}
+
+
+
+
+
+
 // Exporting the displayProp class
 module.exports = {
 	DisplayProp: DisplayProp,
@@ -108,5 +159,6 @@ module.exports = {
 	getProps: getProps,
 	getUsers: getUsers,
 	propExists: propExists,
-	getProp: getProp
+	getProp: getProp,
+	searchProps: searchProps
 };

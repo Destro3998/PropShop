@@ -8,6 +8,7 @@ const propExists = utilities.propExists;
 const getProp = utilities.getProp;
 
 
+
 router.get("/", (req, res) => {
 	let authenticated = req.isAuthenticated();
 
