@@ -129,6 +129,7 @@ router.post("/contact", (req, res) => {
 		})
 });
 
+
 /**
  * This route is for the store page.
  * It is async because it has an await statement.
