@@ -39,55 +39,7 @@
 </form>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    
-    // General settings form
-    const requiredFields = [
-        document.getElementById('site-message'),
-        document.getElementById('company-address'),
-        document.getElementById('company-email'),
-        document.getElementById('company-phone')
-    ];
-    
-    const generalSettingsForm = document.getElementById('generalSettingsForm');
-    const submitButton = generalSettingsForm.querySelector('.config-button');
 
-    function checkRequiredFields() {
-        for(let field of requiredFields) {
-            if (!field.value.trim()) {
-                submitButton.disabled = true;
-                return; 
-            }
-        }
-        submitButton.disabled = false; 
-    }
-
-    for(let field of requiredFields) {
-        field.addEventListener('input', checkRequiredFields);
-    }
-    checkRequiredFields();
-
-    // Color settings form (Not functional yet --- more work in-progress)
-    const mainColorInput = document.getElementById('main-color');
-    const backgroundColorInput = document.getElementById('background-color');
-    const accentColorInput = document.getElementById('accent-color');
-
-    function updateWebsiteColors() {
-        document.documentElement.style.setProperty('--main-color', mainColorInput.value);
-        document.documentElement.style.setProperty('--background-color', backgroundColorInput.value);
-        document.documentElement.style.setProperty('--accent-color', accentColorInput.value);
-    }
-
-    mainColorInput.addEventListener('input', updateWebsiteColors);
-    backgroundColorInput.addEventListener('input', updateWebsiteColors);
-    accentColorInput.addEventListener('input', updateWebsiteColors);
-
-    updateWebsiteColors();
-
-});
-
-</script>
 
 <!-- Will move below CSS to styles.css after -->
 
