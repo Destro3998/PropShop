@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const utilities = require("../utilities/dbUtilities.js");
-const { CartItem } = require("../utilities/models.js");
-const { isAuth } = require("../utilities/authMiddleware.js");
+const {CartItem, Configuration} = require("../utilities/models.js");
+const {isAuth} = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
 const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
+
 
 
 router.get("/", (req, res) => {
@@ -46,25 +47,53 @@ router.get("/about", (req, res) => {
 	});
 });
 
-router.get("/contact", (req, res) => {
-	let authenticated = req.isAuthenticated();
-	let userId;
-	let admin;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-		admin = req.user.admin;
-	} else {
-		userId = undefined;
-		admin = false;
-	}
-	res.render("contact.handlebars", {
-		name: "Contact Page",
-		contactActive: true,
-		authenticated: authenticated,
-		userId: userId,
-		admin: admin
-	});
+router.get("/contact", async (req, res) => {
+    class Company {
+        constructor(address, email, phone, message) {
+            this.address = address;
+            this.email = email;
+            this.phone = phone;
+            this.message = message;
+        }
+    }
+
+    try {
+        let authenticated = req.isAuthenticated();
+        let userId;
+        let admin;
+
+        if (req.user && req.user._id) {
+            userId = req.user._id;
+            admin = req.user.admin;
+        } else {
+            userId = undefined;
+            admin = false;
+        }
+
+        let config = await Configuration.findOne();
+
+        if (!config) {
+            console.error("No configuration found in the database");
+            return res.status(404).send("Configuration not found");
+        }
+
+        let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
+        console.log(company);
+
+        res.render("contact.handlebars", {
+            name: "Contact Page",
+            contactActive: true,
+            authenticated: authenticated,
+            userId: userId,
+            admin: admin,
+            config: company  
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
+
 
 router.post("/contact", (req, res) => {
 
@@ -99,6 +128,7 @@ router.post("/contact", (req, res) => {
 			res.redirect("/contact");
 		})
 });
+
 
 /**
  * This route is for the store page.

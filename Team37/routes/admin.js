@@ -3,6 +3,10 @@ const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
 const {getProps, getUsers} = require("../utilities/dbUtilities.js")
+const { Configuration } = require('../utilities/models'); 
+const dbUtilities = require('../utilities/dbUtilities'); 
+
+
 
 const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
 const fs = require("fs"); // for editing filenames
@@ -139,31 +143,61 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 	res.redirect("/admin/dashboard"); // send the user back to the dashboard -- this assumes that adding props can only be done by admins.
 });
 
-router.get("/dashboard/config", isAdmin, (req, res) => {
-    let authenticated = req.isAuthenticated();
-    let userId;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-	} else {
-		userId = undefined;
-	}
-	let admin;
-	if (req.user && req.user.admin) {
-		admin = req.user.admin;
-	} else {
-		admin = false;
-	}
-    res.render("config.handlebars", {
-        authenticated:authenticated,
-        userId:userId,
-		admin: admin
-        });
+// Render Configuration page
+router.get("/dashboard/config", isAdmin, async (req, res) => {
+
+    let config = await Configuration.findOne();
+    res.render("config.handlebars", { config });
 });
 
-router.post("/dashboard/config", isAdmin, (req, res) => {
-    req.flash("success", "Setting successfully updated");
-    res.redirect("/admin/dashboard/config");
+// Handle Configuration form submission
+router.post("/dashboard/config", isAdmin, async (req, res) => {
+    try {
+        let config = await Configuration.findOne();
+        
+        config.siteMessage = req.body['site-message'];
+        config.companyAddress = req.body['company-address'];
+        config.companyEmail = req.body['company-email'];
+        config.companyPhone = req.body['company-phone'];
+        await config.save();
+		req.flash("success", "Setting successfully updated");
+        res.redirect("/admin/dashboard/config"); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+		}
 });
+
+
+// Dashboard User Search
+
+router.get("/search-users", isAdmin, async (req, res) => {
+    const searchTerm_1 = req.query.q;
+    try {
+        let users = await getUsers(searchTerm_1);
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json([]);
+    }
+});
+
+// Dashboard Prop Search
+
+router.get('/search-props', async (req, res) => {
+    try {
+        const searchTerm_2 = req.query.q;
+        console.log("Searching for:", searchTerm_2);
+        const results = await dbUtilities.searchProps(searchTerm_2);
+        console.log("Search results:", results);
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 // This allows other files to import the router
 module.exports = router;

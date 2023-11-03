@@ -11,6 +11,7 @@ const flash = require("connect-flash");
 require("dotenv").config();
 
 
+
 //For Authentication
 const session = require("express-session");
 const passport = require("passport");
@@ -84,8 +85,6 @@ app.use(express.json());
 
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
-
-
 // This starts the server
 mongoose.connect(uri).then(() => {
 	console.log("Connected to Database.");

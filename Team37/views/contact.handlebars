@@ -10,8 +10,7 @@
             <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
         </svg>
         <h3>Address</h3>
-        <p>123 Example Street,<br>
-            Saskatoon, SK A1B 2C3</p>
+        <p>{{config.address}}</p>
         <p>(Monday to Friday<br>
             8am - 4pm CST)</p>
     </div>
@@ -23,7 +22,7 @@
             </path>
         </svg>
         <h3>Phone</h3>
-        <a href="">123-456-7890</a>
+        <a href="tel:{{config.phone}}">{{config.phone}}</a>
     </div>
     <div class="contact-card container">
         <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 24 24" fill="none"
@@ -32,7 +31,7 @@
             <polyline points="22,6 12,13 2,6"></polyline>
         </svg>
         <h3>Email</h3>
-        <a href="mailto:example@domain.com">example@domain.com</a>
+        <a href="mailto:{{config.email}}">{{config.email}}</a>
     </div>
 
 </div>
@@ -44,10 +43,7 @@
 <div class="contact-inner">
     <div>
         <h2>Message Us</h2>
-        <p>
-            Have a request for a new prop or other inquiries? Submit a request
-            and we will do our best to respond within 48 hours. (example text)
-        </p>
+        <p>{{config.message}}</p>
     </div>
     <div>
         <form action="/contact" method="post" class="vertical-form">

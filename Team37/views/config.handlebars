@@ -1,30 +1,165 @@
-<form action="/admin/dashboard/config" method="post">
-    <fieldset style="display: flex; flex-direction:column">
-        <legend>General Settings</legend>
-        <label for="site-name">Site Name</label>
-        <input type="text" name="site-name" id="site-name">
+<!-- General Settings Form -->
+<form id="generalSettingsForm" class="config-form" action="/admin/dashboard/config" method="post">
+    <fieldset class="config-fieldset">
+        <legend class="config-legend">General Settings</legend>
 
-        <label for="site-description">Site Description</label>
-        <input type="text" name="site-description" id="site-description">
+        <label class="config-label" for="site-message">Site Message</label>
+        <input type="text" name="site-message" id="site-message" class="config-input">
 
-        <label for="company-email">Company Email</label>
-        <input type="text" name="company-email" id="company-email">
+        <label class="config-label" for="company-address">Company Address</label>
+        <input type="text" name="company-address" id="company-address" class="config-input">
 
-        <label for="company-phone">Company Phone</label>
-        <input type="text" name="company-phone" id="company-phone">
+        <label class="config-label" for="company-email">Company Email</label>
+        <input type="text" name="company-email" id="company-email" class="config-input">
+
+        <label class="config-label" for="company-phone">Company Phone</label>
+        <input type="text" name="company-phone" id="company-phone" class="config-input">
     </fieldset>
 
-    <fieldset style="display: flex; flex-direction:column">
-        <legend>Visual Customization</legend>
-        <label for="main-color">Main Color</label>
-        <input type="color" name="main-color" id="main-color">
+    <p class="config-p" style="color: Red; font-size: 0.9em;">Note: Fill out all the fields in the general setting.</p>
 
-        <label for="background-color">Background Color</label>
-        <input type="color" name="background-color" id="background-color">
-
-        <label for="accent-color">Accent Color</label>
-        <input type="color" name="accent-color" id="accent-color">
-    </fieldset>
-
-    <input type="submit" class="button">
+    <input type="submit" class="config-button" disabled>
 </form>
+
+<!-- Visual Customization Form -->
+<form id="visualCustomizationForm" class="config-form" action="/admin/dashboard/config" method="post">
+    <fieldset class="config-fieldset">
+        <legend class="config-legend">Visual Customization</legend>
+        <label class="config-label" for="main-color">Main Color</label>
+        <input type="color" name="main-color" id="main-color" class="config-input">
+
+        <label class="config-label" for="background-color">Background Color</label>
+        <input type="color" name="background-color" id="background-color" class="config-input">
+
+        <label class="config-label" for="accent-color">Accent Color</label>
+        <input type="color" name="accent-color" id="accent-color" class="config-input">
+    </fieldset>
+
+    <input type="submit" class="config-button">
+</form>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // General settings form
+    const requiredFields = [
+        document.getElementById('site-message'),
+        document.getElementById('company-address'),
+        document.getElementById('company-email'),
+        document.getElementById('company-phone')
+    ];
+    
+    const generalSettingsForm = document.getElementById('generalSettingsForm');
+    const submitButton = generalSettingsForm.querySelector('.config-button');
+
+    function checkRequiredFields() {
+        for(let field of requiredFields) {
+            if (!field.value.trim()) {
+                submitButton.disabled = true;
+                return; 
+            }
+        }
+        submitButton.disabled = false; 
+    }
+
+    for(let field of requiredFields) {
+        field.addEventListener('input', checkRequiredFields);
+    }
+    checkRequiredFields();
+
+    // Color settings form (Not functional yet --- more work in-progress)
+    const mainColorInput = document.getElementById('main-color');
+    const backgroundColorInput = document.getElementById('background-color');
+    const accentColorInput = document.getElementById('accent-color');
+
+    function updateWebsiteColors() {
+        document.documentElement.style.setProperty('--main-color', mainColorInput.value);
+        document.documentElement.style.setProperty('--background-color', backgroundColorInput.value);
+        document.documentElement.style.setProperty('--accent-color', accentColorInput.value);
+    }
+
+    mainColorInput.addEventListener('input', updateWebsiteColors);
+    backgroundColorInput.addEventListener('input', updateWebsiteColors);
+    accentColorInput.addEventListener('input', updateWebsiteColors);
+
+    updateWebsiteColors();
+
+});
+
+</script>
+
+<!-- Will move below CSS to styles.css after -->
+
+<style>
+
+.config-body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.config-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.config-fieldset {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.config-legend {
+    font-weight: bold;
+    color: #333;
+}
+
+.config-label {
+    margin-top: 10px;
+    display: block;
+    color: #555;
+}
+
+.config-input[type="text"], input[type="color"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #555;
+}
+
+.config-button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.config-button:hover {
+    background-color: #0056b3;
+}
+
+.config-button:disabled {
+    background-color: #b3c7e0;
+    cursor: not-allowed;
+}
+
+.config-p {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+</style>

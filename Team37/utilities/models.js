@@ -74,6 +74,13 @@ const clientSchema = new mongoose.Schema({
 	userAccount: userSchema
 });
 
+const configSchema = new mongoose.Schema({
+	siteMessage: String,
+	companyAddress: String,
+	companyEmail: String,
+	companyPhone: String
+  });
+
 
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
@@ -81,6 +88,7 @@ const Employee = mongoose.model('Employee', employeeSchema);
 const Prop = mongoose.model('Prop', propSchema);
 const Client = mongoose.model('Client', clientSchema);
 const CartItem = mongoose.model('CartItem', cartItemSchema);
+const Configuration = mongoose.model('Configuration', configSchema);
 
 module.exports = {
 	Employee,
@@ -88,5 +96,6 @@ module.exports = {
 	Client,
 	User,
 	Order,
-	CartItem
+	CartItem,
+	Configuration
 };
