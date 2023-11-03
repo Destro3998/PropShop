@@ -128,9 +128,9 @@ async function getUsers(searchTerm_1 = "") {
 
 async function searchProps(searchTerm_2) {
     try {
-        const regex = new RegExp(searchTerm_2, 'i');  // Case insensitive search
+        const regex = new RegExp(searchTerm_2, 'i');  
         const props = await models.Prop.find({ 
-            name: regex  // Assuming name is the field you want to search on. Modify as needed.
+            name: regex  
         });
         
         console.log("DB returned props:", props);
