@@ -169,7 +169,33 @@ router.post("/dashboard/config", isAdmin, async (req, res) => {
 });
 
 
+// Dashboard User Search
 
+router.get("/search-users", isAdmin, async (req, res) => {
+    const searchTerm_1 = req.query.q;
+    try {
+        let users = await getUsers(searchTerm_1);
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json([]);
+    }
+});
+
+// Dashboard Prop Search
+
+router.get('/search-props', async (req, res) => {
+    try {
+        const searchTerm_2 = req.query.q;
+        console.log("Searching for:", searchTerm_2);
+        const results = await dbUtilities.searchProps(searchTerm_2);
+        console.log("Search results:", results);
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
