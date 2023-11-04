@@ -24,6 +24,15 @@ class DisplayUser { // This is a class used to display users on the site
 	}
 }
 
+class DisplayOrder {
+	constructor(order) {
+		this.orderId = order._id
+		this.user = order.user
+		this.datePlaced = order.datePlaced
+		this.status = order.status
+		this.items = order.items
+	}
+}
 
 /**
  * This method gets props from the database and turns them into objects of the DisplayProp class.
@@ -45,6 +54,25 @@ async function getProps(skip = 0, limit = 0) {
 	}
 }
 
+/**
+ * This method gets orders from the database and turns them into objects of the DisplayOrder class.
+ * This class is asynchronous - all database operations are asynchronous.
+ * @returns {Promise<[]|*[]>}
+ */
+async function getOrders(skip = 0, limit = 0) {
+	try {
+		let orders = await models.Order.find().skip(skip).limit(limit);
+		let displayOrders = [];
+		orders.forEach(order => {
+			// for each prop in the database make it a displayProp object and add it to the list.
+			displayOrders.push(new DisplayOrder(order));
+		});
+		return displayOrders;
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+}
 
 /**
  * This method gets users from the database and turns them into objects of the DisplayUser class.
@@ -156,9 +184,12 @@ async function searchProps(searchTerm_2) {
 module.exports = {
 	DisplayProp: DisplayProp,
 	DisplayUser: DisplayUser,
+	DisplayOrder: DisplayOrder,
 	getProps: getProps,
 	getUsers: getUsers,
+	getOrders: getOrders,
 	propExists: propExists,
 	getProp: getProp,
+	getOrder: getOrder,
 	searchProps: searchProps
 };
