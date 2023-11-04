@@ -45,13 +45,6 @@ propSchema.pre('save', function(next) {
 	next(); // allow rest of the operation to continue
   });
 
-const orderSchema = new mongoose.Schema({
-	price: Number,
-	datePlaced: Date,
-	status: Number,
-	items: [cartItemSchema]
-});
-
 const userSchema = new mongoose.Schema({
 	email: {type: String, unique: true, require: true},
 	fname: String,
@@ -62,7 +55,14 @@ const userSchema = new mongoose.Schema({
 	admin: Boolean,
 	blacklisted: Boolean,
 	cart: [cartItemSchema],
-	orders: [orderSchema]
+});
+
+const orderSchema = new mongoose.Schema({
+	price: Number,
+	datePlaced: Date,
+	status: Number,
+	user: userSchema,
+	items: [cartItemSchema]
 });
 
 const clientSchema = new mongoose.Schema({
