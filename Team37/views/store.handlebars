@@ -22,7 +22,7 @@
                         <p>{{ this.description }}</p>
                         <small>Quantity: {{ this.quantity }}</small><br>
                         <p>CA$ {{this.price}} / day</p>
-                        <button class="button" onclick="addToCart('{{this.propId}}')">Add To Cart</button>
+                        <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
                     </div>
 
                 </div>
@@ -48,26 +48,27 @@
                     let propsContainer = document.querySelector('.store-inner');
 
                     data.forEach(prop => {
-                        let propDiv = document.createElement('div');
-                        propDiv.classList.add('store-card', 'container');
+    let propDiv = document.createElement('div');
+    propDiv.classList.add('store-card', 'container');
 
-                        propDiv.innerHTML = `
-                        <a href="/prop/{{this.propId}}">
-                        <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image"
-                        onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
-                    </a>
-                    <div class="store-item-info">
-                        <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
-                        <p>{{ this.description }}</p>
-                        <small>Quantity: {{ this.quantity }}</small><br>
-                        <p>CA$ {{this.price}} / day</p>
-                        <button class="button" onclick="addToCart('{{this.propId}}')">Add To Cart</button>
-                    </div>
-                    `;
+    // Properly concatenate the dynamic data into the HTML string
+    propDiv.innerHTML = `
+    <a href="/prop/${prop.propId}">
+        <img src="/3dmodels/${prop.propId}.jpg" alt="The prop's image" class="store-item-image"
+        onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
+    </a>
+    <div class="store-item-info">
+        <a href="/prop/${prop.propId}"><h3 class="head-text">${prop.name}</h3></a>
+        <p>${prop.description}</p>
+        <small>Quantity: ${prop.quantity}</small><br>
+        <p>CA$ ${prop.price} / day</p>
+        <button class="button" onclick="addToCart(event, '${prop.propId}')">Add To Cart</button>
+    </div>
+    `;
 
+    propsContainer.appendChild(propDiv);
+});
 
-                        propsContainer.appendChild(propDiv);
-                    });
                 })
                 .catch(error => {
                     console.error("There was an error fetching more props:", error);
