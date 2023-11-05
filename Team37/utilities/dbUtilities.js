@@ -129,6 +129,27 @@ async function getProp(propId) {
 }
 
 
+/**
+ * This function returns a prop given it exists in the database
+ * @param orderId the orderId that will be used to query the database.
+ * @returns {Promise<(Query<Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, {}, unknown, "findOne"> & {})|boolean|null>}
+ */
+async function getOrder(orderId) {
+	try {
+		let exists = await propExists(orderId);
+		if (exists) {
+			let order = await models.Order.findOne({_id: orderId});
+			return order;
+		} else {
+			return null;
+		}
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+
 async function getUsers(searchTerm_1 = "") {
     try {
         let query = {};
