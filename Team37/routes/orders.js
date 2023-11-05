@@ -1,36 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const models = require("../utilities/models.js");
-const utilities = require("../utilities/dbUtilities.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
-const getProps = utilities.getProps;
-const getOrders = utilities.getOrder;
-const DisplayProp = utilities.DisplayProp;
-const DisplayOrder = utilities.DisplayOrder;
-
+const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.js");
 
 /**
  *  proposed file for handling/tracking orders/reservations
- *  
  *  not routed yet.
- * 
- * 
  */
 
 
 /** get all orders in the database, for admin dashboard */
-router.get('/admin/all', isAdmin, async function (req, res) {
-    let all_orders = await getOrders(skip, limit);
-
+router.get('/all', isAdmin, async function (req, res) {
+    let all_orders = await getOrders
+    authenticated = req.isAuthenticated();
     /* code below assumes an implementation of a separate page for all orders on the dashboard,
     so this code would not apply if the order list is integrated into the main dashboard page */
-    /*
+    
     res.render("orders.handlebars", {
-		name: "Orders",
+		name: "All Orders",
 		orders: all_orders,
+        ordersLength: all_orders.length,
 		authenticated: authenticated,
-		userId: userId,
-	});*/
+	});
 })
 
 
@@ -61,7 +53,8 @@ router.post('/new-order/:userId', async function (req, res) {
 
 /** gets a specific order from the database */
 router.get('/:orderId', async function (req, res) {
-    let order_model = await models.Order.findById(req.params.orderId)
+    let orderId = req.params.orderId;
+    let order_model = await getOrder(orderId);
 
     // TODO: code for constructing a DisplayOrder object should go here, once created in dbUtilities.js
     let order = new DisplayOrder(order_model);
@@ -73,4 +66,6 @@ router.get('/:orderId', async function (req, res) {
 	}
 	console.log(order)
 	res.render("order.handlebars", {order: order, authenticated: authenticated, userId: userId});
-})
+});
+
+module.exports = router;

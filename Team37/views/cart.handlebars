@@ -4,73 +4,72 @@
     </ul>
 
     <div class="date-selection">
-    <label for="checkOutDate">Check-Out Date:</label>
-    <input type="date" id="checkInDate" name="checkInDate">
-    
-    <label for="checkInDate">Check-In Date:</label>
-    <input type="date" id="checkOutDate" name="checkOutDate">
+        <label for="checkOutDate">Check-Out Date:</label>
+        <input type="date" id="checkInDate" name="checkInDate">
 
-    <p id="dayCount">Selected days: <span>0</span></p>
-</div>
+        <label for="checkInDate">Check-In Date:</label>
+        <input type="date" id="checkOutDate" name="checkOutDate">
+
+        <p id="dayCount">Selected days: <span>0</span></p>
+    </div>
 </div>
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const checkInDateInput = document.getElementById('checkInDate');
-    const checkOutDateInput = document.getElementById('checkOutDate');
-    const dayCountSpan = document.getElementById('dayCount').querySelector('span');
+        const checkInDateInput = document.getElementById('checkInDate');
+        const checkOutDateInput = document.getElementById('checkOutDate');
+        const dayCountSpan = document.getElementById('dayCount').querySelector('span');
 
-    function updateDayCount() {
-        const checkInDate = new Date(checkInDateInput.value);
-        const checkOutDate = new Date(checkOutDateInput.value);
-        const timeDifference = checkOutDate - checkInDate;
-        const dayDifference = timeDifference / (1000 * 3600 * 24); // milliseconds to days
-        
-        dayCountSpan.textContent = dayDifference > 0 ? dayDifference : 0;
-    }
+        function updateDayCount() {
+            const checkInDate = new Date(checkInDateInput.value);
+            const checkOutDate = new Date(checkOutDateInput.value);
+            const timeDifference = checkOutDate - checkInDate;
+            const dayDifference = timeDifference / (1000 * 3600 * 24); // milliseconds to days
 
-    checkInDateInput.addEventListener('change', function() {
-        checkOutDateInput.min = this.value; 
-        updateDayCount();
-    });
+            dayCountSpan.textContent = dayDifference > 0 ? dayDifference : 0;
+        }
 
-    checkOutDateInput.addEventListener('change', function() {
-        updateDayCount();
-    });
-     
-    // Fetch from local storage
-    const cartJson = localStorage.getItem("cart") || '[]';
-    const cart = JSON.parse(cartJson);
+        checkInDateInput.addEventListener('change', function () {
+            checkOutDateInput.min = this.value;
+            updateDayCount();
+        });
 
-    // Get the cart-items-list
-    const cartList = document.querySelector('.cart-items-list');
+        checkOutDateInput.addEventListener('change', function () {
+            updateDayCount();
+        });
 
-    // append to the cart list
-    cart.forEach(propId => {
-        fetch(`/api/getProp/${propId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Server-side error");
-                }
-                return response.json();
-            })
-            .then(data => {
-                let listItem = document.createElement('li');
-                listItem.classList.add('cart-item');
+        // Fetch from local storage
+        const cartJson = localStorage.getItem("cart") || '[]';
+        const cart = JSON.parse(cartJson);
 
-                listItem.innerHTML = `
+        // Get the cart-items-list
+        const cartList = document.querySelector('.cart-items-list');
+
+        // append to the cart list
+        cart.forEach(propId => {
+            fetch(`/api/getProp/${propId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server-side error");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let listItem = document.createElement('li');
+                    listItem.classList.add('cart-item');
+
+                    listItem.innerHTML = `
                     <span class="prop-name">Name: ${data.name}</span>
                     <span class="prop-description">Description: ${data.description}</span>
                 `;
 
-                cartList.appendChild(listItem);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the item details:", error);
-            });
+                    cartList.appendChild(listItem);
+                })
+                .catch(error => {
+                    console.error("There was an error fetching the item details:", error);
+                });
+        });
     });
-});
 </script>
-

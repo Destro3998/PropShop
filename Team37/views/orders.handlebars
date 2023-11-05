@@ -1,0 +1,22 @@
+<div>
+    <h1 class="title-text">{{name}}</h1>
+    {{#if ordersLength}}
+    {{#each orders}}
+    <div class="order container">
+        <h2>Order id: {{this.id}}</h2>
+        <div class="order-items">
+            {{#each this.items}}
+            <h3>{{this.name}}</h3>
+            <h4>{{this.description}}</h4>
+            <h4>CA$ {{this.price}} / day</h4>
+            {{/each}}
+        </div>
+        <h3>Date Placed: {{this.datePlaced}}</h3>
+        <h3>Status: {{this.status}}</h3>
+        <h3>User: {{this.user.fname}} {{this.user.lname}}</h3>
+    </div>
+    {{/each}}
+    {{else}}
+    <p class="head-text" style="text-align: center;">There are currently no orders</p>
+    {{/if}}
+</div>

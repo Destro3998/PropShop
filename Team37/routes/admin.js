@@ -2,9 +2,8 @@ const express = require("express")
 const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
-const {getProps, getUsers} = require("../utilities/dbUtilities.js")
+const {getProps, getUsers, getOrders} = require("../utilities/dbUtilities.js")
 const { Configuration } = require('../utilities/models'); 
-const dbUtilities = require('../utilities/dbUtilities'); 
 
 
 
@@ -31,6 +30,7 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
 		let users = await getUsers(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
+		let orders = await getOrders();
 		// let props = await models.Prop.find();
         // props = props.map(prop => prop.toObject()); // Convert each Mongoose document to a plain object
 		
@@ -39,7 +39,8 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 			props: props,
 			users: users,
 			authenticated: authenticated,
-			userId: userId
+			userId: userId, 
+			ordersLength: orders.length
 		}); // The options are variables that we are passing to our rendering engine (handlebars)
 	} catch (error) {
 		console.error(error);

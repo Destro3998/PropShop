@@ -108,6 +108,19 @@ async function propExists(propId) {
 	}
 }
 
+
+// this function does not work
+async function orderExists(orderId) {
+	try {
+		let exists = await models.Order.findById(orderId);
+		return exists !== null;
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+}
+
+
 /**
  * This function returns a prop given it exists in the database
  * @param propId the propId that will be used to query the database.
@@ -136,7 +149,7 @@ async function getProp(propId) {
  */
 async function getOrder(orderId) {
 	try {
-		let exists = await propExists(orderId);
+		let exists = await orderExists(orderId);
 		if (exists) {
 			let order = await models.Order.findOne({_id: orderId});
 			return order;

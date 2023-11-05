@@ -12,21 +12,7 @@ require('dotenv').config();
 
 
 router.get("/", (req, res) => {
-	let authenticated = req.isAuthenticated();
-
-	let userId;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-	} else {
-		userId = undefined;
-	}
-	// res.render("index.handlebars", {
-	// 	name: "Index Page",
-	// 	homeActive: true,
-	// 	authenticated: authenticated,
-	// 	userId: userId
-	// });
-
+	// Redirects to the store page
 	res.redirect("/store")
 });
 
@@ -138,7 +124,7 @@ router.post("/contact", (req, res) => {
 router.get("/store", async (req, res) => {
 	// Pagination logic from sam branch
 	let skip = parseInt(req.query.skip) || 0;
-	let limit = parseInt(req.query.limit) || 6;
+	let limit = parseInt(req.query.limit) || 10;
 
 	// Retrieve props using pagination
 	let props = await getProps(skip, limit);

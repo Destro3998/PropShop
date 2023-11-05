@@ -33,6 +33,16 @@ window.addEventListener("DOMContentLoaded", () => {
 	hideAlert(alertSuccess);
 	hideAlert(alertDanger);
 
+	let cartLength = 0;
+	window.addEventListener("storage", function(event){
+		if (event.key === "cart"){
+			cartLength = this.localStorage.getItem("cart").length;
+		}
+	});
+
+	let cartSize = document.getElementById("cart-size");
+	cartSize.innerHTML = `${cartLength} item(s)`
+
 	if (window.location.href.includes("accounts")) {
 		// getting values from the password fields
 		const passwordInput = document.getElementById("password");

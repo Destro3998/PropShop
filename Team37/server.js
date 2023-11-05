@@ -7,6 +7,7 @@ const indexRouter = require("./routes/index");
 const accountsRouter = require("./routes/accounts");
 const propsRouter = require("./routes/props");
 const adminRouter = require("./routes/admin");
+const ordersRouter = require("./routes/orders");
 const flash = require("connect-flash");
 require("dotenv").config();
 
@@ -77,6 +78,7 @@ app.use("/", indexRouter);
 app.use("/accounts", accountsRouter);
 app.use("/prop", propsRouter);
 app.use("/admin", adminRouter);
+app.use("/orders", ordersRouter);
 
 app.use(express.json());
 
