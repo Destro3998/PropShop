@@ -162,7 +162,7 @@ async function getOrder(orderId) {
 	}
 }
 
-
+// getting users for dashboard search funtionality
 async function getUsers(searchTerm_1 = "") {
     try {
         let query = {};
@@ -187,7 +187,7 @@ async function getUsers(searchTerm_1 = "") {
     }
 }
 
-
+// getting prop for dashboard search funtionality
 async function searchProps(searchTerm_2) {
     try {
         const regex = new RegExp(searchTerm_2, 'i');  

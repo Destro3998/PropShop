@@ -1,19 +1,25 @@
-<div class="cart-container">
-    <h1>My Cart</h1>
-    <ul class="cart-items-list">
-    </ul>
+<div class="main-container">
 
-    <div class="date-selection">
-        <label for="checkOutDate">Check-Out Date:</label>
-        <input type="date" id="checkInDate" name="checkInDate">
+    <div class="cart-container">
+        <h1>My Cart</h1>
+        <ul class="cart-items-list">
+        </ul>
+    </div>
 
-        <label for="checkInDate">Check-In Date:</label>
-        <input type="date" id="checkOutDate" name="checkOutDate">
+    <div class="checkout-container">
+            <label for="checkOutDate">Check-Out Date:</label>
+            <input type="date" id="checkInDate" name="checkInDate">
 
-        <p id="dayCount">Selected days: <span>0</span></p>
+            <label for="checkInDate">Check-In Date:</label>
+            <input type="date" id="checkOutDate" name="checkOutDate">
+
+            <p id="dayCount">Booking for: <span>0</span> days</p>
+            <p id="totalPropAmount">Total prop amount: <span>$0.00</span> for <span id="dayCountDisplay">0</span> days</p>
+            <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
+            <p id="deposit">Deposit amount: <span>$0.00</span></p>
+            <button class="checkout-button">Go to checkout</button>
     </div>
 </div>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -40,36 +46,64 @@
             updateDayCount();
         });
 
-        // Fetch from local storage
-        const cartJson = localStorage.getItem("cart") || '[]';
-        const cart = JSON.parse(cartJson);
 
-        // Get the cart-items-list
+        // Populating cart page implementation
+        const authenticated = {{{authenticated}}};
+        let serverCartItems = authenticated ? JSON.parse({{{json cartItems}}}) : [];
+
+        // clear local storage and use propulate prop from database if user is authticated
+        if (authenticated) {
+            localStorage.removeItem('cart');
+        }
+
+        // populate from local storage only if not authenticated
+        const cartJson = !authenticated ? localStorage.getItem("cart") || '[]' : '[]';
+        const localCart = JSON.parse(cartJson);
+
         const cartList = document.querySelector('.cart-items-list');
 
-        // append to the cart list
-        cart.forEach(propId => {
-            fetch(`/api/getProp/${propId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Server-side error");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    let listItem = document.createElement('li');
-                    listItem.classList.add('cart-item');
+        function renderCartItem(data, cartList) {
+            let listItem = document.createElement('li');
+            listItem.classList.add('cart-item');
+            listItem.innerHTML = `
+                <span class="prop-name">Name: ${data.item.name}</span>
+                <span class="prop-description">Description: ${data.item.description}</span>
+                <span class="prop-quantity">Quantity: ${data.quantity}</span>
+                <span class="prop-cost">Cost: $${data.item.price}</span> 
 
-                    listItem.innerHTML = `
-                    <span class="prop-name">Name: ${data.name}</span>
-                    <span class="prop-description">Description: ${data.description}</span>
-                `;
+            `;
+            cartList.appendChild(listItem);
+        }
 
-                    cartList.appendChild(listItem);
-                })
-                .catch(error => {
-                    console.error("There was an error fetching the item details:", error);
-                });
-        });
+        if (authenticated) {
+            serverCartItems.forEach(item => renderCartItem(item, cartList));
+        }
+
+        if (!authenticated) {
+            const cartJson = localStorage.getItem('cart') || '[]';
+            const localCart = JSON.parse(cartJson);
+
+            localCart.forEach(propId => {
+                fetch(`/api/getProp/${propId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server-side error');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        renderCartItem({
+                            item: data,
+                            quantity: 1 
+                        }, cartList);
+                    })
+                    .catch(error => {
+                        console.error('There was an error fetching the item details:', error);
+                    });
+            });
+        }
     });
+
 </script>
+
+

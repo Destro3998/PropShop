@@ -20,7 +20,13 @@ const mongoStore = require("connect-mongo");
 
 
 const app = express();
-const hbs = express_handlebars.create({/* config */});
+const hbs = express_handlebars.create({/* config */
+helpers: {
+    json: function (context) {
+      return JSON.stringify(context);
+    }
+  }});
+
 
 // The link to our database connection. the {process.env.DB_PASSWORD} is the password to our database.
 // Storing our database password in this manner is more secure than just having it in plain text.

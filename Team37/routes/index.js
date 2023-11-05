@@ -203,24 +203,20 @@ router.get("/api/get-userId", isAuth, (req, res) => {
 
 // get item stored in cart
 
-router.get("/cart", isAuth, async (req, res) => {
-    let authenticated = req.isAuthenticated();
+router.get("/cart", async (req, res) => {
+    let authenticated = req.isAuthenticated(); 
     let userId;
     let admin;
 
-    if (req.user && req.user._id) {
+    let detailedCart = [];
+
+    if (authenticated && req.user && req.user._id) {
         userId = req.user._id;
         admin = req.user.admin;
-    } else {
-        // If there's no user object, the user isn't authenticated. Redirect them.
-        return res.redirect("/login"); // Redirect to login or some other page as per your setup
-    }
 
-    try {
-        let userCart = req.user.cart; // Assuming cart is an array in the user model
-        
-        // If you want detailed cart items instead of just references:
-        let detailedCart = [];
+        // get the prop from the database if user is authenticated
+        let userCart = req.user.cart;
+
         for (let item of userCart) {
             let prop = await getProp(item.itemId);
             detailedCart.push({
@@ -228,21 +224,24 @@ router.get("/cart", isAuth, async (req, res) => {
                 quantity: item.quantity
             });
         }
-
-        res.render("cart.handlebars", {
-            name: "My Cart",
-            cartItems: detailedCart,
-            cartActive: true, 
-            authenticated: authenticated,
-            userId: userId,
-            admin: admin
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
+    } else {
+        // check if prop stored in the local session if user not authenticated
+        if (req.session.cart) {
+            detailedCart = req.session.cart;
+        }
     }
+
+    res.render("cart.handlebars", {
+        name: "My Cart",
+        cartItems: JSON.stringify(detailedCart),
+        cartActive: true, 
+        authenticated: authenticated,
+        userId: userId,
+        admin: admin
+    });
 });
+
+
 
 router.get("/api/getProp/:propId", async (req, res) => {
     try {
