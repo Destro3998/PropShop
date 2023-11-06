@@ -17,7 +17,10 @@
             <p id="totalPropAmount">Total prop amount: <span>$0.00</span> for <span id="dayCountDisplay">0</span> days</p>
             <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
             <p id="deposit">Deposit amount: <span>$0.00</span></p>
-            <button class="checkout-button">Go to checkout</button>
+
+            <form action="/orders/new-order/{{userId}}" method="post" >
+                <input type="submit" class="checkout-button" value="Reserve Props">
+            </form>
     </div>
 </div>
 

@@ -223,6 +223,7 @@ module.exports = {
 	getUsers: getUsers,
 	getOrders: getOrders,
 	propExists: propExists,
+	orderExists: orderExists,
 	getProp: getProp,
 	getOrder: getOrder,
 	searchProps: searchProps
