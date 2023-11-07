@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
-const {getProps, getUsers, getOrders} = require("../utilities/dbUtilities.js")
+const {getProps, getUsers, getOrders, searchProps} = require("../utilities/dbUtilities.js")
 const { Configuration } = require('../utilities/models'); 
 
 
@@ -145,14 +145,14 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 });
 
 // Render Configuration page
-router.get("/dashboard/config", isAdmin, async (req, res) => {
+router.get("/config", isAdmin, async (req, res) => {
 
     let config = await Configuration.findOne();
     res.render("config.handlebars", { config });
 });
 
 // Handle Configuration form submission
-router.post("/dashboard/config", isAdmin, async (req, res) => {
+router.post("/config", isAdmin, async (req, res) => {
     try {
         let config = await Configuration.findOne();
         
@@ -162,7 +162,7 @@ router.post("/dashboard/config", isAdmin, async (req, res) => {
         config.companyPhone = req.body['company-phone'];
         await config.save();
 		req.flash("success", "Setting successfully updated");
-        res.redirect("/admin/dashboard/config"); 
+        res.redirect("/admin/config"); 
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -187,10 +187,8 @@ router.get("/search-users", isAdmin, async (req, res) => {
 
 router.get('/search-props', async (req, res) => {
     try {
-        const searchTerm_2 = req.query.q;
-        console.log("Searching for:", searchTerm_2);
-        const results = await dbUtilities.searchProps(searchTerm_2);
-        console.log("Search results:", results);
+        const searchTerm = req.query.q;
+        const results = await searchProps(searchTerm);
         res.json(results);
     } catch (error) {
         console.error(error);

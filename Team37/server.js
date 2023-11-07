@@ -88,9 +88,6 @@ app.use("/orders", ordersRouter);
 
 app.use(express.json());
 
-// app.use(errorHandler);
-// Will be used for handling errors
-
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
 // This starts the server

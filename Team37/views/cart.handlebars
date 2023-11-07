@@ -64,8 +64,7 @@
 
 
         // Populating cart page implementation
-        const authenticated = {{{ authenticated }
-    }};
+        const authenticated = {{{ authenticated }}};
     let serverCartItems = authenticated ? JSON.parse({{{ json cartItems }}}) : [];
 
     // clear local storage and use propulate prop from database if user is authticated

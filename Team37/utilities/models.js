@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
 	price: Number,
 	datePlaced: Date,
-	status: Number,
+	status: String,
 	user: userSchema,
 	items: [cartItemSchema]
 });
