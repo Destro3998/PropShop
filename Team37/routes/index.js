@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const utilities = require("../utilities/dbUtilities.js");
-const {CartItem, Configuration} = require("../utilities/models.js");
-const {isAuth} = require("../utilities/authMiddleware.js");
+const { CartItem, Configuration, User } = require("../utilities/models.js");
+const { isAuth } = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
@@ -34,50 +34,50 @@ router.get("/about", (req, res) => {
 });
 
 router.get("/contact", async (req, res) => {
-    class Company {
-        constructor(address, email, phone, message) {
-            this.address = address;
-            this.email = email;
-            this.phone = phone;
-            this.message = message;
-        }
-    }
+	class Company {
+		constructor(address, email, phone, message) {
+			this.address = address;
+			this.email = email;
+			this.phone = phone;
+			this.message = message;
+		}
+	}
 
-    try {
-        let authenticated = req.isAuthenticated();
-        let userId;
-        let admin;
+	try {
+		let authenticated = req.isAuthenticated();
+		let userId;
+		let admin;
 
-        if (req.user && req.user._id) {
-            userId = req.user._id;
-            admin = req.user.admin;
-        } else {
-            userId = undefined;
-            admin = false;
-        }
+		if (req.user && req.user._id) {
+			userId = req.user._id;
+			admin = req.user.admin;
+		} else {
+			userId = undefined;
+			admin = false;
+		}
 
-        let config = await Configuration.findOne();
+		let config = await Configuration.findOne();
 
-        if (!config) {
-            console.error("No configuration found in the database");
-            return res.status(404).send("Configuration not found");
-        }
+		if (!config) {
+			console.error("No configuration found in the database");
+			return res.status(404).send("Configuration not found");
+		}
 
-        let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
-        console.log(company);
+		let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
+		console.log(company);
 
-        res.render("contact.handlebars", {
-            name: "Contact Page",
-            contactActive: true,
-            authenticated: authenticated,
-            userId: userId,
-            admin: admin,
-            config: company  
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+		res.render("contact.handlebars", {
+			name: "Contact Page",
+			contactActive: true,
+			authenticated: authenticated,
+			userId: userId,
+			admin: admin,
+			config: company
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ message: "Internal server error" });
+	}
 });
 
 
@@ -157,8 +157,8 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 	let propId = req.params.propId;
 	let quantity = 1;
 	let authenticated = req.isAuthenticated();
-	let exists = await propExists(propId);
 	try {
+		let exists = await propExists(propId);
 		if (exists) {
 			let prop = await getProp(propId);
 
@@ -167,9 +167,13 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 				quantity: quantity
 			});
 
+
+
 			if (authenticated) {
-				req.user.cart.push(cartItem);
-				await req.user.save();
+				if (!(alreadyInCart(req.user, propId))) {
+					req.user.cart.push(cartItem);
+					await req.user.save();
+				}
 				// add prop to user cart.
 			} else {
 				// if the user is unauthenticated their cart should be stored in local storage.
@@ -204,59 +208,85 @@ router.get("/api/get-userId", isAuth, (req, res) => {
 // get item stored in cart
 
 router.get("/cart", async (req, res) => {
-    let authenticated = req.isAuthenticated(); 
-    let userId;
-    let admin;
+	let authenticated = req.isAuthenticated();
+	let userId;
+	let admin;
 
-    let detailedCart = [];
+	let detailedCart = [];
+	console.log(req.session);
 
-    if (authenticated && req.user && req.user._id) {
-        userId = req.user._id;
-        admin = req.user.admin;
+	if (authenticated && req.user && req.user._id) {
+		userId = req.user._id;
+		admin = req.user.admin;
 
-        // get the prop from the database if user is authenticated
-        let userCart = req.user.cart;
+		// get the prop from the database if user is authenticated
+		let userCart = req.user.cart;
 
-        for (let item of userCart) {
-            let prop = await getProp(item.itemId);
-            detailedCart.push({
-                item: prop,
-                quantity: item.quantity
-            });
-        }
-    } else {
-        // check if prop stored in the local session if user not authenticated
-        if (req.session.cart) {
-            detailedCart = req.session.cart;
-        }
-    }
+		for (let item of userCart) {
+			let prop = await getProp(item.itemId);
+			detailedCart.push({
+				item: prop,
+				quantity: item.quantity
+			});
+		}
+	} else {
+		// check if prop stored in the local session if user not authenticated
+		if (req.session.cart) {
+			detailedCart = req.session.cart;
+		}
+	}
 
-    res.render("cart.handlebars", {
-        name: "My Cart",
-        cartItems: JSON.stringify(detailedCart),
-        cartActive: true, 
-        authenticated: authenticated,
-        userId: userId,
-        admin: admin
-    });
+	res.render("cart.handlebars", {
+		name: "My Cart",
+		cartItems: JSON.stringify(detailedCart),
+		cartActive: true,
+		authenticated: authenticated,
+		userId: userId,
+		admin: admin
+	});
 });
 
 
 
 router.get("/api/getProp/:propId", async (req, res) => {
-    try {
-        const propId = req.params.propId;
-        const prop = await getProp(propId);
-        if (prop) {
-            res.json(prop);
-        } else {
-            res.status(404).send('Prop not found');
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-    }
+	try {
+		const propId = req.params.propId;
+		const prop = await getProp(propId);
+		if (prop) {
+			res.json(prop);
+		} else {
+			res.status(404).send('Prop not found');
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
+router.post("/cart/clear", async (req, res) => {
+	if (req.isAuthenticated()) {
+		try {
+			await User.findOneAndUpdate({ _id: req.user._id }, { cart: [] }, { new: true });
+			res.status(200).json({message:"Cart successfully cleared"});
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({message:"Internal Server Error"});
+		}
+	}else{
+		res.status(401).json({message:"user not authenticated"});
+	}
+
 });
 
 // This allows other files to import the router
 module.exports = router;
+
+function alreadyInCart(user, itemId) {
+	for (let i = 0; i < user.cart.length; i++) {
+		if (user.cart[i]._id === itemId) {
+			user.cart[i].quantity += 1;
+			return true;
+		}
+	}
+	return false;
+}

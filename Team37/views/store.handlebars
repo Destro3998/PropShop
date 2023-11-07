@@ -12,20 +12,22 @@
     <div>
         <div class="store-inner">
             {{#each props}}
-                <div class="store-card container">
-                    <a href="/prop/{{this.propId}}">
-                        <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image"
+            <div class="store-card container">
+                <a href="/prop/{{this.propId}}">
+                    <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image"
                         onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
+                </a>
+                <div class="store-item-info">
+                    <a href="/prop/{{this.propId}}">
+                        <h3 class="head-text">{{ this.name }}</h3>
                     </a>
-                    <div class="store-item-info">
-                        <a href="/prop/{{this.propId}}"><h3 class="head-text">{{ this.name }}</h3></a>
-                        <p>{{ this.description }}</p>
-                        <small>Quantity: {{ this.quantity }}</small><br>
-                        <p>CA$ {{this.price}} / day</p>
-                        <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
-                    </div>
-
+                    <p>{{ this.description }}</p>
+                    <small>Quantity: {{ this.quantity }}</small><br>
+                    <p>CA$ {{this.price}} / day</p>
+                    <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
                 </div>
+
+            </div>
             {{/each}}
         </div>
     </div>
@@ -43,15 +45,15 @@
         let displayedPropsCount = document.querySelectorAll('.store-card').length;
 
         fetch(`/prop/loadmore?skip=${displayedPropsCount}&limit=10`) // fetch props from server
-                .then(response => response.json())
-                .then(data => {   // Iterate over and display the props
-                    let propsContainer = document.querySelector('.store-inner');
+            .then(response => response.json())
+            .then(data => {   // Iterate over and display the props
+                let propsContainer = document.querySelector('.store-inner');
 
-                    data.forEach(prop => {
-    let propDiv = document.createElement('div');
-    propDiv.classList.add('store-card', 'container');
+                data.forEach(prop => {
+                    let propDiv = document.createElement('div');
+                    propDiv.classList.add('store-card', 'container');
 
-    propDiv.innerHTML = `
+                    propDiv.innerHTML = `
     <a href="/prop/${prop.propId}">
         <img src="/3dmodels/${prop.propId}.jpg" alt="The prop's image" class="store-item-image"
         onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
@@ -65,13 +67,13 @@
     </div>
     `;
 
-    propsContainer.appendChild(propDiv);
-});
-
-                })
-                .catch(error => {
-                    console.error("There was an error fetching more props:", error);
+                    propsContainer.appendChild(propDiv);
                 });
+
+            })
+            .catch(error => {
+                console.error("There was an error fetching more props:", error);
+            });
     });
 
 
@@ -82,27 +84,27 @@
 
     // This function checks if the current user is authenticated
     function checkAuthentication(callback) {
-        fetch("/api/authenticated", {method: "GET"})
-                .then((response) => response.json())
-                .then((data) => {
-                    const isAuthenticated = data.authenticated;
-                    callback(isAuthenticated); // returns true to the callback function if the user is authenticated. False otherwise.
-                })
-                .catch((error) => {
-                    console.error("Error checking authentication: ", error);
-                    callback(false); // Assume the user is not authenticated if there is an error
-                });
+        fetch("/api/authenticated", { method: "GET" })
+            .then((response) => response.json())
+            .then((data) => {
+                const isAuthenticated = data.authenticated;
+                callback(isAuthenticated); // returns true to the callback function if the user is authenticated. False otherwise.
+            })
+            .catch((error) => {
+                console.error("Error checking authentication: ", error);
+                callback(false); // Assume the user is not authenticated if there is an error
+            });
     }
 
     // add to cart
 
     function addToCart(event, propId) {
-    event.preventDefault();
-    event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
 
-    checkAuthentication((isAuthenticated) => {
-        if (isAuthenticated) {
-            fetch(`/cart/add/${propId}`, {method: "POST"})
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                fetch(`/cart/add/${propId}`, { method: "POST" })
                     .then((response) => {
                         if (!response.ok) {
                             throw new Error("Server-side error");
@@ -112,12 +114,12 @@
                     .catch((error) => {
                         console.error("Error adding to cart: ", error);
                     });
-        }
-        cart.push(propId);
-        let updatedCart = JSON.stringify(cart);
-        localStorage.setItem("cart", updatedCart);
-        console.log("Added to local storage cart successfully");
-    });
-}
+            }
+            cart.push(propId);
+            let updatedCart = JSON.stringify(cart);
+            localStorage.setItem("cart", updatedCart);
+            console.log("Added to local storage cart successfully");
+        });
+    }
 
 </script>

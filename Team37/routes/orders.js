@@ -12,7 +12,7 @@ const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.
 
 /** get all orders in the database, for admin dashboard */
 router.get('/all', isAdmin, async function (req, res) {
-    let all_orders = await getOrders
+    let all_orders = await getOrders();
     authenticated = req.isAuthenticated();
     /* code below assumes an implementation of a separate page for all orders on the dashboard,
     so this code would not apply if the order list is integrated into the main dashboard page */
@@ -41,7 +41,7 @@ router.post('/new-order/:userId', async function (req, res) {
 	        status: req.body.status,
 	        user: user,
 	        items: user.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
-        })                      // (incase one or more items have become unavailable since adding to cart)
+        })                      // (in case one or more items have become unavailable since adding to cart)
                                     // this would be done in this route method, but after already constructing the order
     } catch (error) {
         console.log(error)

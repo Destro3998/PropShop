@@ -4,27 +4,40 @@
         <h1>My Cart</h1>
         <ul class="cart-items-list">
         </ul>
+        <p class="p-flex">Clear Cart <button class="button" onclick="clearCart()">Clear</button></p>
     </div>
 
     <div class="checkout-container">
-            <label for="checkOutDate">Check-Out Date:</label>
-            <input type="date" id="checkInDate" name="checkInDate">
+        <label for="checkOutDate">Check-Out Date:</label>
+        <input type="date" id="checkInDate" name="checkInDate">
 
-            <label for="checkInDate">Check-In Date:</label>
-            <input type="date" id="checkOutDate" name="checkOutDate">
+        <label for="checkInDate">Check-In Date:</label>
+        <input type="date" id="checkOutDate" name="checkOutDate">
 
-            <p id="dayCount">Booking for: <span>0</span> days</p>
-            <p id="totalPropAmount">Total prop amount: <span>$0.00</span> for <span id="dayCountDisplay">0</span> days</p>
-            <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
-            <p id="deposit">Deposit amount: <span>$0.00</span></p>
+        <p id="dayCount">Booking for: <span>0</span> days</p>
+        <p id="totalPropAmount">Total prop amount: <span>$0.00</span> for <span id="dayCountDisplay">0</span> days</p>
+        <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
+        <p id="deposit">Deposit amount: <span>$0.00</span></p>
 
-            <form action="/orders/new-order/{{userId}}" method="post" >
-                <input type="submit" class="checkout-button" value="Reserve Props">
-            </form>
+        <form action="/orders/new-order/{{userId}}" method="post">
+            <input type="submit" class="checkout-button" value="Reserve Props">
+        </form>
     </div>
 </div>
 
 <script>
+    function clearCart() {
+        fetch("/cart/clear", { method: "POST" })
+            .then((response) => response.json())
+            .then((data) => {
+                localStorage.setItem("cart", JSON.stringify([]));
+                location.reload();
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
 
         const checkInDateInput = document.getElementById('checkInDate');
@@ -51,62 +64,61 @@
 
 
         // Populating cart page implementation
-        const authenticated = {{{authenticated}}};
-        let serverCartItems = authenticated ? JSON.parse({{{json cartItems}}}) : [];
+        const authenticated = {{{ authenticated }
+    }};
+    let serverCartItems = authenticated ? JSON.parse({{{ json cartItems }}}) : [];
 
-        // clear local storage and use propulate prop from database if user is authticated
-        if (authenticated) {
-            localStorage.removeItem('cart');
-        }
+    // clear local storage and use propulate prop from database if user is authticated
+    if (authenticated) {
+        localStorage.removeItem('cart');
+    }
 
-        // populate from local storage only if not authenticated
-        const cartJson = !authenticated ? localStorage.getItem("cart") || '[]' : '[]';
-        const localCart = JSON.parse(cartJson);
+    // populate from local storage only if not authenticated
+    const cartJson = !authenticated ? localStorage.getItem("cart") || '[]' : '[]';
+    const localCart = JSON.parse(cartJson);
 
-        const cartList = document.querySelector('.cart-items-list');
+    const cartList = document.querySelector('.cart-items-list');
 
-        function renderCartItem(data, cartList) {
-            let listItem = document.createElement('li');
-            listItem.classList.add('cart-item');
-            listItem.innerHTML = `
+    function renderCartItem(data, cartList) {
+        let listItem = document.createElement('li');
+        listItem.classList.add('cart-item');
+        listItem.innerHTML = `
                 <span class="prop-name">Name: ${data.item.name}</span>
                 <span class="prop-description">Description: ${data.item.description}</span>
                 <span class="prop-quantity">Quantity: ${data.quantity}</span>
                 <span class="prop-cost">Cost: $${data.item.price}</span> 
 
             `;
-            cartList.appendChild(listItem);
-        }
+        cartList.appendChild(listItem);
+    }
 
-        if (authenticated) {
-            serverCartItems.forEach(item => renderCartItem(item, cartList));
-        }
+    if (authenticated) {
+        serverCartItems.forEach(item => renderCartItem(item, cartList));
+    }
 
-        if (!authenticated) {
-            const cartJson = localStorage.getItem('cart') || '[]';
-            const localCart = JSON.parse(cartJson);
+    if (!authenticated) {
+        const cartJson = localStorage.getItem('cart') || '[]';
+        const localCart = JSON.parse(cartJson);
 
-            localCart.forEach(propId => {
-                fetch(`/api/getProp/${propId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Server-side error');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        renderCartItem({
-                            item: data,
-                            quantity: 1 
-                        }, cartList);
-                    })
-                    .catch(error => {
-                        console.error('There was an error fetching the item details:', error);
-                    });
-            });
-        }
+        localCart.forEach(propId => {
+            fetch(`/api/getProp/${propId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server-side error');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderCartItem({
+                        item: data,
+                        quantity: 1
+                    }, cartList);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the item details:', error);
+                });
+        });
+    }
     });
 
 </script>
-
-

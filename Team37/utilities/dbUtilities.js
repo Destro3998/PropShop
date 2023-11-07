@@ -1,3 +1,5 @@
+const { Prop } = require("./models");
+
 models = require("./models");
 
 
@@ -27,11 +29,31 @@ class DisplayUser { // This is a class used to display users on the site
 class DisplayOrder {
 	constructor(order) {
 		this.orderId = order._id
-		this.user = order.user
+		this.userFname = order.user.fname
+		this.userLname = order.user.lname
 		this.datePlaced = order.datePlaced
 		this.status = order.status
-		this.items = order.items
+		this.items = createDisplayCartItems(order.items);
 	}
+
+
+}
+
+class DisplayCartItem{
+	constructor(cartItem){
+		let item = Prop.findById({id:cartItem.itemId});
+		this.name = item.name;
+		this.price = item.price;
+		this.quantity = cartItem.quantity;
+	}
+}
+
+function createDisplayCartItems(dbCartItems) {
+	let items = [];
+	dbCartItems.forEach(item => {
+		items.push(new DisplayCartItem(item));
+	});
+	return items;
 }
 
 /**

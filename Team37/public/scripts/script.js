@@ -16,7 +16,7 @@ function hideAlert(alert) {
 // This event listener listens for the entire page to load
 window.addEventListener("DOMContentLoaded", () => {
 
-	// Checking id there is already a cart in local storage
+	// Checking if there is already a cart in local storage
 	let previousCart = localStorage.getItem("cart");
 	if (previousCart === undefined || previousCart === null) {
 		const cart = [];
@@ -32,16 +32,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	hideAlert(alertSuccess);
 	hideAlert(alertDanger);
-
-	let cartLength = 0;
-	window.addEventListener("storage", function(event){
-		if (event.key === "cart"){
-			cartLength = this.localStorage.getItem("cart").length;
-		}
-	});
-
-	let cartSize = document.getElementById("cart-size");
-	cartSize.innerHTML = `${cartLength} item(s)`
 
 	if (window.location.href.includes("accounts")) {
 		// getting values from the password fields
