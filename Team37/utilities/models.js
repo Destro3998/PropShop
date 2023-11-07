@@ -41,7 +41,7 @@ propSchema.pre('save', function(next) {
 		instance._id = `${prop._id}-${index}`;
 	  });
 	}
-	prop.quantity = prop.instance.length + 1; // set quantity to number of instances plus one
+	prop.quantity = prop.instance.length; // set quantity to number of instances plus one
 	next(); // allow rest of the operation to continue
   });
 

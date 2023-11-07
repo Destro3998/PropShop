@@ -8,5 +8,36 @@
     <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" value="{{prop.quantity}}" required>
     <label for="price">Prop Price (CA$)</label>
     <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="1" step="0.01" required>
+    
+    {{#if prop.instance}}
+        <h2>Instance Information:</h2>
+        {{#each prop.instance}}
+            <label for="status">Status</label>
+            <select name="status" id="status" required>
+                <option value="available">Available</option>
+                <option value="reserved">Reserved</option>
+                <option value="checked out">Checked Out</option>
+            </select>
+            <label for="location">Location</label>
+            <input type="text" name="location" id="location" placeholder="Location" value="{{this.location}}" required>
+            <label for="rentHistory">Rent History</label>
+            {{#each this.rentHistory}}
+                <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" value="{{this}}" required>
+            {{/each}}
+        {{/each}}
+    {{else}}
+        <h2>No instance information available. Add new instance:</h2>
+        <label for="status">Status</label>
+        <select name="status" id="status" required>
+            <option value="available">Available</option>
+            <option value="reserved">Reserved</option>
+            <option value="checked out">Checked Out</option>
+        </select>
+        <label for="location">Location</label>
+        <input type="text" name="location" id="location" placeholder="Location" required>
+        <label for="rentHistory">Rent History</label>
+        <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" required>
+    {{/if}}
+    
     <input type="submit" class="button" value="Edit Prop">
 </form>

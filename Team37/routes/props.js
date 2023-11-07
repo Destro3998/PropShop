@@ -78,7 +78,10 @@ router.route("/:propId/edit")
 		let redirectUrl = req.header('referer') || '/';
 		let propId = req.params.propId;
 		let prop_model = await models.Prop.findById(propId);
-		let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price);
+		let prop = { //Adding all the columns from the database schema to the prop object
+			...prop_model._doc, //Adding all the fields from the prop_model
+			instance: prop_model.instance.map((item) => ({ ...item._doc })), //Adding the instance array
+		};
 		let userId;
 		let admin = req.user && req.user.admin ? req.user.admin : false;
 		if (req.user && req.user._id) {
@@ -88,24 +91,33 @@ router.route("/:propId/edit")
 		}
 		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId, admin: admin});
 	})
-	.post(isAdmin, async (req, res) => { // this is used by the form submission
+	.post(isAdmin, async (req, res) => {
 		let propId = req.params.propId;
-		const redirectUrl = req.redirectUrl || "/admin/dashboard"; // redirect url is either the url that the user has come from or "/admin/dashboard" url
+		const redirectUrl = req.redirectUrl || "/admin/dashboard";
 		try {
-			let thisProp = await models.Prop.findById(propId);
-			await models.Prop.findByIdAndUpdate(thisProp.id, {
-				name: req.body.name,
-				description: req.body.description,
-				quantity: req.body.quantity, 
-				price:req.body.price
-			});
+		  	let thisProp = await models.Prop.findById(propId);
+		  	// Updating the basic information of the prop
+		 	thisProp.name = req.body.name;
+		 	thisProp.description = req.body.description;
+		 	thisProp.quantity = req.body.quantity;
+		 	thisProp.price = req.body.price;
+	  
+		 	// Adding a new instance to the instance array
+			const newInstance = {
+				status: req.body.status,
+				location: req.body.location,
+				rentHistory: [req.body.rentHistory],
+		 	};
+		  	thisProp.instance.push(newInstance);
+	  
+		  	// Saving the updated prop with the new instance
+		  	await thisProp.save();
 		} catch (error) {
-			console.error(error);
-			res.status(500);
+		  console.error(error);
+		  res.status(500).send("Error adding instance to prop.");
 		}
-		res.status(200); // everything went well
-		res.redirect(redirectUrl);
-	});
+		res.status(200).redirect(redirectUrl);
+	  });
 
 router.route("/:propId/qrcode")
 	.get(isAdmin, async (req, res) => {
