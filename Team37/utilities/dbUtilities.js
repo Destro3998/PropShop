@@ -29,11 +29,13 @@ class DisplayUser { // This is a class used to display users on the site
 class DisplayOrder {
 	constructor(order) {
 		this.orderId = order._id
+		//user = getUser(order.userId) // replaced user copy with reference to user ID, so get user to get info (this was necessary so that users can create multiple orders without crashing the server)
 		this.userFname = order.user.fname
 		this.userLname = order.user.lname
-		this.datePlaced = order.datePlaced
+		this.userEmail = order.user.email
+		this.datePlaced = order.datePlaced.toLocaleString()
 		this.status = order.status
-		this.items = createDisplayCartItems(order.items);
+		this.numItems = order.items.length
 	}
 
 
@@ -41,7 +43,7 @@ class DisplayOrder {
 
 class DisplayCartItem{
 	constructor(cartItem){
-		let item = Prop.findById({id:cartItem.itemId});
+		let item = getProp(cartItem.itemId);
 		this.name = item.name;
 		this.price = item.price;
 		this.quantity = cartItem.quantity;
@@ -83,12 +85,17 @@ async function getProps(skip = 0, limit = 0) {
  */
 async function getOrders(skip = 0, limit = 0) {
 	try {
-		let orders = await models.Order.find().skip(skip).limit(limit);
 		let displayOrders = [];
+		orders = await models.Order.find().skip(skip).limit(limit)
+		.populate('user') // populate() replaces the id of the user with the user document
+		//.populate('items.0.itemId').exec();
 		orders.forEach(order => {
-			// for each prop in the database make it a displayProp object and add it to the list.
-			displayOrders.push(new DisplayOrder(order));
+
+			console.log(order.items)
+			displayOrders.push(new DisplayOrder(order))// for each prop in the database make it a displayProp object and add it to the list.
 		});
+
+		console.log(orders)
 		return displayOrders;
 	} catch (error) {
 		console.log(error);
@@ -130,6 +137,21 @@ async function propExists(propId) {
 	}
 }
 
+/**
+ * This functions checks whether a given userId is associated with a user in the database
+ * @param userId the userId that will be used to query the database.
+ * @returns {Promise<boolean>} boolean - if user exists then true, otherwise false
+ */
+async function userExists(userId) {
+	try {
+		let exists = await models.User.findById(userId);
+		return exists !== null;
+	} catch (error) {
+		console.log(error)
+		return false;
+	}
+}
+
 
 // this function does not work
 async function orderExists(orderId) {
@@ -156,6 +178,25 @@ async function getProp(propId) {
 			return prop;
 		} else {
 			return null;
+		}
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+/**
+ * This function returns a user given it exists in the database
+ * @param userId the propId that will be used to query the database.
+ * @returns {Promise<(Query<Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, {}, unknown, "findOne"> & {})|boolean|null>}
+ */
+async function getUser(userId) {
+	try {
+		let user = await models.User.findById(userId);
+		if (user) {
+			return user
+		} else {
+			console.error("User not found")
 		}
 	} catch (error) {
 		console.error(error);

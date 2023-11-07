@@ -33,14 +33,14 @@ router.post('/new-order/:userId', async function (req, res) {
 
 	authenticated = req.isAuthenticated();
 
-    let user = await models.User.findById(req.params.userId); // get the user placing the order
+    let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
     try {
         models.Order.create({
             price: req.body.price,
-	        datePlaced: req.body.date,
+	        //datePlaced: new Date(),
 	        status: req.body.status,
-	        user: user,
-	        items: user.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
+	        user: req.params.userId,
+	        items: usermodel.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
         })                      // (in case one or more items have become unavailable since adding to cart)
                                     // this would be done in this route method, but after already constructing the order
     } catch (error) {

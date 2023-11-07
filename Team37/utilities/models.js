@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 
 const cartItemSchema = new mongoose.Schema({
-	itemId: {type: mongoose.Schema.Types.ObjectId, ref: "item", required: true},
+	itemId: {type: mongoose.Schema.Types.ObjectId, ref: "Prop", required: true},
 	quantity: {type: Number, default: 1}
 });
 
@@ -46,7 +46,7 @@ propSchema.pre('save', function(next) {
   });
 
 const userSchema = new mongoose.Schema({
-	email: {type: String, unique: true, require: true},
+	email: {type: String, /*unique: true,*/ require: true},
 	fname: String,
 	lname: String,
 	phone: String,
@@ -59,9 +59,13 @@ const userSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
 	price: Number,
-	datePlaced: Date,
-	status: String,
-	user: userSchema,
+	datePlaced: {type: Date, default: Date.now()},
+	status: { // using enum behaviour to restrict possible values
+		type: String,
+		enum: ["pending", "in progress", "complete"], 
+		default: "pending"
+	  }, 
+	user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
 	items: [cartItemSchema]
 });
 
@@ -89,6 +93,11 @@ const Prop = mongoose.model('Prop', propSchema);
 const Client = mongoose.model('Client', clientSchema);
 const CartItem = mongoose.model('CartItem', cartItemSchema);
 const Configuration = mongoose.model('Configuration', configSchema);
+
+//Order.collection.dropIndexes()
+//Client.collection.dropIndexes()
+//User.collection.dropIndexes()
+
 
 module.exports = {
 	Employee,
