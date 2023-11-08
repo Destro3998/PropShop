@@ -1,16 +1,22 @@
-<form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
-    <label for="prop-name">Prop Name</label>
-    <input type="text" name="name" id="prop-name" placeholder="Prop Name" value="{{prop.name}}" required>
-    <label for="description">Prop Description</label>
-    <textarea name="description" id="prop-description" placeholder="Prop Description"
-              rows="6">{{prop.description}}</textarea>
-    <label for="prop-quantity">Prop Quantity</label>
-    <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" value="{{prop.quantity}}" required>
-    <label for="price">Prop Price (CA$)</label>
-    <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="1" step="0.01" required>
-    
+<div class="edit-prop">
+<div class="container">
+    <h2>Prop Information:</h2>
+    <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
+        <label for="prop-name">Prop Name</label>
+        <input type="text" name="name" id="prop-name" placeholder="Prop Name" value="{{prop.name}}" required>
+        <label for="description">Prop Description</label>
+        <textarea name="description" id="prop-description" placeholder="Prop Description"
+            rows="6">{{prop.description}}</textarea>
+        <label for="prop-quantity">Prop Quantity</label>
+        <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" value="{{prop.quantity}}" required>
+        <label for="price">Prop Price (CA$)</label>
+        <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="1" step="0.01" required>
+    </form>
+</div>    
+<div class="container">
     {{#if prop.instance}}
-        <h2>Instance Information:</h2>
+        <h2>Prop Instance Information:</h2>
+        <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
         {{#each prop.instance}}
             <label for="status">Status</label>
             <select name="status" id="status" required>
@@ -25,8 +31,11 @@
                 <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" value="{{this}}" required>
             {{/each}}
         {{/each}}
+        <input type="submit" class="button" value="Edit Prop">
+        </form>
     {{else}}
         <h2>No instance information available. Add new instance:</h2>
+        <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
         <label for="status">Status</label>
         <select name="status" id="status" required>
             <option value="available">Available</option>
@@ -37,7 +46,8 @@
         <input type="text" name="location" id="location" placeholder="Location" required>
         <label for="rentHistory">Rent History</label>
         <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" required>
-    {{/if}}
-    
-    <input type="submit" class="button" value="Edit Prop">
-</form>
+        <input type="submit" class="button" value="Edit Prop">
+        </form>
+    {{/if}} 
+</div>
+</div>
