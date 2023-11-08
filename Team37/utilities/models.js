@@ -21,6 +21,7 @@ const propSchema = new mongoose.Schema({
 	description: String,
 	quantity: {type: Number, required: true},
 	category: [String],
+	status: { type: String, default: "available"},
 	instance: [ // each prop has children that share prop fields but have unique fields
 		{
 			status: { // using enum behaviour to restrict possible values

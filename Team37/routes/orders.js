@@ -30,7 +30,7 @@ router.post('/new-order/:userId', async function (req, res) {
     authenticated = req.isAuthenticated();
 
     try {
-        orderId = newOrderTransaction(req.params.userId)
+        orderId = await newOrderTransaction(req.params.userId)
     } catch (error) {
         console.log(error)
     }
@@ -50,10 +50,15 @@ router.post('/new-order/:userId', async function (req, res) {
     } catch (error) {
         console.log(error)
     }  */ 
-    
-    res.status(200);
-    //res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
-    res.redirect(`/orders/${orderId}`)
+    if (!orderId) { // if transaction failed
+        res.status(500);
+        res.send()
+        res.redirect("/store");
+    } else {
+        res.status(200);
+        res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
+        //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK 
+    }
 })
 
 
@@ -73,57 +78,83 @@ async function newOrderTransaction(userId) {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    // create order 
-    let order = models.Order.create([{
-        //price: req.body.price, //TODO: handle other attributes
-        //datePlaced: new Date(),
-        //status: req.body.status,
-        user: userId,
-        //items: usermodel.cart
-    }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
+    var order;
+    try { 
+        // create order 
+        let order = await models.Order.create([{
+            //price: req.body.price, //TODO: handle other attributes
+            // don't need to handle other attributes because the schema defaults suffice in this case
+            user: userId,
+        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
 
-    // get all the props referenced in the users cart
-    let user = await models.User.findById(userId).populate('cart.itemId').session(session);
+        //console.log(order[0])
+        //console.log(order[0]._id)
 
-    if (user.cart === null) { // if cart is empty, abort transaction
-        throw new Error("Attempting to reserve empty cart")
+        // get all the props referenced in the users cart
+        let user = await models.User.findById(userId).populate('cart.itemId').session(session);
+
+        //console.log(user)
+        if (user.cart.length < 1) { // if cart is empty, abort transaction
+            throw new Error("Attempting to reserve empty cart")
+        }
+
+        console.log(user.cart.length + " item(s) detected in cart")
+        // go through items in user cart one by one,
+        // checking if able to reserve, and then reserving
+        for (const cartitem of user.cart) {
+            console.log("reserving " + cartitem.itemId.name)
+            
+            // change status/quantity of prop in the store
+            if (cartitem.itemId.status === "available"){ // first check if prop is available
+                console.log("is available" + cartitem.itemId.name)
+                if (cartitem.itemId.quantity > cartitem.quantity) { // if there is more than enough of this prop available
+                    console.log("more than enough" + cartitem.itemId.name)
+                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
+                        quantity: cartitem.itemId.quantity-cartitem.quantity // just lower the number of available props
+                    }).session(session);
+                    
+                } else if (cartitem.itemId.quantity === cartitem.quantity) { // if there is only the exact amount available
+                    console.log("just enough" + cartitem.itemId.name)
+                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, { // set to reserved status
+                        quantity: 0,
+                        status: "reserved"
+                    }).session(session);
+                }	
+                else {
+                    console.log("not enough" + cartitem.itemId.name)
+                    throw new Error("not enough of this item available")
+                }
+            } else { // if not available don't reserve it
+                throw new Error("item is not available to reserve")
+            }
+
+            console.log("reserved " + cartitem.itemId.name)
+
+            // add prop to the order
+            await models.Order.findByIdAndUpdate({_id: order[0].id }, {$push: {items: cartitem}}).session(session);
+            console.log("added to order " + cartitem.itemId.name)
+
+            // remove prop from the user's cart
+            await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
+            console.log("removed from cart " + cartitem.itemId.name)
+
+        }
+
+        //** TODO: add payment processing step here */
+
+        // if every step completed successfully, finalize the transaction
+        await session.commitTransaction();
+        console.log("transaction committed")
+    } catch {
+        await session.abortTransaction();
+        console.log("transaction failed")
+        session.endSession();
+        return null
+    } finally {
+        session.endSession();
+        console.log("session ended")
+        return 1
     }
-
-    // go through items in user cart one by one,
-    // checking if able to reserve, and then reserving
-    for (const cartitem of user.cart) {
-        console.log(cartitem.itemId.status)
-        
-        // change status/quantity of prop in the store
-		if (cartitem.itemId.status === "available"){ // first check if prop is available
-			if (cartitem.itemId.quantity > cartitem.quantity) { // if there is more than 1 of this prop available
-				await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
-					quantity: cartitem.itemId.quantity-cartitem.quantity // just lower the number of available props
-				}).session(session);
-			} else { // if there is only 1 instance of this prop available
-				await models.Prop.findByIdAndUpdate(thisProp.id, { // set to reserved status
-					quantity: 0,
-					status: "reserved"
-				}).session(session);
-			}	
-		} else { // if not available don't reserve it
-            throw new Error("item is not available to reserve")
-		}
-
-        // add prop to the order
-        await models.Order.findByIdAndUpdate({_id: order.id }, {$push: {items: cartitem}}).session(session);
-
-        // remove prop from the user's cart
-        await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
-    }
-
-    //** TODO: add payment processing step here */
-
-    // if every step completed successfully, finalize the transaction
-    session.commitTransaction();
-    session.endSession();
-    console.log("transaction ended")
-    return order.id
 }
 
 

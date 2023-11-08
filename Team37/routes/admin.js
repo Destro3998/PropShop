@@ -116,7 +116,8 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 			name: req.body.name,
 			description: req.body.description,
 			quantity: req.body.quantity,
-			price:req.body.price,
+			status: "available", // TESTING -- REMOVE THIS LATER
+			price: req.body.price,
 		}).then((prop, req, res) => {
 			// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id
