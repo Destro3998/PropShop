@@ -3,6 +3,7 @@ const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
 const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.js");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const mongoose = require("mongoose");
 
