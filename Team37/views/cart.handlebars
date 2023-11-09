@@ -1,3 +1,5 @@
+<script src="https://js.stripe.com/v3/"></script>
+
 
 <div class="main-container">
 
@@ -20,13 +22,9 @@
         <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
         <p id="deposit">Deposit amount: <span>$0.00</span></p>
 
-        
-        <form id="payment-form" action="/orders/new-order/{{userId}}" method="post">
-    <div id="card-element">
-    </div>
-    <input type="submit" class="checkout-button" value="Place Order">
-    </form>
-
+        <form action="/orders/new-order/{{userId}}" method="post">
+            <input type="submit" class="checkout-button" value="Reserve Props">
+        </form>
     </div>
 </div>
 

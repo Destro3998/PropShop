@@ -73,7 +73,7 @@ router.post('/new-order/:userId', async function (req, res) {
  * @param {*} userId the user placing the order
  * @returns the id of the newly created order
  */
-async function newOrderTransaction(userId) {
+ async function newOrderTransaction(userId) {
 
     // start transaction session
     const session = await mongoose.startSession();
@@ -81,23 +81,39 @@ async function newOrderTransaction(userId) {
 
     var order;
     try { 
-        // create order 
-        let order = await models.Order.create([{
-            //price: req.body.price, //TODO: handle other attributes
-            // don't need to handle other attributes because the schema defaults suffice in this case
-            user: userId,
-        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
-
-        //console.log(order[0])
-        //console.log(order[0]._id)
 
         // get all the props referenced in the users cart
         let user = await models.User.findById(userId).populate('cart.itemId').session(session);
 
         //console.log(user)
-        if (user.cart.length < 1) { // if cart is empty, abort transaction
+        if (user.cart.length < 1) { 
             throw new Error("Attempting to reserve empty cart")
         }
+        
+
+        // To DO: Need the total price for the items in the cart - hard coded for now
+        const totalPrice = 1000;
+
+        // Creating a Stripe PaymentIntent
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: totalPrice, 
+            currency: 'cad',
+            // To Do: The payment method needs to be passed from the client side
+            //payment_method: 
+            confirm: false,
+        }, { session: session }); 
+
+
+        // create order 
+        let order = await models.Order.create([{
+            //price: req.body.price, //TODO: handle other attributes
+            // don't need to handle other attributes because the schema defaults suffice in this case
+            user: userId,
+            paymentIntentId: paymentIntent.id,
+        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
+
+        //console.log(order[0])
+        //console.log(order[0]._id)
 
         console.log(user.cart.length + " item(s) detected in cart")
         // go through items in user cart one by one,
@@ -146,6 +162,10 @@ async function newOrderTransaction(userId) {
         // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
         console.log("transaction committed")
+                
+        // To Do: if transaction success, return the order ID of the newly created order
+        return order[0]._id; 
+
     } catch {
         await session.abortTransaction();
         console.log("transaction failed")
@@ -157,7 +177,6 @@ async function newOrderTransaction(userId) {
         return 1
     }
 }
-
 
 /** gets a specific order from the database */
 router.get('/:orderId', async function (req, res) {
