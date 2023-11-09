@@ -26,17 +26,6 @@
 </div>
 
 <script>
-    function clearCart() {
-        fetch("/cart/clear", { method: "POST" })
-            .then((response) => response.json())
-            .then((data) => {
-                localStorage.setItem("cart", JSON.stringify([]));
-                location.reload();
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-    }
 
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -118,6 +107,9 @@
                 });
         });
     }
+
     });
 
 </script>
+
+
