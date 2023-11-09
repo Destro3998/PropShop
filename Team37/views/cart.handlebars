@@ -1,3 +1,4 @@
+
 <div class="main-container">
 
     <div class="cart-container">
@@ -19,9 +20,13 @@
         <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
         <p id="deposit">Deposit amount: <span>$0.00</span></p>
 
-        <form action="/orders/new-order/{{userId}}" method="post">
-            <input type="submit" class="checkout-button" value="Reserve Props">
-        </form>
+        
+        <form id="payment-form" action="/orders/new-order/{{userId}}" method="post">
+    <div id="card-element">
+    </div>
+    <input type="submit" class="checkout-button" value="Place Order">
+    </form>
+
     </div>
 </div>
 

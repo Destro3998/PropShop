@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -9,8 +11,6 @@ const propsRouter = require("./routes/props");
 const adminRouter = require("./routes/admin");
 const ordersRouter = require("./routes/orders");
 const flash = require("connect-flash");
-require("dotenv").config();
-
 
 
 //For Authentication
@@ -85,6 +85,7 @@ app.use("/accounts", accountsRouter);
 app.use("/prop", propsRouter);
 app.use("/admin", adminRouter);
 app.use("/orders", ordersRouter);
+
 
 app.use(express.json());
 

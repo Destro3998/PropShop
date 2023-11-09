@@ -192,5 +192,7 @@ router.get("/:propId/pickup", isAdmin, async (req, res) => {
 	res.render("pickup.handlebars", {prop: prop, authenticated: authenticated, userId: userId});
 });
 
+
+
 // This allows other files to import the router
 module.exports = router;
