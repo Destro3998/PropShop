@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const {isAuth, isBlacklisted} = require("../utilities/authMiddleware");
+const {isAuth, isBlacklisted} = require("../utilities/authMiddleware");
 const {DisplayUser} = require("../utilities/dbUtilities");
 const generatePassword = require("../utilities/password").generatePassword;
 const User = require("../utilities/models").User;

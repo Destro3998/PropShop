@@ -49,6 +49,15 @@
         });
     });*/
 
+
+    /*let images = document.querySelectorAll(".store-item-image");
+    images.forEach(image => {
+        image.addEventListener("error", function () {
+            image.src = "images/default.jpg"
+            // The default image must be changed.
+        });
+    });*/
+
     document.getElementById("loadMoreButton").addEventListener("click", function () {
         // Track the number of items already displayed
         let displayedPropsCount = document.querySelectorAll('.store-card').length;
