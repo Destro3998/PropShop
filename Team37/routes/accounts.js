@@ -49,7 +49,8 @@ router.post("/register", async (req, res) => {
 					phone: req.body.phone,
 					hash: hash,
 					salt: salt,
-					admin: true
+					admin: false,
+					blacklisted: false
 				});
 
 				await newUser.save(); // saving the user to the database (using a promise)
