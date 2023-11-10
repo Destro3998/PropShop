@@ -11,8 +11,6 @@ const ordersRouter = require("./routes/orders");
 const flash = require("connect-flash");
 require("dotenv").config();
 
-
-
 //For Authentication
 const session = require("express-session");
 const passport = require("passport");
@@ -21,11 +19,12 @@ const mongoStore = require("connect-mongo");
 
 const app = express();
 const hbs = express_handlebars.create({/* config */
-helpers: {
-    json: function (context) {
-      return JSON.stringify(context);
+    helpers: {
+        json: function (context) {
+            return JSON.stringify(context);
+        }
     }
-  }});
+});
 
 
 // The link to our database connection. the {process.env.DB_PASSWORD} is the password to our database.
@@ -35,19 +34,19 @@ const uri = `mongodb+srv://admin:${process.env.DB_PASSWORD}.16ms14j.mongodb.net/
 
 // Setting up our database as our storage for all of our sessions and their keys.
 const sessionStore = mongoStore.create({
-	mongoUrl: uri
+    mongoUrl: uri
 })
 
 // Using session middleware to create our sessions
 app.use(session({
-	secret: process.env.SECRET,
-	store: sessionStore,
-	resave: false,
-	saveUninitialized: true,
-	cookie: {
-		maxAge: 1000 * 60 * 60 * 24 // This configures how long our sessions last on our site for.
-		// If you do not clear your cookies then you can stay logged into the site for 24hours
-	}
+    secret: process.env.SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 // This configures how long our sessions last on our site for.
+        // If you do not clear your cookies then you can stay logged into the site for 24hours
+    }
 }));
 
 // Setting up flash messages
@@ -55,8 +54,8 @@ app.use(flash());
 
 // Make flash messages available in handlebars templates
 app.use((req, res, next) => {
-	res.locals.messages = req.flash();
-	next();
+    res.locals.messages = req.flash();
+    next();
 });
 
 
@@ -91,6 +90,8 @@ app.use(express.json());
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
 // This starts the server
+
+
 mongoose.connect(uri).then(() => {
 	console.log("Connected to Database.");
 	app.listen(process.env.PORT, () => {
@@ -101,6 +102,7 @@ mongoose.connect(uri).then(() => {
 		console.log(error);
 	});
 
+
 // IMPORTANT: TO RUN THE SERVER
 // cd to Team37
 // run the command: "npm start"
@@ -108,3 +110,6 @@ mongoose.connect(uri).then(() => {
 
 // If you get this error:MongoParseError: mongodb+srv URI cannot have port number
 // You probably do not have the .env file.
+
+
+module.exports = app;

@@ -27,7 +27,6 @@ var upload = multer({storage: storage})
  */
 
 router.get("/dashboard", isBlacklisted, isAdmin, async (req, res) => {
-router.get("/dashboard", isBlacklisted, isAdmin, async (req, res) => {
 	let authenticated = req.isAuthenticated();
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
@@ -114,7 +113,6 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 		// it would be a good idea later to have a default image to assign to this variable 
 		// like a jpg that says "no image available" stored in the same folder
 		// like this:
-		filenameimg = "default.jpg"
 		filenameimg = "default.jpg"
 	}
 	try {
