@@ -70,6 +70,8 @@ require("./utilities/passport");
 // When we log out the user property is no longer passed in the cookie
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.json());
+
 
 
 // setting up middleware
@@ -86,7 +88,6 @@ app.use("/prop", propsRouter);
 app.use("/admin", adminRouter);
 app.use("/orders", ordersRouter);
 
-app.use(express.json());
 
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
