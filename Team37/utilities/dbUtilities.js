@@ -272,11 +272,6 @@ async function searchProps(searchTerm_2) {
     }
 }
 
-
-
-
-
-
 // Exporting the displayProp class
 module.exports = {
 	DisplayProp: DisplayProp,

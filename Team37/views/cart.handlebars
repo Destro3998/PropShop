@@ -18,9 +18,9 @@
         <input type="date" id="checkOutDate" name="checkOutDate">
 
         <p id="dayCount">Booking for: <span>0</span> days</p>
-        <p id="totalPropAmount">Total prop amount: <span>$0.00</span> for <span id="dayCountDisplay">0</span> days</p>
-        <p id="costPerDay">Total cost: <span>$0.00</span> per day</p>
-        <p id="deposit">Deposit amount: <span>$0.00</span></p>
+        <p id="costPerDay">Total Amount: <span>$0.00</span></p>
+        <p id="totalPropAmount">Reserve Amount: <span>$0.00</span> per day</p>
+        <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>
 
         <form action="/orders/new-order/{{userId}}" method="post">
             <input type="submit" class="checkout-button" value="Reserve Props">
@@ -29,19 +29,8 @@
 </div>
 
 <script>
-    function clearCart() {
-        fetch("/cart/clear", { method: "POST" })
-            .then((response) => response.json())
-            .then((data) => {
-                localStorage.setItem("cart", JSON.stringify([]));
-                location.reload();
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-    }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {     
 
         const checkInDateInput = document.getElementById('checkInDate');
         const checkOutDateInput = document.getElementById('checkOutDate');
@@ -54,20 +43,39 @@
             const dayDifference = timeDifference / (1000 * 3600 * 24); // milliseconds to days
 
             dayCountSpan.textContent = dayDifference > 0 ? dayDifference : 0;
+
+            // Now update the deposit amount as well
+            const totalAmount = parseFloat(document.getElementById('costPerDay').querySelector('span').textContent.replace('$', ''));
+            const reserveAmount = totalAmount * 0.10;
+            updateDepositAmount(reserveAmount);
         }
+
+        checkOutDateInput.addEventListener('change', function () {
+            updateDayCount();
+        });
 
         checkInDateInput.addEventListener('change', function () {
             checkOutDateInput.min = this.value;
             updateDayCount();
         });
 
-        checkOutDateInput.addEventListener('change', function () {
-            updateDayCount();
-        });
 
+        function renderCartItem(data, cartList) {
+        let listItem = document.createElement('li');
+        listItem.classList.add('cart-item');
+        listItem.innerHTML = `
+                <span class="prop-name">Name: ${data.item.name}</span>
+                <span class="prop-description">Description: ${data.item.description}</span>
+                <span class="prop-quantity">Quantity: ${data.quantity}</span>
+                <span class="prop-cost">Cost: $${data.item.price}</span> 
 
-        // Populating cart page implementation
-        const authenticated = {{{ authenticated }}};
+            `;
+        cartList.appendChild(listItem);
+        updateTotalAmount();
+    }
+
+    // Populating cart page implementation
+    const authenticated = {{{ authenticated }}};
     let serverCartItems = authenticated ? JSON.parse({{{ json cartItems }}}) : [];
 
     // clear local storage and use propulate prop from database if user is authticated
@@ -81,46 +89,57 @@
 
     const cartList = document.querySelector('.cart-items-list');
 
-    function renderCartItem(data, cartList) {
-        let listItem = document.createElement('li');
-        listItem.classList.add('cart-item');
-        listItem.innerHTML = `
-                <span class="prop-name">Name: ${data.item.name}</span>
-                <span class="prop-description">Description: ${data.item.description}</span>
-                <span class="prop-quantity">Quantity: ${data.quantity}</span>
-                <span class="prop-cost">Cost: $${data.item.price}</span> 
-
-            `;
-        cartList.appendChild(listItem);
-    }
-
     if (authenticated) {
         serverCartItems.forEach(item => renderCartItem(item, cartList));
+        updateTotalAmount();
+
     }
 
     if (!authenticated) {
         const cartJson = localStorage.getItem('cart') || '[]';
-        const localCart = JSON.parse(cartJson);
+        let localCart = JSON.parse(cartJson);
 
         localCart.forEach(propId => {
             fetch(`/api/getProp/${propId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Server-side error');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    renderCartItem({
-                        item: data,
-                        quantity: 1
-                    }, cartList);
+                    renderCartItem({ item: data, quantity: 1 }, cartList); // Quantity is assumed to be 1
                 })
                 .catch(error => {
-                    console.error('There was an error fetching the item details:', error);
+                    console.error('There was an error:', error);
                 });
         });
     }
+
+    // Function to calculate and update total amount
+    function updateTotalAmount() {
+        const cartItems = authenticated ? serverCartItems : localCart;
+        let totalAmount = 0;
+
+        cartItems.forEach(item => {
+            totalAmount += item.item.price * item.quantity;
+        });
+
+        document.getElementById('costPerDay').querySelector('span').textContent = `$${totalAmount.toFixed(2)}`;
+        updateReserveAmount(totalAmount);
+    }
+
+    // Function to calculate and update reserve amount
+    function updateReserveAmount(totalAmount) {
+        const reserveAmount = totalAmount * 0.10;
+        document.getElementById('totalPropAmount').querySelector('span').textContent = `$${reserveAmount.toFixed(2)} per day`;
+        updateDepositAmount(reserveAmount);
+    }
+
+    // Function to calculate and update deposit amount
+    function updateDepositAmount(reserveAmount) {
+        const daysCountForDeposit = parseInt(document.getElementById('dayCount').querySelector('span').textContent, 10);
+        const depositAmount = reserveAmount * daysCountForDeposit;
+
+        document.getElementById('deposit').querySelectorAll('span')[0].textContent = `$${depositAmount.toFixed(2)}`;
+        document.getElementById('deposit').querySelectorAll('span')[1].textContent = daysCountForDeposit;
+    }
+
     });
 
 </script>
