@@ -49,15 +49,17 @@
             updateDepositAmount(reserveAmount);
         }
 
-        checkOutDateInput.addEventListener('change', function () {
-            updateDayCount();
-        });
-
-        checkInDateInput.addEventListener('change', function () {
+         checkInDateInput.addEventListener('change', function () {
             checkOutDateInput.min = this.value;
             updateDayCount();
         });
 
+
+        checkOutDateInput.addEventListener('change', function () {
+            updateDayCount();
+        });
+
+       
 
         function renderCartItem(data, cartList) {
         let listItem = document.createElement('li');
