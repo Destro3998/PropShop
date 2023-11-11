@@ -59,6 +59,7 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use(express.json());
 
 // This is the passport configuration
 require("./utilities/passport");
@@ -87,7 +88,6 @@ app.use("/admin", adminRouter);
 app.use("/orders", ordersRouter);
 
 
-app.use(express.json());
 
 // connecting to database - Only starts the server if the database connects successfully.
 // Using .then() for the promises. async-await could make this more readable.
