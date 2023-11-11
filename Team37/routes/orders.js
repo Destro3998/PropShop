@@ -3,6 +3,7 @@ const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
 const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.js");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const mongoose = require("mongoose");
 
@@ -26,14 +27,27 @@ router.get('/all', isAdmin, async function (req, res) {
 /** 
  * creates new order on checkout
  */
-router.post('/new-order/:userId', async function (req, res) {
-    authenticated = req.isAuthenticated();
+ router.post('/new-order/:userId', async function (req, res) {
+    const authenticated = req.isAuthenticated();
+    const { paymentMethodId, depositAmount } = req.body;
+    console.log('Received paymentMethodId and depositAmount:', paymentMethodId, depositAmount);
+    console.log('Request body:', req.body); // For debugging
+
+    if (!authenticated) {
+        res.status(401).send('User must be authenticated');
+        return;
+    }
 
     try {
-        orderId = await newOrderTransaction(req.params.userId)
+        // Ensure you're using the correct amount and passing it to the function
+        const orderId = await newOrderTransaction(req.params.userId, req.body.paymentMethodId, req.body.depositAmount);
+        // Redirect should be done in a response to the client, not server-side navigation
+        res.json({ orderId: orderId }); // Respond with JSON
     } catch (error) {
-        console.log(error)
+        console.error(error);
+        res.status(500).json({ error: error.message }); // Respond with JSON error
     }
+});
     /*
     let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
 
@@ -50,7 +64,8 @@ router.post('/new-order/:userId', async function (req, res) {
     } catch (error) {
         console.log(error)
     }  */ 
-    if (!orderId) { // if transaction failed
+    
+    /*if (!orderId) { // if transaction failed
         res.status(500);
         res.send()
         res.redirect("/store");
@@ -59,7 +74,7 @@ router.post('/new-order/:userId', async function (req, res) {
         res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
         //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK 
     }
-})
+})*/
 
 
 /**
@@ -72,38 +87,46 @@ router.post('/new-order/:userId', async function (req, res) {
  * @param {*} userId the user placing the order
  * @returns the id of the newly created order
  */
-async function newOrderTransaction(userId) {
-
-    // start transaction session
+ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     const session = await mongoose.startSession();
     session.startTransaction();
+    let order;
 
-    var order;
-    try { 
-        // create order 
-        let order = await models.Order.create([{
-            //price: req.body.price, //TODO: handle other attributes
-            // don't need to handle other attributes because the schema defaults suffice in this case
-            user: userId,
-        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
-
-        //console.log(order[0])
-        //console.log(order[0]._id)
-
-        // get all the props referenced in the users cart
+    try {
         let user = await models.User.findById(userId).populate('cart.itemId').session(session);
-
-        //console.log(user)
-        if (user.cart.length < 1) { // if cart is empty, abort transaction
-            throw new Error("Attempting to reserve empty cart")
+        if (user.cart.length < 1) {
+            throw new Error("Attempting to reserve an empty cart");
         }
 
-        console.log(user.cart.length + " item(s) detected in cart")
-        // go through items in user cart one by one,
-        // checking if able to reserve, and then reserving
-        for (const cartitem of user.cart) {
+        // Convert deposit amount to the smallest currency unit if necessary
+        depositAmount = parseInt(depositAmount, 10); // Convert to an integer if it's in string format
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+            console.log('Received deposit amount:', depositAmount);
+            throw new Error("Invalid deposit amount");
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: depositAmount, // Assumes depositAmount is in cents
+            currency: 'cad',
+            payment_method: paymentMethodId,
+            confirmation_method: 'manual',
+            confirm: true,
+        });
+
+        if (paymentIntent.status !== 'succeeded') {
+            throw new Error("Payment failed with status: " + paymentIntent.status);
+        }
+
+        order = await models.Order.create([{
+            user: userId,
+            paymentIntentId: paymentIntent.id,
+        }], { session: session });
+
+        for (const cartItem of user.cart) {
+
+
             console.log("reserving " + cartitem.itemId.name)
-            
+
             // change status/quantity of prop in the store
             if (cartitem.itemId.status === "available"){ // first check if prop is available
                 console.log("is available" + cartitem.itemId.name)
@@ -137,24 +160,18 @@ async function newOrderTransaction(userId) {
             // remove prop from the user's cart
             await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
             console.log("removed from cart " + cartitem.itemId.name)
-
         }
 
-        //** TODO: add payment processing step here */
-
-        // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
-        console.log("transaction committed")
-    } catch {
+    } catch (error) {
         await session.abortTransaction();
-        console.log("transaction failed")
-        session.endSession();
-        return null
+        console.error("Error during transaction:", error.message);
+        throw error;
     } finally {
         session.endSession();
-        console.log("session ended")
-        return 1
     }
+
+    return order ? order._id : null;
 }
 
 
