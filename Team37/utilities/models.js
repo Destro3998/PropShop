@@ -30,7 +30,8 @@ const propSchema = new mongoose.Schema({
 				required: true
 		  	}, 
 			location: {type: String, required: true},
-			rentHistory: [String]
+			rentHistory: [String], 
+			condition: {type: String}
 		}
 	]
 });
