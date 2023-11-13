@@ -183,13 +183,16 @@ router.post("/cart/add/:propId", isAuth, async (req, res) => {
 		} else {
 			res.flash("error", "You attempted to add a non-existent item to your cart");
 		}
-		res.redirect("/store");
+		const newCartCount = req.user.cart.reduce((acc, item) => acc + item.quantity, 0);
+		res.json({ success: true, newCartCount: newCartCount });
+
 	} catch (error) {
 		console.error(error);
 		res.status(500).send("internal Server Error");
 	}
 
 });
+
 
 
 router.get("/api/authenticated", (req, res) => {
@@ -203,7 +206,6 @@ router.get("/api/authenticated", (req, res) => {
 router.get("/api/get-userId", isAuth, (req, res) => {
 	res.json({ id: req.user._id });
 })
-
 
 // get item stored in cart
 
@@ -247,6 +249,20 @@ router.get("/cart", async (req, res) => {
 });
 
 
+router.get("/api/getCartCount", async (req, res) => {
+	let count = 0;
+  
+	if (req.isAuthenticated()) {
+	  const userCart = req.user.cart;
+	  count = userCart.reduce((acc, item) => acc + item.quantity, 0);
+	} else {
+	  count = req.session.cart ? req.session.cart.length : 0;
+	}
+  
+	res.json({ count });
+  });
+  
+
 
 router.get("/api/getProp/:propId", async (req, res) => {
 	try {
@@ -263,20 +279,22 @@ router.get("/api/getProp/:propId", async (req, res) => {
 	}
 });
 
-router.post("/cart/clear", async (req, res) => {
-	if (req.isAuthenticated()) {
-		try {
-			await User.findOneAndUpdate({ _id: req.user._id }, { cart: [] }, { new: true });
-			res.status(200).json({message:"Cart successfully cleared"});
-		} catch (error) {
-			console.error(error);
-			res.status(500).json({message:"Internal Server Error"});
-		}
-	}else{
-		res.status(401).json({message:"user not authenticated"});
-	}
 
-});
+router.post("/cart/clear", isAuth, async (req, res) => {
+	if (req.isAuthenticated()) {
+	  try {
+		await User.findOneAndUpdate({ _id: req.user._id }, { cart: [] });
+		res.json({ message: "Cart successfully cleared" });
+	  } catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Internal Server Error" });
+	  }
+	} else {
+	  res.status(401).json({ message: "User not authenticated" });
+	}
+  });
+  
+  
 
 // This allows other files to import the router
 module.exports = router;

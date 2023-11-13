@@ -3,22 +3,17 @@
     {{#if ordersLength}}
     {{#each orders}}
     <div class="order container">
-        <h2 style="padding-left: 1rem;">Order id: {{this.orderId}}</h2>
-        <div class="order-items">
-            {{#each this.items}}
-            <div class="container order-item ">
-                <h3>Name: {{this.name}}</h3>
-                <h4>Quantity: {{this.quantity}}</h4>
-                <h4>Prices: CA$ {{this.price}} / day</h4>
+        <a href="/orders/{{this.orderId}}">
+            <h2 style="padding-left: 1rem;">Order id: {{this.orderId}}</h2>
+            <div style="padding-left: 1rem;">
+                <h3>User: {{this.userFname}} {{this.userLname}}   -   {{this.userEmail}}</h3>
+                <h3>Date Placed: {{this.datePlaced}}</h3>
+                <h3>Status: {{this.status}}</h3>
             </div>
-
-            {{/each}}
-        </div>
-        <div style="padding-left: 1rem;">
-            <h3>Date Placed: {{this.datePlaced}}</h3>
-        <h3>Status: {{this.status}}</h3>
-        <h3>User: {{this.userFname}} {{this.userLname}}</h3>
-        </div>
+            <div class="order-items">
+                <h4>{{this.numItems}} item(s)</h4>
+            </div>
+        </a>
         
     </div>
     {{/each}}

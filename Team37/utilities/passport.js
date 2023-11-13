@@ -1,4 +1,5 @@
 const passport = require("passport");
+const { isEmailAdmin } = require("./adminUtilities");
 const localStrategy = require("passport-local").Strategy;
 const User = require("./models").User;
 const validatePassword = require("./password").validatePassword;
@@ -14,7 +15,19 @@ passport.use(new localStrategy({usernameField: "email", passwordField: "password
 					return callback(null, false)
 				}
 
-				// function defined at the bottom of server.js
+
+				const isAdminEmail = isEmailAdmin(email);
+				if (isAdminEmail){
+					const isLoginValid = validatePassword(password, user.hash, user.salt);
+					if (isLoginValid) {
+						user.admin = true; // if the user has logged in with an admin email then set their admin value to true.
+						return callback(null, user);
+					} else {
+						return callback(null, false);
+					}
+				} 
+
+
 				const isLoginValid = validatePassword(password, user.hash, user.salt);
 
 				if (isLoginValid) {
