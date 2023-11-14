@@ -71,58 +71,93 @@ router.get("/:propId", async (req, res) => {
 // This route is a combination of the get and post requests.
 // async because it interacts with the database
 router.route("/:propId/edit")
-    .get(isAdmin, async (req, res) => { // rendering the page
-        let authenticated = req.isAuthenticated();
-        let redirectUrl = req.header('referer') || '/';
-        let propId = req.params.propId;
-        let prop_model = await models.Prop.findById(propId);
-        let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price);
-        let userId;
-        let admin = req.user && req.user.admin ? req.user.admin : false;
-        userId = req.user && req.user._id ? req.user._id : undefined;
-        res.render("editProp.handlebars", {
-            prop: prop,
-            propId: propId,
-            authenticated: authenticated,
-            userId: userId,
-            admin: admin
-        });
-    })
-    .post(isAdmin, async (req, res) => { // this is used by the form submission
-        let propId = req.params.propId;
-        const redirectUrl = req.redirectUrl || "/admin/dashboard"; // redirect url is either the url that the user has come from or "/admin/dashboard" url
-        try {
-            let thisProp = await models.Prop.findById(propId);
-            await models.Prop.findByIdAndUpdate(thisProp.id, {
-                name: req.body.name,
-                description: req.body.description,
-                quantity: req.body.quantity,
-                price: req.body.price
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(500);
-        }
-        res.status(200); // everything went well
-        res.redirect(redirectUrl);
-    });
+	.get(isAdmin, async (req, res) => { // rendering the page
+		let authenticated = req.isAuthenticated();
+		let redirectUrl = req.header('referer') || '/';
+		let propId = req.params.propId;
+		let prop_model = await models.Prop.findById(propId);
+		let prop = { //Adding all the columns from the database schema to the prop object
+			...prop_model._doc, //Adding all the fields from the prop_model
+			instance: prop_model.instance.map((item) => ({ ...item._doc })), //Adding the instance array
+		};
+		let userId;
+		let admin = req.user && req.user.admin ? req.user.admin : false;
+		if (req.user && req.user._id) {
+			userId = req.user._id;
+		} else {
+			userId = undefined;
+		}
+		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId, admin: admin});
+	})
+	.post(isAdmin, async (req, res) => {
+		let propId = req.params.propId;
+		// Get which form submitted this data
+		let formType = req.body.formType;
+		try {
+		  	let thisProp = await models.Prop.findById(propId);
+			if (formType === "general") {
+				// Update basic prop information based on the form
+				thisProp.name = req.body.name;
+				thisProp.description = req.body.description;
+				thisProp.category = req.body.category;
+				thisProp.price = req.body.price;
+		  	} else if (formType === "newInstance") {
+				// Adding a new instance of this prop
+				let newInstance = {
+					status: req.body.status,
+					location: req.body.location,
+					rentHistory: [req.body.rentHistory],
+				};
+			  	thisProp.instance.push(newInstance);
+		  	}
+		  	await thisProp.save();
+		} catch (error) {
+		  console.error(error);
+		  res.status(500).send("Error adding instance to prop.");
+		}
+		let redirectUrl = req.redirectUrl || `/prop/${propId}/edit`;
+		res.status(200).redirect(redirectUrl);
+	  });
+
+router.route("/:propId/:instanceId/edit")
+	.post(isAdmin, async (req, res) => {
+		let propId = req.params.propId;
+		// Get which form submitted this data
+		let formType = req.body.formType;
+		try {
+			let thisProp = await models.Prop.findById(propId);
+			if (formType === "instance") {
+				// Get the instance that is being updated
+				let instanceId = req.params.instanceId;
+				let thisInstance = thisProp.instance.id(instanceId);
+				// Update instance properties based on the form
+				thisInstance.status = req.body.status;
+				thisInstance.location = req.body.location;
+				thisInstance.rentHistory = [req.body.rentHistory];
+		  	}
+			await thisProp.save();
+	  	} catch (error) {
+			console.error(error);
+			res.status(500).send("Error adding instance to prop.");
+	  	}
+		let redirectUrl = req.redirectUrl || `/prop/${req.params.propId}/edit`;
+		res.status(200).redirect(redirectUrl);
+	});
 
 router.route("/:propId/qrcode")
     .get(isAdmin, async (req, res) => {
         let propId = req.params.propId;
-
         // URL the QR code image will link when scanned
-        const propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/pickup`;
-
-        // generate a data URL for the QR code image corresponding to the propUrl
+        let propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/pickup`;
+        // Generate a data URL for the QR code image corresponding to the propUrl
         qrCode.toDataURL(propUrl, function (error, url) {
             if (error) {
                 console.log("Error Occured");
                 return;
             }
-            // specifies to the client an html file is being sent
+            // Specifies to the client an html file is being sent
             res.set('Content-Type', 'text/html');
-            // sends a html response to the client consisting of the QR code image and nothing else
+            // Sends a html response to the client consisting of the QR code image and nothing else
             res.send(`<html lang="en"><body><img src="${url}" alt="QR Code" style="max-width: 100%; max-height: 100%;" /></body></html>`);
         })
     });

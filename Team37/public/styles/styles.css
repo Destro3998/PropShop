@@ -821,6 +821,11 @@ model-viewer{
     border-radius: var(--border-radius);
 }
 
+.edit-prop {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
 .order-selection{
     padding: 0.75em;
     border-radius: var(--border-radius);
