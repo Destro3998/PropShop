@@ -1,23 +1,91 @@
+<script>
+    document.addEventListener("PageStart", function () {
+        // Get all the forms on the page
+        let forms = document.querySelectorAll(".vertical-form");
+
+        // Iterate through each form
+        forms.forEach(function (form) {
+            // Store original values when the page loads for each form
+            let originalValues = {};
+
+            // Iterate through each input in the form
+            form.querySelectorAll("input, select, textarea").forEach(function (input) {
+                originalValues[input.name] = input.value;
+            });
+
+            // Add event listener to the form submission for each form
+            form.addEventListener("PageSubmit", function (event) {
+                let valuesChanged = false;
+
+                // Check each form for changed values
+                form.querySelectorAll("input, select, textarea").forEach(function (input) {
+                    if (input.value !== originalValues[input.name]) {
+                        valuesChanged = true;
+                    }
+                });
+
+                // If values have changed, handle depending on which form is submitted
+                if (valuesChanged) {
+                    // Get which form was submitted
+                    let formTypeInput = document.createElement("input");
+                    formTypeInput.type = "hidden";
+                    formTypeInput.name = "formType";
+                    formTypeInput.value = originalValues.formType || ""; 
+                }
+            });
+        });
+    });
+</script>
+
 <div class="edit-prop">
-<div class="container">
-    <h2>Prop Information:</h2>
+<div class="prop container">
+    <h2>{{prop.name}} Information:</h2>
     <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
-        <label for="prop-name">Prop Name</label>
+        <label for="prop-name">Name</label>
         <input type="text" name="name" id="prop-name" placeholder="Prop Name" value="{{prop.name}}" required>
-        <label for="description">Prop Description</label>
+        <label for="description">Description</label>
         <textarea name="description" id="prop-description" placeholder="Prop Description"
             rows="6">{{prop.description}}</textarea>
-        <label for="prop-quantity">Prop Quantity</label>
-        <input type="number" name="quantity" id="prop-quantity" placeholder="1" min="0" value="{{prop.quantity}}" required>
-        <label for="price">Prop Price (CA$)</label>
-        <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="1" step="0.01" required>
+        <label for="prop-category">Prop Category</label>
+        <input type="text" name="category" id="prop-category" placeholder="Prop Category" value="{{prop.category}}" required>
+        <label for="price">Price (CA$)</label>
+        <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="{{prop.price}}" step="0.01" required>
+        <label for="prop-quantity">Quantity: {{prop.quantity}}</label>
+        <input type="hidden" name="formType" value="general">
+        <input type="submit" class="button" value="Save">
     </form>
 </div>    
-<div class="container">
+<div class="prop container">
     {{#if prop.instance}}
-        <h2>Prop Instance Information:</h2>
-        <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
+        <h2>Props:</h2>
+        <div class="props-item-area">
         {{#each prop.instance}}
+        <div class="prop container">
+            <h3>{{../prop.name}}</h3>
+            <form action="/prop/{{../propId}}/{{this._id}}/edit" method="post" class="vertical-form">
+                <label for="status">Status: {{this.status}}</label>
+                <select name="status" id="status" required>
+                    <option value="" selected>Change Status</option>
+                    <option value="available">Available</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="checked out">Checked Out</option>
+                </select>
+                <label for="location">Location</label>
+                <input type="text" name="location" id="location" placeholder="Location" value="{{this.location}}" required>
+                <label for="condition">Condition</label>
+                <input type="text" name="condition" id="condition" placeholder="Condition">
+                <label for="rentHistory">Rent History</label>
+                <textarea name="rentHistory" id="rentHistory" placeholder="Rent History"
+                    rows="3">{{this.rentHistory}}</textarea>
+                <input type="hidden" name="formType" value="instance">
+                <input type="submit" class="button" value="Save">
+        </form>
+        </div>
+        {{/each}}
+        </div>
+        <div class="prop container">
+        <h2>Add another {{prop.name}}:</h2>
+        <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
             <label for="status">Status</label>
             <select name="status" id="status" required>
                 <option value="available">Available</option>
@@ -25,29 +93,37 @@
                 <option value="checked out">Checked Out</option>
             </select>
             <label for="location">Location</label>
-            <input type="text" name="location" id="location" placeholder="Location" value="{{this.location}}" required>
+            <input type="text" name="location" id="location" placeholder="Location" required>
+            <label for="condition">Condition</label>
+            <input type="text" name="condition" id="condition" placeholder="Condition">
             <label for="rentHistory">Rent History</label>
-            {{#each this.rentHistory}}
-                <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" value="{{this}}" required>
-            {{/each}}
-        {{/each}}
-        <input type="submit" class="button" value="Edit Prop">
+            <textarea name="rentHistory" id="rentHistory" placeholder="Rent History" 
+                rows="3"></textarea>
+            <input type="hidden" name="formType" value="newInstance">
+            <input type="submit" class="button" value="Save">
         </form>
+        </div>
     {{else}}
-        <h2>No instance information available. Add new instance:</h2>
+        <div class="prop container">
+        <h2>No {{prop.name}} found. Add one:</h2>
         <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
-        <label for="status">Status</label>
-        <select name="status" id="status" required>
-            <option value="available">Available</option>
-            <option value="reserved">Reserved</option>
-            <option value="checked out">Checked Out</option>
-        </select>
-        <label for="location">Location</label>
-        <input type="text" name="location" id="location" placeholder="Location" required>
-        <label for="rentHistory">Rent History</label>
-        <input type="text" name="rentHistory" id="rentHistory" placeholder="Rent History" required>
-        <input type="submit" class="button" value="Edit Prop">
+            <label for="status">Status</label>
+            <select name="status" id="status" required>
+                <option value="available">Available</option>
+                <option value="reserved">Reserved</option>
+                <option value="checked out">Checked Out</option>
+            </select>
+            <label for="location">Location</label>
+            <input type="text" name="location" id="location" placeholder="Location" required>
+            <label for="condition">Condition</label>
+            <input type="text" name="condition" id="condition" placeholder="Condition">
+            <label for="rentHistory">Rent History</label>
+            <textarea name="rentHistory" id="rentHistory" placeholder="Rent History" 
+                rows="3"></textarea>
+            <input type="hidden" name="formType" value="newInstance">
+            <input type="submit" class="button" value="Save">
         </form>
+        </div>
     {{/if}} 
 </div>
 </div>

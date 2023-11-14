@@ -17,35 +17,28 @@ const employeeSchema = new mongoose.Schema({
 
 const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
-	price: {type: Number, required: true}, //setting this to false for now until the server/frontend is setup to handle this value
+	price: {type: Number, required: true}, // Setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
 	quantity: {type: Number, required: true},
 	category: [String],
-	status: { type: String, default: "available"},
-	instance: [ // each prop has children that share prop fields but have unique fields
+	instance: [ // Each prop has children that share prop fields but have unique fields
 		{
-			status: { // using enum behaviour to restrict possible values
+			status: { // Using enum behaviour to restrict possible values
 				type: String,
 				enum: ["available", "reserved", "checked out"], 
 				required: true
 		  	}, 
 			location: {type: String, required: true},
-			rentHistory: [String], 
-			condition: {type: String}
+			condition: {type: String},
+			rentHistory: [String] 
 		}
 	]
 });
-// pre-hook trigger before saving to propSchema
+// Pre-hook trigger before saving to propSchema
 propSchema.pre('save', function(next) {
-	const prop = this;
-	if (prop.isNew) { // set each prop instance id to be (prop id)-(instance array location)
-	  prop.instance.forEach((instance, index) => {
-		instance._id = `${prop._id}-${index}`;
-	  });
-	}
-	prop.quantity = prop.instance.length; // set quantity to number of instances plus one
-	next(); // allow rest of the operation to continue
-  });
+	this.quantity = this.instance.length; // Set quantity to number of instances plus one
+	next(); // Allow rest of the operation to continue
+});
 
 const userSchema = new mongoose.Schema({
 	email: {type: String, /*unique: true,*/ require: true},
@@ -85,8 +78,7 @@ const configSchema = new mongoose.Schema({
 	companyAddress: String,
 	companyEmail: String,
 	companyPhone: String
-  });
-
+});
 
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
@@ -99,7 +91,6 @@ const Configuration = mongoose.model('Configuration', configSchema);
 //Order.collection.dropIndexes()
 //Client.collection.dropIndexes()
 //User.collection.dropIndexes()
-
 
 module.exports = {
 	Employee,
