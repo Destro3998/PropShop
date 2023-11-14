@@ -3,7 +3,7 @@
     <h3 class="subtitle-text">Find the prop that's right for you.</h3>
     <form action="/prop/search" method="GET">
         <input type="text" name="q" placeholder="Search for a prop...">
-        <input type="submit" value="Search" style="cursor: pointer;">
+        <input type="submit" value="Search" class="button">
     </form>
 
 </div>
@@ -129,6 +129,7 @@
             localStorage.setItem("cart", updatedCart);
             console.log("Added to local storage cart successfully");
         });
+        location.reload();
     }
 
 </script>
