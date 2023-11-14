@@ -887,3 +887,28 @@ model-viewer{
         padding: 1em;
     }
 }
+
+/* Style for the Stripe card element container */
+.checkout-container #card-element {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+    width: calc(100% - 22px); 
+    box-sizing: border-box; 
+}
+
+#card-errors {
+    color: #fa755a;  
+    margin-bottom: 15px;
+}
+
+.StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+    border-color: #fa755a;
+}

@@ -3,6 +3,7 @@ const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
 const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.js");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const mongoose = require("mongoose");
 
@@ -26,14 +27,27 @@ router.get('/all', isAdmin, async function (req, res) {
 /** 
  * creates new order on checkout
  */
-router.post('/new-order/:userId', async function (req, res) {
-    authenticated = req.isAuthenticated();
+ router.post('/new-order/:userId', async function (req, res) {
+    const authenticated = req.isAuthenticated();
+    const { paymentMethodId, depositAmount } = req.body;
+
+    if (!authenticated) {
+        return res.status(401).send('User must be authenticated');
+    }
 
     try {
-        orderId = await newOrderTransaction(req.params.userId)
+        const orderId = await newOrderTransaction(req.params.userId, paymentMethodId, depositAmount);
+        // if the orderId is not null or undefined
+        if (!orderId) {
+            throw new Error('Failed to create order.');
+        }
+
+        res.json({ orderId: orderId, redirectIRL: "/store" }); // send order ID in the response
     } catch (error) {
-        console.log(error)
+        console.error('Order creation failed:', error);
+        res.status(500).json({ error: error.message });
     }
+});
     /*
     let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
 
@@ -50,7 +64,8 @@ router.post('/new-order/:userId', async function (req, res) {
     } catch (error) {
         console.log(error)
     }  */ 
-    if (!orderId) { // if transaction failed
+    
+    /*if (!orderId) { // if transaction failed
         res.status(500);
         res.send()
         res.redirect("/store");
@@ -59,7 +74,7 @@ router.post('/new-order/:userId', async function (req, res) {
         res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
         //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK 
     }
-})
+})*/
 
 
 /**
@@ -72,89 +87,76 @@ router.post('/new-order/:userId', async function (req, res) {
  * @param {*} userId the user placing the order
  * @returns the id of the newly created order
  */
-async function newOrderTransaction(userId) {
+ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
+    const session = await mongoose.startSession(); // Start a new session for transaction
+    session.startTransaction(); // Start the transaction
+    let order;
 
-    // start transaction session
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    try {
+        let user = await models.User.findById(userId)
+            .populate('cart.itemId')
+            .session(session);
 
-    var order;
-    try { 
-        // create order 
-        let order = await models.Order.create([{
-            //price: req.body.price, //TODO: handle other attributes
-            // don't need to handle other attributes because the schema defaults suffice in this case
-            user: userId,
-        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
-
-        //console.log(order[0])
-        //console.log(order[0]._id)
-
-        // get all the props referenced in the users cart
-        let user = await models.User.findById(userId).populate('cart.itemId').session(session);
-
-        //console.log(user)
-        if (user.cart.length < 1) { // if cart is empty, abort transaction
-            throw new Error("Attempting to reserve empty cart")
+        if (user.cart.length < 1) {
+            throw new Error("Attempting to reserve an empty cart");
         }
 
-        console.log(user.cart.length + " item(s) detected in cart")
-        // go through items in user cart one by one,
-        // checking if able to reserve, and then reserving
-        for (const cartitem of user.cart) {
-            console.log("reserving " + cartitem.itemId.name)
-            
-            // change status/quantity of prop in the store
-            if (cartitem.itemId.status === "available"){ // first check if prop is available
-                console.log("is available" + cartitem.itemId.name)
-                if (cartitem.itemId.quantity > cartitem.quantity) { // if there is more than enough of this prop available
-                    console.log("more than enough" + cartitem.itemId.name)
-                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
-                        quantity: cartitem.itemId.quantity-cartitem.quantity // just lower the number of available props
-                    }).session(session);
-                    
-                } else if (cartitem.itemId.quantity === cartitem.quantity) { // if there is only the exact amount available
-                    console.log("just enough" + cartitem.itemId.name)
-                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, { // set to reserved status
-                        quantity: 0,
-                        status: "reserved"
-                    }).session(session);
-                }	
-                else {
-                    console.log("not enough" + cartitem.itemId.name)
-                    throw new Error("not enough of this item available")
-                }
-            } else { // if not available don't reserve it
-                throw new Error("item is not available to reserve")
+        depositAmount = parseInt(depositAmount, 10); // convert to an integer if it's in string format
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+            throw new Error("Invalid deposit amount");
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: depositAmount, 
+            currency: 'cad',
+            payment_method: paymentMethodId,
+            confirmation_method: 'manual',
+            confirm: true,
+            return_url: 'http://localhost:3000/orders/all', 
+
+        });
+
+        if (paymentIntent.status !== 'succeeded') {
+            throw new Error("Payment failed with status: " + paymentIntent.status);
+        }
+
+        // create the order with the payment intent ID
+        order = await models.Order.create([{
+            user: userId,
+            paymentIntentId: paymentIntent.id,
+        }], { session: session });
+
+        // Update inventory and create order items
+        for (const cartItem of user.cart) {
+            if (cartItem.itemId.quantity >= 1) {
+                // Logic to adjust inventory and handle reservations goes here
+            } else {
+                throw new Error(`Item ${cartItem.itemId.name} is not available to reserve`);
             }
 
-            console.log("reserved " + cartitem.itemId.name)
+            // Add prop to the order
+            await models.Order.findByIdAndUpdate(order[0]._id, {
+                $push: { items: cartItem }
+            }, { session: session });
 
-            // add prop to the order
-            await models.Order.findByIdAndUpdate({_id: order[0].id }, {$push: {items: cartitem}}).session(session);
-            console.log("added to order " + cartitem.itemId.name)
-
-            // remove prop from the user's cart
-            await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
-            console.log("removed from cart " + cartitem.itemId.name)
-
+            // Remove prop from the user's cart
+            await models.User.findByIdAndUpdate(userId, {
+                $pull: { cart: { _id: cartItem._id } }
+            }, { session: session });
         }
 
-        //** TODO: add payment processing step here */
-
-        // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
         console.log("transaction committed")
-    } catch {
+    } catch (error) {
         await session.abortTransaction();
         console.log("transaction failed")
-        session.endSession();
-        return null
+        throw error;
     } finally {
         session.endSession();
         console.log("session ended")
-        return 1
     }
+
+    return order ? order[0]._id : null; // Return the ID of the created order
 }
 
 
