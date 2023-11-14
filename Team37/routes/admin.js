@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router();
 const models = require("../utilities/models.js");
-const {isAdmin, isAuth, isBlacklisted} = require("../utilities/authMiddleware.js");
+const {isAdmin, isAuth, isBlacklisted, isBlacklisted} = require("../utilities/authMiddleware.js");
 const {getProps, getUsers, getOrders, searchProps} = require("../utilities/dbUtilities.js")
 const { Configuration } = require('../utilities/models'); 
 

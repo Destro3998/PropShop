@@ -43,6 +43,14 @@ h3{
     margin-top: 0.5em;
 }
 
+main{
+    margin: 0 1em;
+}
+
+h3{
+    margin-top: 0.5em;
+}
+
 .main-theme {
     color: var(--main-color);
 }
