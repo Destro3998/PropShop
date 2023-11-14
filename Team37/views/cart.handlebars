@@ -19,7 +19,7 @@
         <p id="totalPropAmount">Reserve Amount: <span>$0.00</span> per day</p>
         <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>  
 
-        <form id="payment-form" action="/orders/new-order/{{userId}}" method="post">
+        <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
             <div id="card-element"></div>
             <div id="card-errors" role="alert"></div>
             <input type="submit" class="checkout-button" value="Reserve Props">
@@ -173,14 +173,15 @@
                 });
 
                 if (error) {
-                    console.log(error);
-                } else {
-            
-                    const depositAmountSpan = document.getElementById('deposit').querySelectorAll('span')[0];
+                    // display any error from creating the payment method
+                    document.getElementById('card-errors').textContent = error.message;
+                    return; 
+                }
+                const depositAmountSpan = document.getElementById('deposit').querySelectorAll('span')[0];
                     let depositAmountText = depositAmountSpan.textContent;
-                    let depositAmount = parseFloat(depositAmountText.replace(/[$,]/g, '')) * 100; // Convert dollars to cents
+                    let depositAmount = parseFloat(depositAmountText.replace(/[$,]/g, '')) * 100; // converting dollars to cents
 
-                    // Make sure we have a proper number for the deposit amount
+                    // make sure we have a proper number for the deposit amount
                     if (isNaN(depositAmount) || depositAmount <= 0) {
                         console.error('Invalid deposit amount');
                         return;
@@ -197,22 +198,22 @@
                     })
                     .then(response => response.json())
                     .then(result => {
-                        // Process result
+                        // process result
                         if (result.error) {
                             console.error(result.error.message);
-                            // Display errors on the page
+                            // display errors on the page
                             document.getElementById('card-errors').textContent = result.error.message;
                         } else {
-                            // Order was successful
-                            window.location.href = `/order-confirmation/${result.orderId}`;
+                            // display message and re-drirect when order gets successful
+                            alert('Payment successful! Your order has been placed.'); 
+                            window.location.href = `/orders/${result.orderId}`;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        // Display errors on the page
                         document.getElementById('card-errors').textContent = error.message;
                     });
                 }
-            });
+            );
 </script>
 

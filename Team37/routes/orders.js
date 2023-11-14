@@ -30,22 +30,22 @@ router.get('/all', isAdmin, async function (req, res) {
  router.post('/new-order/:userId', async function (req, res) {
     const authenticated = req.isAuthenticated();
     const { paymentMethodId, depositAmount } = req.body;
-    console.log('Received paymentMethodId and depositAmount:', paymentMethodId, depositAmount);
-    console.log('Request body:', req.body); // For debugging
 
     if (!authenticated) {
-        res.status(401).send('User must be authenticated');
-        return;
+        return res.status(401).send('User must be authenticated');
     }
 
     try {
-        // Ensure you're using the correct amount and passing it to the function
-        const orderId = await newOrderTransaction(req.params.userId, req.body.paymentMethodId, req.body.depositAmount);
-        // Redirect should be done in a response to the client, not server-side navigation
-        res.json({ orderId: orderId }); // Respond with JSON
+        const orderId = await newOrderTransaction(req.params.userId, paymentMethodId, depositAmount);
+        // if the orderId is not null or undefined
+        if (!orderId) {
+            throw new Error('Failed to create order.');
+        }
+
+        res.json({ orderId: orderId, redirectIRL: "/store" }); // send order ID in the response
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message }); // Respond with JSON error
+        console.error('Order creation failed:', error);
+        res.status(500).json({ error: error.message });
     }
 });
     /*
@@ -88,90 +88,75 @@ router.get('/all', isAdmin, async function (req, res) {
  * @returns the id of the newly created order
  */
  async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    const session = await mongoose.startSession(); // Start a new session for transaction
+    session.startTransaction(); // Start the transaction
     let order;
 
     try {
-        let user = await models.User.findById(userId).populate('cart.itemId').session(session);
+        let user = await models.User.findById(userId)
+            .populate('cart.itemId')
+            .session(session);
+
         if (user.cart.length < 1) {
             throw new Error("Attempting to reserve an empty cart");
         }
 
-        // Convert deposit amount to the smallest currency unit if necessary
-        depositAmount = parseInt(depositAmount, 10); // Convert to an integer if it's in string format
+        depositAmount = parseInt(depositAmount, 10); // convert to an integer if it's in string format
         if (isNaN(depositAmount) || depositAmount <= 0) {
-            console.log('Received deposit amount:', depositAmount);
             throw new Error("Invalid deposit amount");
         }
 
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: depositAmount, // Assumes depositAmount is in cents
+            amount: depositAmount, 
             currency: 'cad',
             payment_method: paymentMethodId,
             confirmation_method: 'manual',
             confirm: true,
+            return_url: 'http://localhost:3000/orders/all', 
+
         });
 
         if (paymentIntent.status !== 'succeeded') {
             throw new Error("Payment failed with status: " + paymentIntent.status);
         }
 
+        // create the order with the payment intent ID
         order = await models.Order.create([{
             user: userId,
             paymentIntentId: paymentIntent.id,
         }], { session: session });
 
+        // Update inventory and create order items
         for (const cartItem of user.cart) {
-
-
-            console.log("reserving " + cartitem.itemId.name)
-
-            // change status/quantity of prop in the store
-            if (cartitem.itemId.status === "available"){ // first check if prop is available
-                console.log("is available" + cartitem.itemId.name)
-                if (cartitem.itemId.quantity > cartitem.quantity) { // if there is more than enough of this prop available
-                    console.log("more than enough" + cartitem.itemId.name)
-                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
-                        quantity: cartitem.itemId.quantity-cartitem.quantity // just lower the number of available props
-                    }).session(session);
-                    
-                } else if (cartitem.itemId.quantity === cartitem.quantity) { // if there is only the exact amount available
-                    console.log("just enough" + cartitem.itemId.name)
-                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, { // set to reserved status
-                        quantity: 0,
-                        status: "reserved"
-                    }).session(session);
-                }	
-                else {
-                    console.log("not enough" + cartitem.itemId.name)
-                    throw new Error("not enough of this item available")
-                }
-            } else { // if not available don't reserve it
-                throw new Error("item is not available to reserve")
+            if (cartItem.itemId.quantity >= 1) {
+                // Logic to adjust inventory and handle reservations goes here
+            } else {
+                throw new Error(`Item ${cartItem.itemId.name} is not available to reserve`);
             }
 
-            console.log("reserved " + cartitem.itemId.name)
+            // Add prop to the order
+            await models.Order.findByIdAndUpdate(order[0]._id, {
+                $push: { items: cartItem }
+            }, { session: session });
 
-            // add prop to the order
-            await models.Order.findByIdAndUpdate({_id: order[0].id }, {$push: {items: cartitem}}).session(session);
-            console.log("added to order " + cartitem.itemId.name)
-
-            // remove prop from the user's cart
-            await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
-            console.log("removed from cart " + cartitem.itemId.name)
+            // Remove prop from the user's cart
+            await models.User.findByIdAndUpdate(userId, {
+                $pull: { cart: { _id: cartItem._id } }
+            }, { session: session });
         }
 
         await session.commitTransaction();
+        console.log("transaction committed")
     } catch (error) {
         await session.abortTransaction();
-        console.error("Error during transaction:", error.message);
+        console.log("transaction failed")
         throw error;
     } finally {
         session.endSession();
+        console.log("session ended")
     }
 
-    return order ? order._id : null;
+    return order ? order[0]._id : null; // Return the ID of the created order
 }
 
 

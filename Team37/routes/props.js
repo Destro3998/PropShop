@@ -18,7 +18,7 @@ router.get('/loadmore', async (req, res) => {
         
         let displayProps = [];  // Convert the mongoose documents to Display Prop objects
         props.forEach(prop => {
-            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
+            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity, prop.price));
         });
 
         res.json(displayProps);
