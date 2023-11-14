@@ -108,7 +108,7 @@ async function getOrders(skip = 0, limit = 0) {
  * This class is asynchronous - all database operations are asynchronous.
  * @returns {Promise<[]|*[]>}
  */
-async function getUsers() {
+async function getDisplayUsers() {
 	try {
 		let users = await models.User.find({});
 		let displayUsers = [];
@@ -184,6 +184,28 @@ async function getProp(propId) {
 		return false;
 	}
 }
+
+/**
+ * This function returns a prop given it exists in the database
+ * @param propId the propId that will be used to query the database.
+ * @returns {Promise<(Query<Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, Document<unknown, {}, unknown> & unknown extends {_id?: infer U} ? IfAny<U, {_id: Types.ObjectId}, Required<{_id: U}>> : {_id: Types.ObjectId}, {}, unknown, "findOne"> & {})|boolean|null>}
+ */
+async function getDisplayProp(propId) {
+	try {
+		let exists = await propExists(propId);
+		if (exists) {
+			let prop = await models.Prop.findOne({_id: propId});
+			return new DisplayProp(prop.id, prop.name, prop.description, prop.quantity, prop.price, prop.status);
+		} else {
+			return null;
+		}
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+
 
 /**
  * This function returns a user given it exists in the database
@@ -284,5 +306,7 @@ module.exports = {
 	orderExists: orderExists,
 	getProp: getProp,
 	getOrder: getOrder,
-	searchProps: searchProps
+	searchProps: searchProps,
+	getDisplayProp: getDisplayProp,
+	getDisplayUsers: getDisplayUsers
 };

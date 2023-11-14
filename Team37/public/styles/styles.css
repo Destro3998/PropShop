@@ -32,7 +32,7 @@ body {
     /* background-color: var(--background-color); /* config page changes */
     font-family: 'Montserrat', sans-serif;
     /* font-family: 'Noto Sans', sans-serif; */
-    margin: 2em;
+    /* margin: 2em; */
 }
 
 .main-theme {
@@ -44,7 +44,8 @@ body {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus, 
+select:focus{
     outline: none;
 }
 
@@ -60,9 +61,8 @@ a {
 .navbar {
     display: flex;
     justify-content: space-between;
-    padding: 1em;
+    padding: 2em 1em;
     background-color: var(--alternate-color);
-    border-radius: var(--border-radius);
     align-items: center;
 }
 
@@ -88,7 +88,6 @@ a {
     justify-content: space-around;
     background-color: var(--alternate-color);
     align-items: center;
-    border-radius: var(--border-radius);
 }
 
 
@@ -404,6 +403,7 @@ input {
 .bi-cart, .bi-heart {
     height: 2rem;
     width: 2rem;
+    color: white;
 }
 
 .contact-inner {
@@ -580,7 +580,7 @@ ul, ol {
     display: flex;
     padding: 5rem;
     align-items: start;
-    gap: 5rem;
+    gap: 4rem;
 }
 
 .prop-image {
@@ -588,16 +588,7 @@ ul, ol {
     position: relative;
     text-align: center;
     height: 30rem;
-    flex: 4;
-}
-
-.prop-details {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex: 2;
-    align-content: center;
+    flex: 3;
 }
 
 h1, button {
@@ -665,6 +656,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f6f6f6;
     padding: 0;
+    margin: 0;
 }
 
 h1 {
@@ -757,6 +749,10 @@ model-viewer{
 .cart-svg{
     display: flex;
     align-items: center;
+    background: black;
+    padding: 0.2em 1em;
+    border-radius: var(--border-radius);
+    column-gap: 1em;
 }
 
 
@@ -851,3 +847,69 @@ model-viewer{
 }
 
 
+.edit-prop {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+.order-selection{
+    padding: 0.75em;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+}
+
+.prop-details{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.prop-details > p{
+    margin: 0.5em 0;
+}
+
+.radio-flex{
+    display: flex;
+    gap: 1em;
+}
+
+.cart-count{
+    color: white;
+}
+
+
+/* Media Queries */
+
+@media screen and (max-width: 600px){
+    .navbar{
+        padding: 0.25em;
+        width: 100%;
+    }
+
+    .navbar-logo{
+        display: none;
+    }
+
+    .nav-link{
+        padding: 0.5em;
+        margin: 0.25em;
+    }
+
+    .store-inner{
+        grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
+        margin: 0;
+        gap: 0;
+    }
+
+    .store-card{
+        width: 95%;
+        margin: 0.5em 0;
+    }
+
+    .footer{
+        padding: 1em;
+    }
+}

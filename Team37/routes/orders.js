@@ -164,6 +164,7 @@ router.get('/all', isAdmin, async function (req, res) {
 router.get('/:orderId', async function (req, res) {
     let orderId = req.params.orderId;
     let order_model = await getOrder(orderId);
+    let authenticated = req.isAuthenticated();
 
     // TODO: code for constructing a DisplayOrder object should go here, once created in dbUtilities.js
     let order = new DisplayOrder(order_model);
