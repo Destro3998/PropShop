@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
-const {isAuth} = require("../utilities/authMiddleware");
-const {DisplayUser, getUserOrders} = require("../utilities/dbUtilities");
+const {isAuth, isBlacklisted, isAdmin} = require("../utilities/authMiddleware");
+const {DisplayUser, getUserOrders, getDisplayUsers, getDisplayUser} = require("../utilities/dbUtilities");
 const {Order} = require("../utilities/models");
 const generatePassword = require("../utilities/password").generatePassword;
 const User = require("../utilities/models").User;
@@ -208,6 +208,50 @@ router.post("/:userId/update-phone", isAuth, async (req, res) => {
 		res.status(200).json({message: "Phone Number updated successfully"});
 	} catch (error) {
 		res.status(400).json({error: error.message});
+	}
+});
+
+router.post("/:userId/delete", isBlacklisted, isAdmin, async (req, res) =>{
+	let redirectUrl = req.header('referer') || '/';
+	try{
+		let userId = req.params.userId;
+		await User.findByIdAndRemove(userId);
+		res.redirect(redirectUrl);
+	}catch (error){
+		res.render("error.handlebars", {error:true, message:"Failed to delete user"})
+	}
+});
+
+
+router.get("/:userId/edit", isBlacklisted, isAdmin, async (req, res) =>{
+	let userId = req.params.userId;
+	try{
+		let displayUser = await getDisplayUser(userId);
+		res.render("userEdit.handlebars", {user: displayUser});
+	} catch (error){
+		res.render("error.handlebars", {error:true, message:"Failed to get the user edit page"})
+	}
+
+});
+
+router.post("/:userId/edit", isBlacklisted, isAdmin, async (req, res) =>{
+	let userId = req.params.userId;
+	try{
+		let admin = req.body.admin;
+		let blacklisted = req.body.blacklisted;
+		
+		let user = await User.findById(userId);
+		
+		user.admin = admin === "true";
+		user.blacklisted = blacklisted === "true";
+
+		// if admin === "true" ? user.admin = true : user.admin = false;
+		user.save();
+
+		req.flash("success", "User successfully updated");
+		res.redirect(`/accounts/${userId}/edit`)
+	}catch (error) {
+		res.render("error.handlebars", {error:true, message:"Failed to update the user's information"})
 	}
 });
 

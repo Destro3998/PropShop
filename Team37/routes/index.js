@@ -17,22 +17,6 @@ router.get("/", (req, res) => {
 });
 
 
-router.get("/about", (req, res) => {
-	let authenticated = req.isAuthenticated();
-	let userId;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-	} else {
-		userId = undefined;
-	}
-	res.render("about.handlebars", {
-		name: "About Page",
-		aboutActive: true,
-		authenticated: authenticated,
-		userId: userId
-	});
-});
-
 router.get("/contact", async (req, res) => {
 	class Company {
 		constructor(address, email, phone, message) {
@@ -60,7 +44,8 @@ router.get("/contact", async (req, res) => {
 
 		if (!config) {
 			console.error("No configuration found in the database");
-			return res.status(404).send("Configuration not found");
+			res.render("error.handlebars", {error:true, message:"No configuration found in the database"});
+			// return res.status(404).send("Configuration not found");
 		}
 
 		let company = new Company(config.companyAddress, config.companyEmail, config.companyPhone, config.siteMessage);
@@ -76,7 +61,8 @@ router.get("/contact", async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		res.status(500).json({ message: "Internal server error" });
+		// res.status(500).json({ message: "Internal server error" });
+		res.render("error.handlebars", {error:true, message:"Internal Server Error"});
 	}
 });
 
@@ -190,7 +176,6 @@ router.post("/cart/add/:propId", isAuth, isBlacklisted, async (req, res) => {
 		console.error(error);
 		res.status(500).send("internal Server Error");
 	}
-
 });
 
 

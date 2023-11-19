@@ -1,0 +1,30 @@
+<div class="account-update">
+    <div class="container edit-user">
+        <h2 class="head-text">{{user.fname}} {{user.lname}}</h2>
+        <p class="">{{user.email}}</p>
+        <p class="">{{user.phone}}</p>
+    </div>
+
+    <div class="container">
+        <form action="/accounts/{{user.userId}}/edit" method="post" class="edit-user">
+            <fieldset>
+                <legend>Admin</legend>
+                <label for="admin-true">True</label>
+                <input type="radio" id="admin-true" name="admin" value="true" {{#if user.admin}}checked{{/if}}>
+                <label for="admin-false">False</label>
+                <input type="radio" id="admin-false" name="admin" value="false" {{#unless user.admin}}checked{{/unless}}>
+            </fieldset>
+
+            <fieldset>
+                <legend>Blacklisted</legend>
+                <label for="blacklisted-true">True</label>
+                <input type="radio" id="blacklisted-true" name="blacklisted" value="true" {{#if user.blacklisted}}checked{{/if}}>
+                <label for="blacklisted-false">False</label>
+                <input type="radio" id="blacklisted-false" name="blacklisted" value="false" {{#unless user.blacklisted}}checked{{/unless}}>
+            </fieldset>
+            <input type="reset" class="button">
+            <input type="submit" class="button">
+        </form>
+    </div>
+
+</div>

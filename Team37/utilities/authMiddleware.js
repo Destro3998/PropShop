@@ -46,5 +46,7 @@ module.exports.isBlacklisted = (req, res, next) =>{
 			res.render("error.handlebars", {blacklisted:true, message:"You are blacklisted and cannot view this resource."});
 			// res.status(401).json({message:"You are blacklisted and cannot view this resource."});
 		}
+	}else{
+		next();
 	}
 }

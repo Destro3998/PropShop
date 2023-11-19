@@ -866,6 +866,10 @@ model-viewer{
     border-bottom: 2rem;
 }
 
+.edit-user{
+    padding: 2rem;
+}
+
 
 /* Media Queries */
 

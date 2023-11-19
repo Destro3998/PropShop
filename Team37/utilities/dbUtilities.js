@@ -1,4 +1,4 @@
-const { Prop, Order} = require("./models");
+const { Prop, Order, User} = require("./models");
 
 models = require("./models");
 
@@ -135,6 +135,16 @@ async function getDisplayUsers() {
 	} catch (error) {
 		console.log(error)
 		return []
+	}
+}
+
+async function getDisplayUser(userId){
+	try{
+		let user = await User.findById(userId);
+		return new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone, user.blacklisted, user.admin);
+	} catch (error){
+		console.error(error);
+		return null;
 	}
 }
 
@@ -325,5 +335,6 @@ module.exports = {
 	searchProps: searchProps,
 	getDisplayProp: getDisplayProp,
 	getDisplayUsers: getDisplayUsers,
-	getUserOrders: getUserOrders
+	getUserOrders: getUserOrders,
+	getDisplayUser: getDisplayUser
 };
