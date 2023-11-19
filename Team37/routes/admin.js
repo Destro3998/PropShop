@@ -1,15 +1,14 @@
 const express = require("express")
 const router = express.Router();
 const models = require("../utilities/models.js");
-const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
-const {getProps, getUsers, getOrders, searchProps} = require("../utilities/dbUtilities.js")
-const { Configuration } = require('../utilities/models'); 
-
+const {isAdmin, isAuth, isBlacklisted} = require("../utilities/authMiddleware.js");
+const {getProps, getUsers, getOrders, searchProps, getDisplayUsers} = require("../utilities/dbUtilities.js")
+const { Configuration, User } = require('../utilities/models'); 
+const fs = require("fs"); // for editing filenames
+const multer = require("multer"); // for file upload
 
 
 const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
-const fs = require("fs"); // for editing filenames
-const multer = require("multer"); // for file upload
 var storage = multer.diskStorage({ // setting up file uploads
 	destination: function (req, file, cb) {
 		cb(null, imagedir)
@@ -25,12 +24,13 @@ var upload = multer({storage: storage})
  * This function is async because we have await statements within in
  */
 
-router.get("/dashboard", isAdmin, async (req, res) => {
+router.get("/dashboard", isAdmin, isBlacklisted, async (req, res) => {
 	let authenticated = req.isAuthenticated();
 	try {
 		let props = await getProps(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
 		let users = await getUsers(); // this has to be asynchronous because it is a database operation. (the function returns a promise)
 		let orders = await getOrders();
+		let displayUsers = await getDisplayUsers();
 		// let props = await models.Prop.find();
         // props = props.map(prop => prop.toObject()); // Convert each Mongoose document to a plain object
 		
@@ -40,7 +40,8 @@ router.get("/dashboard", isAdmin, async (req, res) => {
 			users: users,
 			authenticated: authenticated,
 			userId: userId, 
-			ordersLength: orders.length
+			ordersLength: orders.length, 
+			displayUsers: displayUsers
 		}); // The options are variables that we are passing to our rendering engine (handlebars)
 	} catch (error) {
 		console.error(error);
@@ -195,6 +196,35 @@ router.get('/search-props', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+router.post("/dashboard/:userId/blacklist", isAdmin, async (req, res) =>{
+	let userId = req.params.userId;
+	try {
+		let user = await User.findById(userId);
+		// console.log("user: ", user);
+		// console.log("User blacklisted", user.blacklisted);
+
+		user.blacklisted = !user.blacklisted;
+		await user.save();
+
+		if (user.blacklisted === true) {
+			req.flash("success", "User Blacklisted");
+			res.status(200).json({message:"User Un-Blacklisted"});
+		}
+		else if (user.blacklisted === false) {
+			req.flash("success", "User Un-Blacklisted");
+			res.status(200).json({message:"User Blacklisted"});
+		}
+		else{
+			req.flash("error", "Blacklist operation failed");
+			res.status(500).json({message:"Internal Server Error"});
+		}
+	}catch (error){
+		console.log(error);
+		req.flash("error", "Blacklist operation failed");
+		res.status(500).json({message:"Internal Server Error"})
+	}
 });
 
 

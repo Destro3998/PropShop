@@ -1,7 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const {isAuth} = require("../utilities/authMiddleware");
-const {DisplayUser} = require("../utilities/dbUtilities");
+const {DisplayUser, getUserOrders} = require("../utilities/dbUtilities");
+const {Order} = require("../utilities/models");
 const generatePassword = require("../utilities/password").generatePassword;
 const User = require("../utilities/models").User;
 
@@ -111,15 +112,15 @@ router.get("/logout", isAuth, (req, res, next) => {
 /**
  * This method is used to get the user's account page based on their user id
  */
-router.get("/:userId", isAuth, (req, res) => {
+router.get("/:userId", isAuth, async (req, res) => {
 	let authenticated = req.isAuthenticated();
+	const userId = req.user && req.user._id ? req.user._id : undefined;
 	let user = req.user;
-	let orders = req.user.orders ? req.user.orders : undefined;
-
+	let orders = await getUserOrders(userId);
 	let displayUser = new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone); // using a class to display the user's information.
 	// this class is used because handlebars is not allowed to access values from the request by default.
 	// probably for safety reasons
-	const userId = req.user && req.user._id ? req.user._id : undefined;
+
 	res.render("account.handlebars", {
 		accountActive: true,
 		authenticated: authenticated,

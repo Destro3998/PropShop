@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const models = require("../utilities/models.js");
 const {isAdmin, isAuth} = require("../utilities/authMiddleware.js");
-const { getOrders, getOrder, DisplayOrder } = require("../utilities/dbUtilities.js");
+const {getOrders, getOrder, DisplayOrder} = require("../utilities/dbUtilities.js");
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const mongoose = require("mongoose");
+const {Order} = require("../utilities/models");
+const {getUserOrders} = require("../utilities/dbUtilities");
 
 
 /** get all orders in the database, for admin dashboard */
@@ -14,22 +16,22 @@ router.get('/all', isAdmin, async function (req, res) {
     authenticated = req.isAuthenticated();
     /* code below assumes an implementation of a separate page for all orders on the dashboard,
     so this code would not apply if the order list is integrated into the main dashboard page */
-    
+
     res.render("orders.handlebars", {
-		name: "All Orders",
-		orders: all_orders,
+        name: "All Orders",
+        orders: all_orders,
         ordersLength: all_orders.length,
-		authenticated: authenticated,
-	});
+        authenticated: authenticated,
+    });
 })
 
 
-/** 
+/**
  * creates new order on checkout
  */
- router.post('/new-order/:userId', async function (req, res) {
+router.post('/new-order/:userId', isAuth, async function (req, res) {
     const authenticated = req.isAuthenticated();
-    const { paymentMethodId, depositAmount } = req.body;
+    const {paymentMethodId, depositAmount} = req.body;
 
     if (!authenticated) {
         return res.status(401).send('User must be authenticated');
@@ -42,38 +44,38 @@ router.get('/all', isAdmin, async function (req, res) {
             throw new Error('Failed to create order.');
         }
 
-        res.json({ orderId: orderId, redirectIRL: "/store" }); // send order ID in the response
+        res.json({orderId: orderId, redirectIRL: "/store"}); // send order ID in the response
     } catch (error) {
         console.error('Order creation failed:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 });
-    /*
-    let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
+/*
+let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
 
 
-    try {
-        models.Order.create({
-            price: req.body.price,
-	        //datePlaced: new Date(),
-	        status: req.body.status,
-	        user: req.params.userId,
-	        items: usermodel.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
-        })                      // (in case one or more items have become unavailable since adding to cart)
-                                    // this would be done in this route method, but after already constructing the order
-    } catch (error) {
-        console.log(error)
-    }  */ 
-    
-    /*if (!orderId) { // if transaction failed
-        res.status(500);
-        res.send()
-        res.redirect("/store");
-    } else {
-        res.status(200);
-        res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
-        //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK 
-    }
+try {
+    models.Order.create({
+        price: req.body.price,
+        //datePlaced: new Date(),
+        status: req.body.status,
+        user: req.params.userId,
+        items: usermodel.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
+    })                      // (in case one or more items have become unavailable since adding to cart)
+                                // this would be done in this route method, but after already constructing the order
+} catch (error) {
+    console.log(error)
+}  */
+
+/*if (!orderId) { // if transaction failed
+    res.status(500);
+    res.send()
+    res.redirect("/store");
+} else {
+    res.status(200);
+    res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
+    //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK
+}
 })*/
 
 
@@ -87,7 +89,7 @@ router.get('/all', isAdmin, async function (req, res) {
  * @param {*} userId the user placing the order
  * @returns the id of the newly created order
  */
- async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
+async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     const session = await mongoose.startSession(); // Start a new session for transaction
     session.startTransaction(); // Start the transaction
     let order;
@@ -107,12 +109,12 @@ router.get('/all', isAdmin, async function (req, res) {
         }
 
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: depositAmount, 
+            amount: depositAmount,
             currency: 'cad',
             payment_method: paymentMethodId,
             confirmation_method: 'manual',
             confirm: true,
-            return_url: 'http://localhost:3000/orders/all', 
+            return_url: 'http://localhost:3000/orders/all',
 
         });
 
@@ -124,7 +126,7 @@ router.get('/all', isAdmin, async function (req, res) {
         order = await models.Order.create([{
             user: userId,
             paymentIntentId: paymentIntent.id,
-        }], { session: session });
+        }], {session: session});
 
         // Update inventory and create order items
         for (const cartItem of user.cart) {
@@ -136,13 +138,13 @@ router.get('/all', isAdmin, async function (req, res) {
 
             // Add prop to the order
             await models.Order.findByIdAndUpdate(order[0]._id, {
-                $push: { items: cartItem }
-            }, { session: session });
+                $push: {items: cartItem}
+            }, {session: session});
 
             // Remove prop from the user's cart
             await models.User.findByIdAndUpdate(userId, {
-                $pull: { cart: { _id: cartItem._id } }
-            }, { session: session });
+                $pull: {cart: {_id: cartItem._id}}
+            }, {session: session});
         }
 
         await session.commitTransaction();
@@ -161,21 +163,30 @@ router.get('/all', isAdmin, async function (req, res) {
 
 
 /** gets a specific order from the database */
-router.get('/:orderId', async function (req, res) {
+router.get('/:orderId', isAuth, async function (req, res) {
     let orderId = req.params.orderId;
     let order_model = await getOrder(orderId);
     let authenticated = req.isAuthenticated();
 
     // TODO: code for constructing a DisplayOrder object should go here, once created in dbUtilities.js
     let order = new DisplayOrder(order_model);
-	let userId;
-	if (req.user && req.user._id) {
-		userId = req.user._id;
-	} else {
-		userId = undefined;
-	}
-	console.log(order)
-	res.render("order.handlebars", {order: order, authenticated: authenticated, userId: userId});
+    let userId;
+    userId = req.user && req.user._id ? req.user._id : undefined;
+    console.log(order)
+    res.render("order.handlebars", {order: order, authenticated: authenticated, userId: userId});
+});
+
+
+router.get("/:userId/orders", async (req, res) =>{
+   try{
+       let authenticated = req.isAuthenticated();
+       let userId = req.params.userId;
+       let orders = await getUserOrders(userId);
+       let ordersLength = orders.length;
+       res.render("orders.handlebars", {orders:orders, ordersLength:ordersLength, authenticated:authenticated})
+   } catch (error){
+       res.render("error.handlebars", {error:error})
+   }
 });
 
 module.exports = router;

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const utilities = require("../utilities/dbUtilities.js");
 const { CartItem, Configuration, User } = require("../utilities/models.js");
-const { isAuth } = require("../utilities/authMiddleware.js");
+const { isAuth, isBlacklisted } = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
@@ -81,7 +81,7 @@ router.get("/contact", async (req, res) => {
 });
 
 
-router.post("/contact", (req, res) => {
+router.post("/contact", isBlacklisted, (req, res) => {
 
 	sgMail.setApiKey(process.env.SENDGRID_KEY);
 
@@ -153,7 +153,7 @@ router.get("/store", async (req, res) => {
 });
 
 // add to cart
-router.post("/cart/add/:propId", isAuth, async (req, res) => {
+router.post("/cart/add/:propId", isAuth, isBlacklisted, async (req, res) => {
 	let propId = req.params.propId;
 	let quantity = 1;
 	let authenticated = req.isAuthenticated();
@@ -209,7 +209,7 @@ router.get("/api/get-userId", isAuth, (req, res) => {
 
 // get item stored in cart
 
-router.get("/cart", async (req, res) => {
+router.get("/cart", isBlacklisted, async (req, res) => {
 	let authenticated = req.isAuthenticated();
 	let userId;
 	let admin;

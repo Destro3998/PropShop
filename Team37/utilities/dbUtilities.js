@@ -1,4 +1,4 @@
-const { Prop } = require("./models");
+const { Prop, Order} = require("./models");
 
 models = require("./models");
 
@@ -17,12 +17,14 @@ class DisplayProp {  // This is a class used to display props on the site
 }
 
 class DisplayUser { // This is a class used to display users on the site
-	constructor(userId, email, fname, lname, phone) {
+	constructor(userId, email, fname, lname, phone, blacklisted, admin) {
 		this.userId = userId;
 		this.email = email;
 		this.fname = fname;
 		this.lname = lname;
 		this.phone = phone;
+		this.blacklisted = blacklisted;
+		this.admin = admin;
 	}
 }
 
@@ -86,7 +88,7 @@ async function getProps(skip = 0, limit = 0) {
 async function getOrders(skip = 0, limit = 0) {
 	try {
 		let displayOrders = [];
-		orders = await models.Order.find().skip(skip).limit(limit)
+		let orders = await models.Order.find().skip(skip).limit(limit)
 		.populate('user') // populate() replaces the id of the user with the user document
 		//.populate('items.0.itemId').exec();
 		orders.forEach(order => {
@@ -103,6 +105,20 @@ async function getOrders(skip = 0, limit = 0) {
 	}
 }
 
+async function getUserOrders(userId){
+	let displayOrders = [];
+	try{
+		let orders = await Order.find({user:userId});
+		orders.forEach(order => {
+			displayOrders.push(new DisplayOrder(order));
+		});
+		return displayOrders;
+	}catch (error){
+		console.error(error);
+		return [];
+	}
+}
+
 /**
  * This method gets users from the database and turns them into objects of the DisplayUser class.
  * This class is asynchronous - all database operations are asynchronous.
@@ -113,7 +129,7 @@ async function getDisplayUsers() {
 		let users = await models.User.find({});
 		let displayUsers = [];
 		users.forEach(user => { // for each user in the database make it a displayUser object and add it to the list.
-			displayUsers.push(new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone));
+			displayUsers.push(new DisplayUser(user._id, user.email, user.fname, user.lname, user.phone, user.blacklisted, user.admin));
 		});
 		return displayUsers;
 	} catch (error) {
@@ -217,9 +233,9 @@ async function getUser(userId) {
 		let user = await models.User.findById(userId);
 		if (user) {
 			return user
-		} else {
-			console.error("User not found")
 		}
+		console.error("User not found");
+		return null;
 	} catch (error) {
 		console.error(error);
 		return false;
@@ -308,5 +324,6 @@ module.exports = {
 	getOrder: getOrder,
 	searchProps: searchProps,
 	getDisplayProp: getDisplayProp,
-	getDisplayUsers: getDisplayUsers
+	getDisplayUsers: getDisplayUsers,
+	getUserOrders: getUserOrders
 };
