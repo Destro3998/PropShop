@@ -1,12 +1,14 @@
 <div>
-    <h2>Order id: {{order.orderId}}</h2>
-    <div class="order-items">
+    <h2>Order id: {{order._id}}</h2>
+    <ul class="order-items-list">
         {{#each order.items}}
-        <h3>{{this.name}}</h3>
-        <h4>{{this.description}}</h4>
-        <h4>CA$ {{this.price}} / day</h4>
+        <li class="order-item">
+            <span class="order-prop-name">Item name: {{this.itemId.name}}</span>
+            <span class="order-prop-description">Item Description: {{this.itemId.description}}</span>
+        </li>
         {{/each}}
-    </div>
+    </ul>
     <h3>Date Placed: {{order.datePlaced}}</h3>
     <h3>Status: {{order.status}}</h3>
 </div>
+

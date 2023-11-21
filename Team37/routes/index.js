@@ -278,7 +278,7 @@ router.post("/cart/clear", isAuth, async (req, res) => {
 	  res.status(401).json({ message: "User not authenticated" });
 	}
   });
-  
+
   
 
 // This allows other files to import the router

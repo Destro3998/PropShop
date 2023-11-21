@@ -126,7 +126,12 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
         order = await models.Order.create([{
             user: userId,
             paymentIntentId: paymentIntent.id,
+            items: user.cart.map(cartItem => ({
+                itemId: cartItem.itemId,
+                quantity: cartItem.quantity
+            }))
         }], {session: session});
+
 
         // Update inventory and create order items
         for (const cartItem of user.cart) {
@@ -135,12 +140,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             } else {
                 throw new Error(`Item ${cartItem.itemId.name} is not available to reserve`);
             }
-
-            // Add prop to the order
-            await models.Order.findByIdAndUpdate(order[0]._id, {
-                $push: {items: cartItem}
-            }, {session: session});
-
+            
             // Remove prop from the user's cart
             await models.User.findByIdAndUpdate(userId, {
                 $pull: {cart: {_id: cartItem._id}}
@@ -165,16 +165,34 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 /** gets a specific order from the database */
 router.get('/:orderId', isAuth, async function (req, res) {
     let orderId = req.params.orderId;
-    let order_model = await getOrder(orderId);
     let authenticated = req.isAuthenticated();
+    let userId = req.user && req.user._id ? req.user._id : undefined;
 
-    // TODO: code for constructing a DisplayOrder object should go here, once created in dbUtilities.js
-    let order = new DisplayOrder(order_model);
-    let userId;
-    userId = req.user && req.user._id ? req.user._id : undefined;
-    console.log(order)
-    res.render("order.handlebars", {order: order, authenticated: authenticated, userId: userId});
+    try {
+        let order = await Order.findById(orderId)
+            .populate({
+                path: 'items',
+                populate: { path: 'itemId' } // Adjust based on your schema
+            })
+            .exec();
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        // Convert Mongoose document to a plain object
+        let orderObj = order.toObject();
+
+        res.render("order.handlebars", {order: orderObj, authenticated: authenticated, userId: userId});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+    
 });
+
+
 
 
 router.get("/:userId/orders", async (req, res) =>{
