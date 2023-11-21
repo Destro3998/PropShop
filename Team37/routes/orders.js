@@ -140,7 +140,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             } else {
                 throw new Error(`Item ${cartItem.itemId.name} is not available to reserve`);
             }
-            
+
             // Remove prop from the user's cart
             await models.User.findByIdAndUpdate(userId, {
                 $pull: {cart: {_id: cartItem._id}}
@@ -172,7 +172,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
         let order = await Order.findById(orderId)
             .populate({
                 path: 'items',
-                populate: { path: 'itemId' } // Adjust based on your schema
+                populate: { path: 'itemId' } 
             })
             .exec();
 
@@ -180,7 +180,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
             return res.status(404).send('Order not found');
         }
 
-        // Convert Mongoose document to a plain object
+        // Converting Mongoose document to a plain object
         let orderObj = order.toObject();
 
         res.render("order.handlebars", {order: orderObj, authenticated: authenticated, userId: userId});
@@ -191,9 +191,6 @@ router.get('/:orderId', isAuth, async function (req, res) {
     }
     
 });
-
-
-
 
 router.get("/:userId/orders", async (req, res) =>{
    try{
