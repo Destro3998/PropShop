@@ -16,7 +16,7 @@ router.get('/loadmore', async (req, res) => {
 
         let displayProps = [];  // Convert the mongoose documents to Display Prop objects
         props.forEach(prop => {
-            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
+            displayProps.push(new DisplayProp(prop));
         });
 
         res.json(displayProps);
@@ -41,7 +41,7 @@ router.get('/search', async (req, res) => {
 
         let displayProps = [];  // Convert the mongoose documents to Display Prop objects
         props.forEach(prop => {
-            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity));
+            displayProps.push(new DisplayProp(prop));
         });
 
         res.render('store', {props: displayProps, authenticated: authenticated});  // Render the store template with the search results
@@ -57,7 +57,7 @@ router.get("/:propId", async (req, res) => {
     let authenticated = req.isAuthenticated();
     let propId = req.params.propId; // getting the propId from the url
     let prop_model = await models.Prop.findById(propId);
-    let prop = new DisplayProp(prop_model.id, prop_model.name, prop_model.description, prop_model.quantity, prop_model.price, prop_model.status);
+    let prop = new DisplayProp(prop_model);
     let userId;
     if (req.user && req.user._id) {
         userId = req.user._id;

@@ -6,13 +6,13 @@ models = require("./models");
 // This file should have database utility functions
 
 class DisplayProp {  // This is a class used to display props on the site
-	constructor(propId, name, description, quantity, price, status) {
-		this.propId = propId;
-		this.name = name;
-		this.description = description;
-		this.quantity = quantity;
-		this.price = price;
-		this.status = status;
+	constructor(prop) {
+		this.propId = prop._id;
+		this.name = prop.name;
+		this.description = prop.description;
+		this.quantity = prop.quantity;
+		this.price = prop.price;
+		this.status = prop.status;
 	}
 }
 
@@ -71,7 +71,7 @@ async function getProps(skip = 0, limit = 0) {
 		let displayProps = [];
 		props.forEach(prop => {
 			// for each prop in the database make it a displayProp object and add it to the list.
-			displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity, prop.price));
+			displayProps.push(new DisplayProp(prop));
 		});
 		return displayProps;
 	} catch (error) {
