@@ -172,7 +172,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
         let order = await Order.findById(orderId)
             .populate({
                 path: 'items',
-                populate: { path: 'itemId' } 
+                populate: {path: 'itemId'}
             })
             .exec();
 
@@ -180,28 +180,46 @@ router.get('/:orderId', isAuth, async function (req, res) {
             return res.status(404).send('Order not found');
         }
 
+        let reservedItems = [];
+        let checkedItems = []
+        order.items.forEach((item) => {
+            if (item.status === "checked out") {
+                checkedItems.push(item.toObject());
+                console.log(item.toObject());
+            } else {
+                reservedItems.push(item.toObject());
+                console.log(item.toObject());
+            }
+        });
+
         // Converting Mongoose document to a plain object
         let orderObj = order.toObject();
 
-        res.render("order.handlebars", {order: orderObj, authenticated: authenticated, userId: userId});
+        res.render("order.handlebars", {
+            order: orderObj,
+            authenticated: authenticated,
+            userId: userId,
+            reservedItems: reservedItems,
+            checkedItems: checkedItems
+        });
 
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
     }
-    
+
 });
 
-router.get("/:userId/orders", async (req, res) =>{
-   try{
-       let authenticated = req.isAuthenticated();
-       let userId = req.params.userId;
-       let orders = await getUserOrders(userId);
-       let ordersLength = orders.length;
-       res.render("orders.handlebars", {orders:orders, ordersLength:ordersLength, authenticated:authenticated})
-   } catch (error){
-       res.render("error.handlebars", {error:error})
-   }
+router.get("/:userId/orders", async (req, res) => {
+    try {
+        let authenticated = req.isAuthenticated();
+        let userId = req.params.userId;
+        let orders = await getUserOrders(userId);
+        let ordersLength = orders.length;
+        res.render("orders.handlebars", {orders: orders, ordersLength: ordersLength, authenticated: authenticated})
+    } catch (error) {
+        res.render("error.handlebars", {error: error})
+    }
 });
 
 module.exports = router;

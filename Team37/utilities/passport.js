@@ -15,17 +15,20 @@ passport.use(new localStrategy({usernameField: "email", passwordField: "password
 					return callback(null, false)
 				}
 
-
-				const isAdminEmail = isEmailAdmin(email);
-				if (isAdminEmail){
-					const isLoginValid = validatePassword(password, user.hash, user.salt);
-					if (isLoginValid) {
-						user.admin = true; // if the user has logged in with an admin email then set their admin value to true.
-						return callback(null, user);
-					} else {
-						return callback(null, false);
+				{ // This block of code doesn't do much - just ensures that super-admins cannot be un-admin-ed
+					// suer admins are admins that are hard coded.
+					const isAdminEmail = isEmailAdmin(email);
+					if (isAdminEmail){
+						const isLoginValid = validatePassword(password, user.hash, user.salt);
+						if (isLoginValid) {
+							user.admin = true; // if the user has logged in with an admin email then set their admin value to true.
+							return callback(null, user);
+						} else {
+							return callback(null, false);
+						}
 					}
-				} 
+				}
+
 
 
 				const isLoginValid = validatePassword(password, user.hash, user.salt);
