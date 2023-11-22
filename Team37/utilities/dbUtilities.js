@@ -11,6 +11,8 @@ class DisplayProp {  // This is a class used to display props on the site
 		this.name = prop.name;
 		this.description = prop.description;
 		this.quantity = prop.quantity;
+		this.image = prop.image;
+		this.model3d = prop.model3d;
 		this.price = prop.price;
 		this.status = prop.status;
 	}
@@ -221,7 +223,7 @@ async function getDisplayProp(propId) {
 		let exists = await propExists(propId);
 		if (exists) {
 			let prop = await models.Prop.findOne({_id: propId});
-			return new DisplayProp(prop.id, prop.name, prop.description, prop.quantity, prop.price, prop.status);
+			return new DisplayProp(prop);
 		} else {
 			return null;
 		}
@@ -310,7 +312,7 @@ async function searchProps(searchTerm_2) {
         
         let displayProps = [];
         props.forEach(prop => {
-            displayProps.push(new DisplayProp(prop._id, prop.name, prop.description, prop.quantity, prop.price));
+            displayProps.push(new DisplayProp(prop));
         });
         
         return displayProps;

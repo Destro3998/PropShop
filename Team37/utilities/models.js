@@ -19,13 +19,17 @@ const propSchema = new mongoose.Schema({
 	name: {type: String, required: true},
 	price: {type: Number, required: true}, // Setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
-	quantity: {type: Number, required: true},
 	category: [String],
+	image: {type: String},
+	model3d: {type: String},
+	quantity: {type: Number, required: true},
+	numOfAvailable: {type: Number}, // Number of instances with the status available
+	numOfReserved: {type: Number, default: 0},
 	instance: [ // Each prop has children that share prop fields but have unique fields
 		{
 			status: { // Using enum behaviour to restrict possible values
 				type: String,
-				enum: ["available", "reserved", "checked out"], 
+				enum: ["available", "unavailable"], 
 				required: true
 		  	}, 
 			location: {type: String, required: true},
@@ -37,6 +41,13 @@ const propSchema = new mongoose.Schema({
 // Pre-hook trigger before saving to propSchema
 propSchema.pre('save', function(next) {
 	this.quantity = this.instance.length; // Set quantity to number of instances plus one
+	// Count the number of instances with status "available"
+  	this.numOfAvailable = this.instance.reduce((count, instance) => {
+    	if (instance.status === 'available') {
+      		count++;
+    	}
+    	return count - this.numOfReserved;
+  	}, 0);
 	next(); // Allow rest of the operation to continue
 });
 
