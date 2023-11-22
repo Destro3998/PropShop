@@ -93,7 +93,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     const session = await mongoose.startSession(); // Start a new session for transaction
     session.startTransaction(); // Start the transaction
     let order;
-
+ 
     try {
         let user = await models.User.findById(userId)
             .populate('cart.itemId')

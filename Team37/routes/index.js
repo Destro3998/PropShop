@@ -192,6 +192,7 @@ router.get("/api/get-userId", isAuth, (req, res) => {
 	res.json({ id: req.user._id });
 })
 
+
 // get item stored in cart
 
 router.get("/cart", isBlacklisted, async (req, res) => {
@@ -279,7 +280,37 @@ router.post("/cart/clear", isAuth, async (req, res) => {
 	}
   });
 
-  
+
+  //delete from cart - autheticated users only
+router.delete("/cart/remove/:itemId", isAuth, async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const itemId = req.params.itemId;
+	console.log("Received itemId:", itemId);
+
+    try {
+        let user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Convert itemId to ObjectId before comparison
+        const objectId = mongoose.Types.ObjectId(itemId);
+		console.log("Converted objectId:", objectId);
+
+        user.cart = user.cart.filter(item => !item.itemId.equals(objectId));
+        
+        await user.save();
+        res.json({ message: "Item removed from cart" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
 
 // This allows other files to import the router
 module.exports = router;
