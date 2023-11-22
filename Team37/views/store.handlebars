@@ -17,7 +17,7 @@
             {{#each props}}
             <div class="store-card container">
                 <a href="/prop/{{this.propId}}">
-                    <img src="/3dmodels/{{this.propId}}.jpg" alt="The prop's image" class="store-item-image"
+                    <img src="/3dmodels/{{this.image}}" alt="The prop's image" class="store-item-image"
                         onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
                 </a>
                 <div class="store-item-info">
@@ -58,7 +58,7 @@
 
                     propDiv.innerHTML = `
     <a href="/prop/${prop.propId}">
-        <img src="/3dmodels/${prop.propId}.jpg" alt="The prop's image" class="store-item-image"
+        <img src="/3dmodels/${prop.image}" alt="The prop's image" class="store-item-image"
         onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
     </a>
     <div class="store-item-info">

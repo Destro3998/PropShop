@@ -11,6 +11,8 @@ class DisplayProp {  // This is a class used to display props on the site
 		this.name = prop.name;
 		this.description = prop.description;
 		this.quantity = prop.quantity;
+		this.image = prop.image;
+		this.model3d = prop.model3d;
 		this.price = prop.price;
 		this.status = prop.status;
 	}

@@ -118,9 +118,11 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 			description: req.body.description,
 			quantity: req.body.quantity,
 			status: "available", // TESTING -- REMOVE THIS LATER
+			image: filenameimg,
+			model3d: filename3d,
 			price: req.body.price,
 		}).then((prop, req, res) => {
-			// this renames the files to match the id just created for the prop
+			/*// this renames the files to match the id just created for the prop
 			// (it would probably make more sense to just intially name it after the prop id
 			// on upload, but i could only get the upload function to work before prop creation.
 			// this could maybe be solved better by using serparate html forms for uploading the files
@@ -137,7 +139,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {
 					if (err) throw err
 				})
-			}
+			}*/
 		});
 	} catch (error) {
 		console.log(error)
