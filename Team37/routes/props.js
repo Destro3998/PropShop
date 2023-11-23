@@ -5,6 +5,18 @@ const {getProps, getProp, getDisplayProp, DisplayProp} = require("../utilities/d
 const {isAdmin} = require("../utilities/authMiddleware.js");
 const qrCode = require('qrcode');
 
+const multer = require("multer"); // for file upload
+const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
+var storage = multer.diskStorage({ // setting up file uploads
+	destination: function (req, file, cb) {
+		cb(null, imagedir)
+	},
+	filename: function (req, file, cb) {
+		cb(null, Date.now() + file.originalname) // add date.now() to make uploaded props have unique file names and to not risk getting mixed up in the folder
+	}
+})
+var upload = multer({storage: storage})
+
 
 // load-more functionality
 router.get('/loadmore', async (req, res) => {
@@ -89,8 +101,24 @@ router.route("/:propId/edit")
 		}
 		res.render("editProp.handlebars", {prop: prop, propId: propId, authenticated: authenticated, userId: userId, admin: admin});
 	})
-	.post(isAdmin, async (req, res) => {
+	.post(isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
+        name: 'model3d',
+        maxCount: 1}]), async (req, res) => {
 		let propId = req.params.propId;
+
+        // CHECK IF IMAGES/3D MODELS WERE UPLOADED FIRST
+	    if (req.files.model3d !== undefined) {
+		    filename3d = req.files.model3d[0].filename
+	    } else {
+		    filename3d = null
+	    }
+	    if (req.files.image !== undefined) {
+		    filenameimg = req.files.image[0].filename
+
+	    } else {
+		filenameimg = null
+	    }
+
 		// Get which form submitted this data
 		let formType = req.body.formType;
 		try {
@@ -101,6 +129,12 @@ router.route("/:propId/edit")
 				thisProp.description = req.body.description;
 				thisProp.category = req.body.category;
 				thisProp.price = req.body.price;
+                if (filenameimg != null){
+                    thisProp.image = filenameimg
+                }
+                if (filename3d != null){
+                    thisProp.model3d = filename3d
+                }
 		  	} else if (formType === "newInstance") {
 				// Adding a new instance of this prop
 				let newInstance = {

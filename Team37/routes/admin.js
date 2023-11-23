@@ -106,10 +106,6 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 		filenameimg = req.files.image[0].filename
 
 	} else {
-		// it would be a good idea later to have a default image to assign to this variable 
-		// like a jpg that says "no image available" stored in the same folder
-		// like this:
-		// filenameimg = "default.jpg"
 		filenameimg = null
 	}
 	try {

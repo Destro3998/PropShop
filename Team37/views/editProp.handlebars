@@ -40,7 +40,7 @@
 <div class="edit-prop">
 <div class="prop container">
     <h2>{{prop.name}} Information:</h2>
-    <form action="/prop/{{propId}}/edit" method="post" class="vertical-form">
+    <form action="/prop/{{propId}}/edit" method="post" class="vertical-form" enctype="multipart/form-data">
         <label for="prop-name">Name</label>
         <input type="text" name="name" id="prop-name" placeholder="Prop Name" value="{{prop.name}}" required>
         <label for="description">Description</label>
@@ -51,6 +51,13 @@
         <label for="price">Price (CA$)</label>
         <input type="number" name="price" id="prop-price" placeholder="1" min="1" value="{{prop.price}}" step="0.01" required>
         <label for="prop-quantity">Quantity: {{prop.quantity}}</label>
+
+        <label for="image">Upload New Preview Image (.jpg)</label>
+        <input type="file" name="image" id="prop-image" accept=".jpg">
+
+        <label for="model3d">Upload New 3D Model (.glb)</label>
+        <input type="file" name="model3d" id="prop-3d" accept=".glb">
+
         <input type="hidden" name="formType" value="general">
         <input type="submit" class="button" value="Save">
     </form>
