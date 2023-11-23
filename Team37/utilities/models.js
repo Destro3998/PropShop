@@ -32,7 +32,7 @@ const propSchema = new mongoose.Schema({
 				enum: ["available", "unavailable"], 
 				required: true
 		  	}, 
-			location: {type: String, required: true},
+			location: {type: String},
 			condition: {type: String},
 			rentHistory: [String] 
 		}

@@ -113,6 +113,16 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 		filenameimg = null
 	}
 	try {
+
+		instances = []
+		for (let i = 0; i < req.body.quantity; i++){
+			let newInstance = {
+				status: "available",
+				rentHistory: [],
+			};
+			instances.push(newInstance)
+		}
+
 		models.Prop.create({ // this creates entries in the database
 			name: req.body.name,
 			description: req.body.description,
@@ -121,25 +131,7 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 			image: filenameimg,
 			model3d: filename3d,
 			price: req.body.price,
-		}).then((prop, req, res) => {
-			/*// this renames the files to match the id just created for the prop
-			// (it would probably make more sense to just intially name it after the prop id
-			// on upload, but i could only get the upload function to work before prop creation.
-			// this could maybe be solved better by using serparate html forms for uploading the files
-			// but i am keeping all prop creation within one form submission for now)
-
-			if (filenameimg !== null) {
-				extension1 = filenameimg.slice(filenameimg.lastIndexOf(".")) // get file extensions (will be useful if/when mutliple file types are accepted)
-				fs.rename(imagedir + '/' + filenameimg, imagedir + '/' + prop._id + extension1, (err) => {
-					if (err) throw err
-				})
-			}
-			if (filename3d !== null) {
-				extension2 = filename3d.slice(filename3d.lastIndexOf("."))
-				fs.rename(imagedir + '/' + filename3d, imagedir + '/' + prop._id + extension2, (err) => {
-					if (err) throw err
-				})
-			}*/
+			instance: instances
 		});
 	} catch (error) {
 		console.log(error)
