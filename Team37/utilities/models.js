@@ -91,7 +91,9 @@ const configSchema = new mongoose.Schema({
 	siteMessage: String,
 	companyAddress: String,
 	companyEmail: String,
-	companyPhone: String
+	companyPhone: String,
+	logo: String, // logo on site header
+	landing: String, // landing image to site catalog
 });
 
 const User = mongoose.model("User", userSchema);

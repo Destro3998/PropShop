@@ -143,15 +143,27 @@ router.get("/config", isAdmin, async (req, res) => {
     res.render("config.handlebars", { config });
 });
 
+
 // Handle Configuration form submission
 router.post("/config", isAdmin, async (req, res) => {
     try {
+		console.log(req.body)
         let config = await Configuration.findOne();
         
         config.siteMessage = req.body['site-message'];
         config.companyAddress = req.body['company-address'];
         config.companyEmail = req.body['company-email'];
         config.companyPhone = req.body['company-phone'];
+
+		/*console.log(req.files)
+		if (req.files !== undefined){
+			if (req.files.logo !== undefined) {
+				config.logo = req.files.logo[0].filename 
+			}
+			if (req.files.landing !== undefined) {
+				config.landing = req.files.landing[0].filename 
+			}
+		}*/
         await config.save();
 		req.flash("success", "Setting successfully updated");
         res.redirect("/admin/config"); 
@@ -159,6 +171,28 @@ router.post("/config", isAdmin, async (req, res) => {
         console.error(error);
         res.status(500).send("Internal Server Error");
 		}
+});
+
+router.post("/config/visual", isAdmin, upload.fields(
+	[{name: 'logo', maxCount: 1}, {name: 'landing', maxCount: 1 }]), 
+	async (req, res) => {
+	try {
+		let config = await Configuration.findOne();
+		if (req.files !== undefined){
+			if (req.files.logo !== undefined) {
+				config.logo = req.files.logo[0].filename 
+			}
+			if (req.files.landing !== undefined) {
+				config.landing = req.files.landing[0].filename 
+			}
+		}
+        await config.save();
+		req.flash("success", "Setting successfully updated");
+        res.redirect("/admin/config"); 
+	} catch (error) {
+	console.error(error);
+	res.status(500).send("Internal Server Error");
+	}
 });
 
 
