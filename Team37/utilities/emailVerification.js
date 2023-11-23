@@ -44,7 +44,9 @@ async function sendVerificationEmail(user, host) {
     // Create the email token if it has not already been created
     if (!user.emailToken) {
         user.emailToken = crypto.randomBytes(64).toString('hex');
+        user.verified = false;
     }
+    await user.save();
 
     // Verification email
     const msg = {

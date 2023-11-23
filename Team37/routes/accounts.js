@@ -1,10 +1,11 @@
 const express = require("express");
 const passport = require("passport");
 const crypto = require("crypto");
-const { isAuth } = require("../utilities/authMiddleware");
-const { DisplayUser } = require("../utilities/dbUtilities");
+const { isAuth, isBlacklisted, isAdmin } = require("../utilities/authMiddleware");
+const { DisplayUser, getUserOrders, getDisplayUsers, getDisplayUser } = require("../utilities/dbUtilities");
+const { Order } = require("../utilities/models");
 const generatePassword = require("../utilities/password").generatePassword;
-const User = require("../utilities/models").User;
+const User = require("../utilities/models").User
 const { isVerified, sendVerificationEmail } = require("../utilities/emailVerification");
 
 const router = express.Router();

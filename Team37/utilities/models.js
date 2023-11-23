@@ -93,7 +93,6 @@ const configSchema = new mongoose.Schema({
 	companyEmail: String,
 	companyPhone: String
 });
-});
 
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
