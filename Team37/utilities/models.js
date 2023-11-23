@@ -29,7 +29,7 @@ const propSchema = new mongoose.Schema({
 		{
 			status: { // Using enum behaviour to restrict possible values
 				type: String,
-				enum: ["available", "unavailable"], 
+				enum: ["available", "reserved"], 
 				required: true
 		  	}, 
 			location: {type: String},
@@ -46,8 +46,9 @@ propSchema.pre('save', function(next) {
     	if (instance.status === 'available') {
       		count++;
     	}
-    	return count - this.numOfReserved;
+    	return count;
   	}, 0);
+	this.numOfReserved = this.quantity - this.numOfAvailable;
 	next(); // Allow rest of the operation to continue
 });
 
