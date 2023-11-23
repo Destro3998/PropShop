@@ -3,81 +3,83 @@
 const mongoose = require("mongoose");
 
 const cartItemSchema = new mongoose.Schema({
-	itemId: {type: mongoose.Schema.Types.ObjectId, ref: "Prop", required: true},
-	quantity: {type: Number, default: 1}
+	itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Prop", required: true },
+	quantity: { type: Number, default: 1 }
 });
 
 const employeeSchema = new mongoose.Schema({
-	name: {type: String, required: true},
-	email: {type: String, required: true},
+	name: { type: String, required: true },
+	email: { type: String, required: true },
 	phone: Number,
 	address: String,
-	password: {type: String, required: true},
+	password: { type: String, required: true },
 });
 
 const propSchema = new mongoose.Schema({
-	name: {type: String, required: true},
-	price: {type: Number, required: true}, // Setting this to false for now until the server/frontend is setup to handle this value
+	name: { type: String, required: true },
+	price: { type: Number, required: true }, // Setting this to false for now until the server/frontend is setup to handle this value
 	description: String,
 	category: [String],
-	image: {type: String},
-	model3d: {type: String},
-	quantity: {type: Number, required: true},
-	numOfAvailable: {type: Number}, // Number of instances with the status available
-	numOfReserved: {type: Number, default: 0},
+	image: { type: String },
+	model3d: { type: String },
+	quantity: { type: Number, required: true },
+	numOfAvailable: { type: Number }, // Number of instances with the status available
+	numOfReserved: { type: Number, default: 0 },
 	instance: [ // Each prop has children that share prop fields but have unique fields
 		{
 			status: { // Using enum behaviour to restrict possible values
 				type: String,
-				enum: ["available", "reserved"], 
+				enum: ["available", "reserved"],
 				required: true
-		  	}, 
-			location: {type: String},
-			condition: {type: String},
-			rentHistory: [String] 
+			},
+			location: { type: String },
+			condition: { type: String },
+			rentHistory: [String]
 		}
 	]
 });
 // Pre-hook trigger before saving to propSchema
-propSchema.pre('save', function(next) {
+propSchema.pre('save', function (next) {
 	this.quantity = this.instance.length; // Set quantity to number of instances plus one
 	// Count the number of instances with status "available"
-  	this.numOfAvailable = this.instance.reduce((count, instance) => {
-    	if (instance.status === 'available') {
-      		count++;
-    	}
-    	return count;
-  	}, 0);
+	this.numOfAvailable = this.instance.reduce((count, instance) => {
+		if (instance.status === 'available') {
+			count++;
+		}
+		return count;
+	}, 0);
 	this.numOfReserved = this.quantity - this.numOfAvailable;
 	next(); // Allow rest of the operation to continue
 });
 
 const userSchema = new mongoose.Schema({
-	email: {type: String, /*unique: true,*/ require: true},
+	email: { type: String, /*unique: true,*/ require: true },
 	fname: String,
 	lname: String,
 	phone: String,
-	hash: {type: String, require: true},
-	salt: {type: String, require: true},
+	hash: { type: String, require: true },
+	salt: { type: String, require: true },
 	admin: Boolean,
 	blacklisted: Boolean,
+	emailToken: String,
+	verified: { type: Boolean, default: false },
 	cart: [cartItemSchema],
 });
 
 const orderSchema = new mongoose.Schema({
 	price: Number,
-	datePlaced: {type: Date, default: Date.now()},
+	datePlaced: { type: Date, default: Date.now() },
 	status: { // using enum behaviour to restrict possible values
 		type: String,
-		enum: ["pending", "in progress", "complete"], 
+		enum: ["pending", "in progress", "complete"],
 		default: "pending"
-	  }, 
-	user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
+	},
+	user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 	items: [cartItemSchema]
 });
 
 const clientSchema = new mongoose.Schema({
-	name: {type: String, required: true},
+	name: { type: String, required: true },
 	email: String,
 	phone: Number,
 	address: String,
@@ -90,6 +92,7 @@ const configSchema = new mongoose.Schema({
 	companyAddress: String,
 	companyEmail: String,
 	companyPhone: String
+});
 });
 
 const User = mongoose.model("User", userSchema);
