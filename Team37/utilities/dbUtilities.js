@@ -39,11 +39,9 @@ class DisplayOrder {
 		this.userEmail = order.user.email
 		this.datePlaced = order.datePlaced.toLocaleString()
 		this.status = order.status
-		this.numItems = order.items.length
-	}
-
-
+		;	}
 }
+
 
 class DisplayCartItem{
 	constructor(cartItem){
@@ -107,19 +105,16 @@ async function getOrders(skip = 0, limit = 0) {
 	}
 }
 
-async function getUserOrders(userId){
-	let displayOrders = [];
-	try{
-		let orders = await Order.find({user:userId});
-		orders.forEach(order => {
-			displayOrders.push(new DisplayOrder(order));
-		});
-		return displayOrders;
-	}catch (error){
-		console.error(error);
-		return [];
-	}
+async function getUserOrders(userId) {
+    try {
+        let orders = await Order.find({ user: userId });
+        return orders.map(order => new DisplayOrder(order));
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
 }
+
 
 /**
  * This method gets users from the database and turns them into objects of the DisplayUser class.

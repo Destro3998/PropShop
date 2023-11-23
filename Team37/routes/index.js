@@ -288,7 +288,6 @@ router.delete("/cart/remove/:itemId", isAuth, async (req, res) => {
     }
 
     const itemId = req.params.itemId;
-	console.log("Received itemId:", itemId);
 
     try {
         let user = await User.findById(req.user._id);
@@ -296,10 +295,7 @@ router.delete("/cart/remove/:itemId", isAuth, async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Convert itemId to ObjectId before comparison
         const objectId = mongoose.Types.ObjectId(itemId);
-		console.log("Converted objectId:", objectId);
-
         user.cart = user.cart.filter(item => !item.itemId.equals(objectId));
         
         await user.save();

@@ -69,12 +69,17 @@
                 <span class="prop-cost">Cost: $${data.item.price}</span> 
                 <button class="remove-btn" data-id="${data.item.id}">Remove</button>
             `;
-            console.log(data.item.id)
+                
+        console.log("cart item with ID:", data.item.id);
+
+        console.log("cart item with ID:", data.item._id);
+
+
         cartList.appendChild(listItem);
         listItem.querySelector('.remove-btn').addEventListener('click', () => {
-        removeCartItem(item id: data.item.id, authenticated);
+        removeCartItem(data.item.id, authenticated);
     });
-        updateTotalAmount();s
+        updateTotalAmount();
     }
 
     // Populating cart page implementation
@@ -120,12 +125,14 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message === "Item removed from cart") {
-                        // Refresh the page after successful deletion
-                        window.location.reload();
-                    } else {
-                        console.error('Item was not removed:', data.message);
-                    }
-                })
+                    const itemElement = document.querySelector(`[data-id="${itemId}"]`).parentElement;
+                    itemElement.remove();
+                    updateTotalAmount();
+                } else {
+                    console.error('Item was not removed:', data.message);
+                }
+            })
+
                 .catch(error => {
                     console.error('There was an error:', error);
                 });

@@ -627,6 +627,7 @@ ul, ol {
     width: 20%;
 }
 
+
 .user-card:hover {
     /* Testing basic hover animations. */
     background-color: rgba(169, 249, 149, 0.572);
@@ -655,7 +656,23 @@ ul, ol {
     flex-direction: column;
     border-radius: var(--border-radius);
     width: 20%;
+    max-height: 600px; 
+    overflow-y: auto; 
 }
+
+.order {
+    padding: 1em;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 1em;
+}
+
+.order p {
+    margin: 0.5em 0;
+    font-size: 0.95em;
+    line-height: 1.4; 
+}
+
+
 
 .load-more-container{
     margin: 1em 0;
