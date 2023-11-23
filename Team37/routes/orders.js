@@ -94,16 +94,63 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     session.startTransaction(); // Start the transaction
     let order;
 
-    try {
-        let user = await models.User.findById(userId)
-            .populate('cart.itemId')
-            .session(session);
+    try { 
+        // create order 
+        let order = await models.Order.create([{
+            user: userId,
+        }], {session: session}); // set the session for this operation so that it remains isolated to this transaction
 
-        if (user.cart.length < 1) {
-            throw new Error("Attempting to reserve an empty cart");
+
+        // get all the props referenced in the users cart
+        let user = await models.User.findById(userId).populate('cart.itemId').session(session);
+
+        //console.log(user)
+        if (user.cart.length < 1) { // if cart is empty, abort transaction
+            throw new Error("Attempting to reserve empty cart")
         }
 
-        depositAmount = parseInt(depositAmount, 10); // convert to an integer if it's in string format
+        console.log(user.cart.length + " item(s) detected in cart")
+        // go through items in user cart one by one,
+        // checking if able to reserve, and then reserving
+        // also verifying costs before processing payment
+        totalPrice = 0
+        for (const cartitem of user.cart) {
+            console.log("reserving " + cartitem.itemId.name)
+            
+            // change status/quantity of prop in the store
+            if (cartitem.itemId.numOfAvailable > 0){ // first check if prop is available
+                console.log("is available" + cartitem.itemId.name)
+                if (cartitem.itemId.numOfAvailable >= cartitem.quantity) { // if there is more than enough of this prop available
+                    console.log("enough available " + cartitem.itemId.name)
+                    await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
+                        numOfReserved: cartitem.itemId.numOfReserved + cartitem.quantity // just lower the number of available props
+                    }).session(session);
+                }	
+                else {
+                    console.log("not enough" + cartitem.itemId.name)
+                    throw new Error("not enough of this item available")
+                }
+            } else { // if not available don't reserve it
+                throw new Error("item is not available to reserve")
+            }
+
+            console.log("reserved " + cartitem.itemId.name)
+
+            // add prop to the order
+            await models.Order.findByIdAndUpdate({_id: order[0].id }, {$push: {items: cartitem}}).session(session);
+            console.log("added to order " + cartitem.itemId.name)
+
+            // remove prop from the user's cart
+            await models.User.findByIdAndUpdate({_id: userId}, {$pull: {cart: {_id: cartitem.id}}}).session(session);
+            console.log("removed from cart " + cartitem.itemId.name)
+
+            // add cost of the prop to the total price for the order
+            totalPrice += (cartitem.itemId.price * cartitem.quantity)
+        }
+        
+        //** TODO: add payment processing step here */
+        depositAmount = totalPrice * 0.10; //TODO: replace 0.10 with reservation fee set by config page
+        depositAmount = parseInt(depositAmount*100) // convert $ to cents and parse as integer for stripe
         if (isNaN(depositAmount) || depositAmount <= 0) {
             throw new Error("Invalid deposit amount");
         }
@@ -122,31 +169,11 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             throw new Error("Payment failed with status: " + paymentIntent.status);
         }
 
-        // create the order with the payment intent ID
-        order = await models.Order.create([{
-            user: userId,
-            paymentIntentId: paymentIntent.id,
-            items: user.cart.map(cartItem => ({
-                itemId: cartItem.itemId,
-                quantity: cartItem.quantity
-            }))
-        }], {session: session});
+        Order.findByIdAndUpdate(order[0].id, {paymentIntentId: paymentIntent.id}).session(session);
 
 
-        // Update inventory and create order items
-        for (const cartItem of user.cart) {
-            if (cartItem.itemId.quantity >= 1) {
-                // Logic to adjust inventory and handle reservations goes here
-            } else {
-                throw new Error(`Item ${cartItem.itemId.name} is not available to reserve`);
-            }
 
-            // Remove prop from the user's cart
-            await models.User.findByIdAndUpdate(userId, {
-                $pull: {cart: {_id: cartItem._id}}
-            }, {session: session});
-        }
-
+        // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
         console.log("transaction committed")
     } catch (error) {
