@@ -1141,3 +1141,91 @@ model-viewer {
     align-content: center;
     flex-wrap: wrap;
 }
+
+/* config Page */
+
+.config-body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.config-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.config-fieldset {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.config-legend {
+    font-weight: bold;
+    color: #333;
+}
+
+.config-label {
+    margin-top: 10px;
+    display: block;
+    color: #555;
+}
+
+.config-input[type="text"], input[type="color"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #555;
+}
+
+.config-p {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.config-button[type="submit"] {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.config-button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.config-button[type="submit"]:disabled {
+    background-color: #b3c7e0;
+    cursor: not-allowed;
+}
+
+/* Prop added to cart - notification */
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 50%;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: green;
+    z-index: 1000;
+}
+
+.notification.notification-error {
+    background-color: red;
+}

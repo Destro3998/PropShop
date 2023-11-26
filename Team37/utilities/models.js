@@ -94,6 +94,11 @@ const configSchema = new mongoose.Schema({
 	companyPhone: String,
 	logo: String, // logo on site header
 	landing: String, // landing image to site catalog
+	depositPercentage: {
+		type: Number,
+		required: true,
+		default: 10
+	}
 });
 
 const User = mongoose.model("User", userSchema);
