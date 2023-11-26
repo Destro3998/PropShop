@@ -1,7 +1,8 @@
 <div class="order-heading">
     <h2>Order id: {{order._id}}</h2>
-    <h3>Date Placed: {{order.datePlaced}}</h3>
-    <h3>Status: {{order.status}}</h3>
+    <a href="/accounts/{{user._id}}/edit">Ordered by: {{user.fname}} {{user.lname}}</a>
+    <p>Date Placed: {{order.datePlaced}}</p>
+    <p>Status: {{order.status}}</p>
 </div>
 
 <div>
@@ -10,32 +11,32 @@
             <h2>Pending Items</h2>
             <div class="order-pending-group container">
                 {{#if reservedItems}}
-                    {{#each reservedItems}}
-                        <div class="pending-items-group container">
-                            <p>item name: {{this.itemId.name}}</p>
-                            <p>item description: {{this.itemId.description}}</p>
-                            <p>Status: {{this.itemId.status}}</p>
-                        </div>
-                    {{/each}}
+                {{#each reservedItems}}
+                <div class="pending-items-group container">
+                    <p>item name: {{this.itemId.name}}</p>
+                    <p>item description: {{this.itemId.description}}</p>
+                    <p>Status: {{this.itemId.status}}</p>
+                </div>
+                {{/each}}
                 {{else}}
-                    <p>There are no items that have not been scanned</p>
+                <p>There are no items that have not been scanned</p>
                 {{/if}}
 
             </div>
         </div>
         <div>
-            <h2>Scanned (Completed) Items</h2>
+            <h2>Scanned Items</h2>
             <div class="order-completed-group container">
                 {{#if checkedItems}}
-                    {{#each checkedItems}}
-                        <div class="completed-items-group container">
-                            <p>item name: {{this.itemId.name}}</p>
-                            <p>item description: {{this.itemId.description}}</p>
-                            <p>Status: {{this.itemId.status}}</p>
-                        </div>
-                    {{/each}}
+                {{#each checkedItems}}
+                <div class="completed-items-group container">
+                    <p>item name: {{this.itemId.name}}</p>
+                    <p>item description: {{this.itemId.description}}</p>
+                    <p>Status: {{this.itemId.status}}</p>
+                </div>
+                {{/each}}
                 {{else}}
-                    <p>There are no items that have been scanned</p>
+                <p>There are no items that have been scanned</p>
                 {{/if}}
 
             </div>
@@ -45,31 +46,73 @@
 
 <div class="order-states">
     <h2>Set the Order State</h2>
-    <button class="button" {{#if pendingDisabled}} disabled {{/if}} onclick="setStatePending()">Pending</button>
-    <button class="button" {{#if progressDisabled}} disabled {{/if}} onclick="setStateProgress()">In Progress</button>
-    <button class="button" {{#if completeDisabled}} disabled {{/if}} onclick="setStateComplete()">Complete</button>
+    <button type="button" class="button" {{#if pendingDisabled}} disabled {{/if}}
+        onclick="setStatePending()">Pending</button>
+    <button type="button" class="button" {{#if progressDisabled}} disabled {{/if}} onclick="setStateProgress()">In
+        Progress</button>
+    <button type="button" class="button" {{#if completeDisabled}} disabled {{/if}}
+        onclick="setStateComplete()">Complete</button>
 </div>
 
 <script>
-    function setStatePending() {
+    async function setStatePending() {
         let reserved = document.getElementsByClassName("pending-items-group");
-        console.log(reserved)
         if (reserved.length === 0) {
             confirm("Are you sure you want to set status to pending when there are no elements that are pending?")
         }
         // A fetch request
+        try {
+            const response = await fetch("/orders/{{order._id}}/pending", {
+                method: "POST",
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error("Failed to change the order's state")
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+
     }
 
-    function setStateProgress() {
-        // A fetch request
+    async function setStateProgress() {
+        try {
+            // A fetch request
+            const response = await fetch("/orders/{{order._id}}/inProgress", {
+                method: "POST",
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error("Failed to change the order's state")
+            }
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+
     }
 
-    function setStateComplete() {
+    async function setStateComplete() {
         let reserved = document.getElementsByClassName("pending-items-group");
-        console.log(reserved)
         if (reserved.length !== 0) {
             confirm("Are you sure you want to set status to completed when there are still pending items?")
         }
         // A fetch request
+        try {
+            const response = await fetch("/orders/{{order._id}}/complete", {
+                method: "POST",
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error("Failed to change the order's state")
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
     }
 </script>

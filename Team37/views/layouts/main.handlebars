@@ -7,120 +7,127 @@
     <title>MYRIAD</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&family=Noto+Sans:wght@100;300&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&family=Noto+Sans:wght@100;300&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vina+Sans&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Vina+Sans&display=swap"
+        rel="stylesheet">
     <script src="/scripts/script.js"></script>
 </head>
 <body>
-<header>
-    <nav class="navbar container">
-        <div class="navbar-logo">
+    <header>
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo" class="logo">
+                </a>
+            </div>
+            <div class="navbar-links">
+
+                {{#if admin}}
+                <a href="/admin/dashboard" class="nav-link button">To Dashboard</a>
+                {{else}}
+                {{/if}}
+
+                <!--            {{#if contactActive}}-->
+                <!--                <a href="/contact" class="nav-link active">Contact</a>-->
+                <!--            {{else}}-->
+                <!--                <a href="/contact" class="nav-link">Contact</a>-->
+                <!--            {{/if}}-->
+
+                <!--            {{#if storeActive}}-->
+                <!--                <a href="/store" class="nav-link active">Catalogue</a>-->
+                <!--            {{else}}-->
+                <!--                <a href="/store" class="nav-link">Catalogue</a>-->
+                <!--            {{/if}}-->
+
+            </div>
+
+
+            <div class="navbar-account-actions">
+                <form action="/prop/search" method="GET">
+                    <input type="text" name="q" placeholder="Search for a prop...">
+                    <input type="submit" value="Search" style="cursor: pointer;">
+                </form>
+                {{!-- <a href="/cart" class="cart-link">
+                    <div class="cart-icon"></div>
+
+                </a> --}}
+
+                <div class="cart-svg nav-link">
+                    <a href="/cart" class="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-cart" viewBox="0 0 16 16">
+                            <path
+                                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                    </a>
+                    <span id="cart-count" class="cart-count">{{propCount}}</span>
+                </div>
+
+
+                {{#if authenticated}}
+                <a href="/accounts/{{userId}}" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                        <path fill-rule="evenodd"
+                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                    </svg>
+                </a>
+
+                <a href="/accounts/logout" class="nav-link">Logout</a>
+
+                {{else}}
+                <a href="/accounts/login" class="nav-link">Login</a>
+                <a href="/accounts/register" class="nav-link">Register</a>
+                {{/if}}
+
+
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="alert-box" id="alert-box">
+            {{#if messages.error}}
+            <div class="alert alert-danger" id="alert-danger">{{messages.error}}</div>
+            {{/if}}
+
+            {{#if messages.success}}
+            <div class="alert alert-success" id="alert-success">{{messages.success}}</div>
+            {{/if}}
+        </div>
+
+        {{{body}}}
+    </main>
+    <footer class="footer">
+        <div class="footer-logo">
             <a href="/">
                 <img src="/images/logo.png" alt="Logo" class="logo">
             </a>
         </div>
-        <div class="navbar-links">
-
-            {{#if admin}}
-                <a href="/admin/dashboard" class="nav-link">To Dashboard</a>
-            {{else}}
-            {{/if}}
-
-<!--            {{#if contactActive}}-->
-<!--                <a href="/contact" class="nav-link active">Contact</a>-->
-<!--            {{else}}-->
-<!--                <a href="/contact" class="nav-link">Contact</a>-->
-<!--            {{/if}}-->
-
-<!--            {{#if storeActive}}-->
-<!--                <a href="/store" class="nav-link active">Catalogue</a>-->
-<!--            {{else}}-->
-<!--                <a href="/store" class="nav-link">Catalogue</a>-->
-<!--            {{/if}}-->
-
+        <div class="footer-links">
+            <a href="/contact" class="footer-link">Contact</a>
+            <a href="/store" class="footer-link">Store</a>
         </div>
+    </footer>
 
+    <script>
+        // prop count near cart favicon update globally accross all pages
+        let authenticated = {{{ authenticated }}};
 
-        <div class="navbar-account-actions">
-            <form action="/prop/search" method="GET">
-                <input type="text" name="q" placeholder="Search for a prop...">
-                <input type="submit" value="Search" style="cursor: pointer;">
-            </form>
-            {{!-- <a href="/cart" class="cart-link">
-                <div class="cart-icon"></div>
-
-            </a> --}}
-
-            <div class="cart-svg nav-link">
-                <a href="/cart" class="">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                         class="bi bi-cart" viewBox="0 0 16 16">
-                        <path
-                                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                    </svg>
-                </a>
-                <span id="cart-count" class="cart-count">{{propCount}}</span>
-            </div>
-
-
-            {{#if authenticated}}
-                    <a href="/accounts/{{userId}}" class="nav-link">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             width="32" height="32" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                            <path fill-rule="evenodd"
-                                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                        </svg>
-                    </a>
-
-                <a href="/accounts/logout" class="nav-link">Logout</a>
-
-            {{else}}
-                    <a href="/accounts/login" class="nav-link">Login</a>
-                    <a href="/accounts/register" class="nav-link">Register</a>
-            {{/if}}
-
-
-        </div>
-    </nav>
-</header>
-<main>
-    <div class="alert-box" id="alert-box">
-        {{#if messages.error}}
-            <div class="alert alert-danger" id="alert-danger">{{messages.error}}</div>
-        {{/if}}
-
-        {{#if messages.success}}
-            <div class="alert alert-success" id="alert-success">{{messages.success}}</div>
-        {{/if}}
-    </div>
-
-    {{{body}}}
-</main>
-<footer class="footer container">
-    <div class="footer-logo">
-        <a href="/">
-            <img src="/images/logo.png" alt="Logo" class="logo">
-        </a>
-    </div>
-    <div class="footer-links">
-        <a href="/contact" class="footer-link">Contact</a>
-        <a href="/store" class="footer-link">Store</a>
-    </div>
-</footer>
-
-<script>
-    // prop count near cart favicon update globally accross all pages
-    let authenticated = {{{ authenticated }}};
-
-    function updateCartCount() {
-        const cartCountElement = document.getElementById('cart-count');
-        if (cartCountElement) {
-            if (authenticated) {
-                fetch('/api/getCartCount')
+        function updateCartCount() {
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                if (authenticated) {
+                    fetch('/api/getCartCount')
                         .then(response => response.json())
                         .then(data => {
                             cartCountElement.textContent = data.count;
@@ -128,17 +135,17 @@
                         .catch(error => {
                             console.error('Error updating cart count:', error);
                         });
-            } else {
-                const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-                cartCountElement.textContent = localCart.length;
+                } else {
+                    const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+                    cartCountElement.textContent = localCart.length;
+                }
             }
         }
-    }
 
-    // clear cart for user and non-user and update cart count
-    function clearCart() {
-        if (authenticated) {
-            fetch("/cart/clear", {method: "POST"})
+        // clear cart for user and non-user and update cart count
+        function clearCart() {
+            if (authenticated) {
+                fetch("/cart/clear", { method: "POST" })
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.message === "Cart successfully cleared") {
@@ -149,19 +156,15 @@
                     .catch((error) => {
                         console.error(error);
                     });
-        } else {
-            localStorage.setItem("cart", JSON.stringify([]));
-            updateCartCount();
-            location.reload();
+            } else {
+                localStorage.setItem("cart", JSON.stringify([]));
+                updateCartCount();
+                location.reload();
+            }
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', updateCartCount);
-</script>
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
 
 </body>
 </html>
-
-
-
-

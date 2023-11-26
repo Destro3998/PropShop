@@ -1,6 +1,6 @@
 <div class="dashboard">
     <div class="sidebar container">
-        <div class="sidebar-action container">
+        <div class="sidebar-action">
             <h3>Configure your site</h3>
             <a href="/admin/config" class="text-svg-link">To Site Config
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -11,7 +11,7 @@
             </a>
         </div>
 
-        <div class="sidebar-action container">
+        <div class="sidebar-action">
             <h3>View all orders</h3>
             <a href="/orders/all" class="text-svg-link">To all orders
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -55,10 +55,10 @@
             <p>No users in the system</p>
             {{else}}
             {{#each displayUsers}}
-            <div class="client container" id="toClientPage">
+            <div class="client" id="toClientPage">
                 <div class="inner-item-container">
                     <div class="item-info">
-                        <h2><a href="">{{ this.fname }} {{ this.lname }}</a></h2>
+                        <h2>{{ this.fname }} {{ this.lname }}</h2>
                         <p>Email: {{ this.email }}</p>
                         <p>Phone Number: {{ this.phone }}</p>
                         <p>Blacklisted: {{ this.blacklisted }}</p>
@@ -128,7 +128,7 @@
             <div class="prop container" id="toPropPage">
                 <div class="inner-item-container">
                     <div class="item-info">
-                        <h3><a href="/prop/{{this.propId}}">{{this.name}}</a></h3>
+                        <h2><a href="/prop/{{this.propId}}">{{this.name}}</a></h2>
                         <p>Price: {{this.price}}</p>
                         <p>Description:{{this.description}}</p>
                         <p>Quantity: {{this.quantity}}</p>

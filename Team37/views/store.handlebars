@@ -12,27 +12,25 @@
 </div>
 
 <div>
-    <div>
-        <div class="store-inner">
-            {{#each props}}
-            <div class="store-card container">
+    <div class="store-inner">
+        {{#each props}}
+        <div class="store-card container">
+            <a href="/prop/{{this.propId}}">
+                <img src="/3dmodels/{{this.image}}" alt="The prop's image" class="store-item-image"
+                    onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
+            </a>
+            <div class="store-item-info">
                 <a href="/prop/{{this.propId}}">
-                    <img src="/3dmodels/{{this.image}}" alt="The prop's image" class="store-item-image"
-                        onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
+                    <h3 class="head-text">{{ this.name }}</h3>
                 </a>
-                <div class="store-item-info">
-                    <a href="/prop/{{this.propId}}">
-                        <h3 class="head-text">{{ this.name }}</h3>
-                    </a>
-                    <p>{{ this.description }}</p>
-                    <p>Quantity: {{ this.quantity }}</p>
-                    <p>CA$ {{this.price}} / day</p>
-                    <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
-                </div>
-
+                <p>{{ this.description }}</p>
+                <p>Quantity: {{ this.quantity }}</p>
+                <p>CA$ {{this.price}} / day</p>
+                <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
             </div>
-            {{/each}}
+
         </div>
+        {{/each}}
     </div>
 </div>
 

@@ -333,5 +333,6 @@ module.exports = {
 	getDisplayProp: getDisplayProp,
 	getDisplayUsers: getDisplayUsers,
 	getUserOrders: getUserOrders,
-	getDisplayUser: getDisplayUser
+	getDisplayUser: getDisplayUser, 
+	getUser: getUser, 
 };

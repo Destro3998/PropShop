@@ -33,7 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	hideAlert(alertSuccess);
 	hideAlert(alertDanger);
 
-	if (window.location.href.includes("accounts")) {
+	if (window.location.href.includes("login") || window.location.href.includes("register") || window.location.href.includes("update")) {
 		// getting values from the password fields
 		const passwordInput = document.getElementById("password");
 		const passwordReEnterInput = document.getElementById("passwordReEnter");

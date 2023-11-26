@@ -7,6 +7,9 @@
     --box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
     --main-color: #f6f6f6;
     --accent-color: #800020;
+    --red-border: rgba(162, 11, 11, 1) 2px solid;
+    --gray-border: rgba(46, 46, 46, 0.5) 2px solid;
+    --mineshaft: rgba(46, 46, 46, 1);
 }
 
 /* Width of the scrollbar */
@@ -17,11 +20,13 @@
 /* Track (the area on the sides of the scrollbar) */
 ::-webkit-scrollbar-track {
     background: #ffffff;
+    border: var(--mineshaft) 1px solid;
+    border-radius: var(--border-radius);
 }
 
 /* Handle (the draggable part of the scrollbar) */
 ::-webkit-scrollbar-thumb {
-    background: rgb(49, 49, 49);
+    background: rgb(46, 46, 46);
     border-radius: var(--border-radius);
 }
 
@@ -30,9 +35,14 @@
     background: #242323;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     /* background-color: var(--background-color); /* config page changes */
-    font-family: 'Montserrat', sans-serif;
+    /* font-family: 'Montserrat', sans-serif; */
+    font-family: "Poppins", "sans-serif";
     /* font-family: Arial, sans-serif; */
     /* font-family: 'Oswald', sans-serif; */
     /*font-family: 'Noto Sans', sans-serif;*/
@@ -63,16 +73,16 @@ a:visited {
 
 a {
     text-decoration: none;
-    color: initial;
+    color: inherit;
 }
 
 .navbar {
     display: flex;
     justify-content: space-between;
-    padding: 2em 0;
-    background-color: var(--alternate-color);
+    padding: 1rem 0;
     align-items: center;
     max-height: 7.5rem;
+    border-bottom: var(--gray-border);
 }
 
 .title-text {
@@ -85,6 +95,7 @@ a {
 
 .strong-text {
     font-size: 6.25rem;
+    font-weight: 700;
 }
 
 .active {
@@ -105,9 +116,11 @@ a {
 
 .footer {
     display: flex;
-    padding: 4em;
+    padding: 5em;
     justify-content: space-around;
-    background-color: var(--alternate-color);
+    /* background-color: var(--mineshaft); */
+    background-image: linear-gradient(to bottom, #f6f6f6, 8%, var(--mineshaft) 10%);
+    color: white;
     align-items: center;
 }
 
@@ -128,7 +141,14 @@ a {
 }
 
 .container {
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
+    border: var(--gray-border);
+    transition: all ease-in-out 600ms;
+    box-sizing: border-box;
+}
+
+.container:hover {
+    border: var(--red-border);
 }
 
 /* Dashboard Styles */
@@ -235,9 +255,10 @@ a {
 .item-search-box {
     padding: 0.75em;
     border-radius: var(--border-radius);
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
-    border: none;
-    width: -webkit-fill-available;
+    /* box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5); */
+    border: var(--gray-border);
+    flex: 9;
+
     /* This forces the search box to fill up all available space */
     /* This probably should not be used */
 }
@@ -246,7 +267,7 @@ a {
 .item-search-button {
     padding: 0.75em;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
     background-color: var(--background-color);
     border: none;
     cursor: pointer;
@@ -277,44 +298,51 @@ a {
 
 .button {
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
     padding: 1rem;
     background-color: white;
-    border: none;
     cursor: pointer;
+    border: var(--gray-border);
     transition: all ease-in-out 250ms;
 }
 
 .button:hover {
     background-color: #EEE;
+    border: var(--red-border);
 }
 
 input[type=submit] {
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
+    border: var(--gray-border);
     background-color: white;
-    border: none;
     cursor: pointer;
     transition: all ease-in-out 250ms;
+    flex: 1;
 }
 
 
 input[type=submit]:hover {
     background-color: #EEE;
+    border: var(--red-border);
 }
 
 .button:active {
     transform: scale(0.9, 0.9);
-    box-shadow: 0px 0px 10px 5px #007BFF;
+    box-shadow: 0px 0px 10px 5px var(--accent-color);
 }
 
 .vertical-form {
     margin: 1em 0;
     display: flex;
     gap: 1em;
-    align-items: center;
     flex-direction: column;
     flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.vertical-form>label {
+    text-align: center;
 }
 
 textarea,
@@ -322,8 +350,15 @@ input {
     padding: 1em;
     border: none;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
+    border: var(--gray-border);
+    transition: all ease-in-out 250ms;
     font: inherit;
+}
+
+textarea:focus,
+input:focus {
+    border: var(--red-border);
 }
 
 .prop {
@@ -363,7 +398,8 @@ input {
 .header-info {
     background-color: white;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    border: var(--gray-border);
+    /* box-shadow: var(--box-shadow); */
     padding: 0.75em;
     text-align: center;
 }
@@ -373,15 +409,17 @@ input {
     padding: 0.75em;
     border-radius: var(--border-radius);
     margin: 0.5em 0;
+    border: var(--gray-border);
 }
 
 .store-inner {
     display: grid;
     /* This makes a repeating grid that auto fills its container. With a minimum with of 35em and a max width of 1 fractional unit of the available space. */
     grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
-    gap: 2em;
+    row-gap: 2rem;
+    column-gap: 0.5rem;
     border-radius: var(--border-radius);
-    margin: 2em 0;
+    margin: 2rem 0;
     justify-items: center;
 }
 
@@ -433,6 +471,7 @@ input {
 .sidebar-action {
     padding: 1em;
     border-radius: var(--border-radius);
+    border: var(--gray-border);
 }
 
 .order-status-group {
@@ -460,6 +499,9 @@ input {
 
 .order-heading {
     padding: 2rem;
+    border: var(--gray-border);
+    border-radius: var(--border-radius);
+    margin: 2rem;
 }
 
 .order-states {
@@ -492,8 +534,8 @@ input {
 
 .bi-cart,
 .bi-heart {
-    height: 2rem;
-    width: 2rem;
+    height: 1.5rem;
+    width: 1.5rem;
     color: white;
 }
 
@@ -527,6 +569,10 @@ input {
     padding: 1em;
     gap: 1em;
     margin: 3em 0;
+}
+
+.auth-form>label {
+    text-align: center;
 }
 
 ul,
@@ -570,11 +616,14 @@ ol {
 }
 
 .contact-inner {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+    display: flex;
+    /* grid-template-columns: repeat(auto-fit, minmax(15em, 1fr)); */
+    flex-direction: column;
     gap: 2em;
     border-radius: var(--border-radius);
     margin: 2.5em 0;
+    flex-wrap: wrap;
+    align-items: stretch;
 }
 
 .contact-card {
@@ -598,7 +647,8 @@ ol {
 .account-update {
     display: flex;
     gap: 2em;
-    justify-content: space-around;
+    margin: 2rem 0;
+    justify-content: center;
 }
 
 .password-update {
@@ -838,8 +888,8 @@ model-viewer {
 .cart-svg {
     display: flex;
     align-items: center;
-    background: black;
-    padding: 0.2em 1em;
+    background: var(--mineshaft);
+    padding: 0.8em 1em;
     border-radius: var(--border-radius);
     column-gap: 1em;
 }
@@ -959,6 +1009,7 @@ model-viewer {
 
 .edit-user {
     padding: 2rem;
+    border-radius: var(--border-radius);
 }
 
 
@@ -1058,4 +1109,35 @@ model-viewer {
 .order-prop-description {
     font-size: 1em;
     color: #777;
+}
+
+.contact-tiles {
+
+    /* align-content: center; */
+    display: grid;
+    justify-content: space-around;
+    grid-template-columns: repeat(auto-fill, minmax(calc((100vw - 1rem)/2), 1fr));
+    align-items: stretch;
+    justify-items: center;
+}
+
+.user-edit {
+    border: var(--gray-border);
+    border-radius: var(--border-radius);
+}
+
+.user-edit-fieldset {
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.order-list {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
 }

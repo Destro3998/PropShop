@@ -1,92 +1,115 @@
-# 370 Project - Fall 2023
 
+# Myriad Studios E-commerce website
 
+## Team 37 - Fall 2023 CMPT 370 Project
 
-## Getting started
+## Project Description
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+This project is an e-commerce platform that allows users to view items, add them to a shopping cart and make reservations which are fulfilled at Myriad studio's warehouse. The administrators of this website are able to manage their inventory and keep track of who has rented out their merchandise, when they will get it back.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Technologies Used
 
-## Add your files
+* NodeJs + Express (Backend + web framework)
+* MongDB (Database)
+* Handlebars (templating engine)
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## How to install the project
 
+### Step 1
+
+In a terminal shell perform a git clone.
+
+Use:
+
+```bash
+git clone https://git.cs.usask.ca/bjf403/370-project-fall-2023.git
 ```
-cd existing_repo
-git remote add origin https://git.cs.usask.ca/bjf403/370-project-fall-2023.git
-git branch -M main
-git push -uf origin main
+
+to clone with HTTPS.
+
+Use:
+
+```bash
+git@git.cs.usask.ca:bjf403/370-project-fall-2023.git
 ```
 
-## Integrate with your tools
+to clone with SSH.
 
-- [ ] [Set up project integrations](https://git.cs.usask.ca/bjf403/370-project-fall-2023/-/settings/integrations)
+### Step 2
 
-## Collaborate with your team
+Install NodeJS to your system. (If you already have nodeJS installed you can safely skip this step.)
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Visit <https://nodejs.org/en/download> and choose an installation based on your operating system.
+Your installation must at least be the latest LTS Version: 20.10.0 (includes npm 10.2.3).
 
-## Test and Deploy
+Once that is installed on your system open a terminal and run.
 
-Use the built-in continuous integration in GitLab.
+```bash
+node --version
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+if this gives you no errors, then you have successfully installed nodeJS onto your system.
 
-***
+### Step 3
 
-# Editing this README
+Download all necessary dependencies for the project.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+To do this you will need to open up a terminal window in the Team37 directory.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+For windows: `370-project-fall-2023\Team37`
+For Unix: `370-project-fall-2023/Team37`
 
-## Name
-Choose a self-explaining name for your project.
+Once in this directory run the following command:
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+```bash
+npm install -y
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Once this is complete you will have all the dependencies necessary to run the project.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Step 4
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Create a `.env` file in the `370-project-fall-2023/Team37` directory.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+in this file add the following:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```env
+DB_PASSWORD=admin@370
+SECRET=5DULGXyMq7zPzuXmGFYuP8rOL0fnWvKoX51GkqMMrdTlnePTeXEO2sCvKjhXpjVw
+DB_URI="mongodb+srv://admin:admin@370.16ms14j.mongodb.net/?retryWrites=true&w=majority"
+PORT=3000
+SENDGRID_KEY=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
+NGROK_AUTHTOKEN=2XwkdiCjiBZscmmVEc2TcZDBrhl_5J4AJSpCZkAJfMXpJ3uSE
+tokenNGROK = 2XwkdiCjiBZscmmVEc2TcZDBrhl_5J4AJSpCZkAJfMXpJ3uSE node launch.js
+STRIPE_SECRET_KEY=sk_test_51OAKPjCUWYKakee9pIKRZMiWhoLnOtrcchprN2KTVab8A05zDhLLJed35Ih9Za5tLNoGAEK3gfLV0FkP9OEVVQMX00tImmsV1e
+STRIPE_PUBLISHABLE_KEY=pk_test_51OAKPjCUWYKakee9uqX1PvVQxvgjxne676F0d7c6ujYg3uxu2r5qCUz8y1jlSRDkz73xPtgD7Etpyf0M1RCualDF00L2JYGtbh
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Once you have this copied into the .env file you are good to start the server.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### Step 5
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Start the server
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+In your terminal window that is in the `370-project-fall-2023/Team37` directory run the command `npm start`. This command will start teh server on port 3000.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+In your browser navigate to <locahost:3000> or <http://127.0.0.1:3000/>
 
-## License
-For open source projects, say how it is licensed.
+### Step 6
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+You're in.
+
+## Credits
+
+The Team of developers that worked on this project:
+
+* Clinton Claypool
+* Dylan Crosby
+* Noah Martens
+* Shubham Jain
+* Sukhman Dhawan
+* Theophilus Nenhanga
+
+## Thank you
+
+Thank you to you for taking the time to look at this project.

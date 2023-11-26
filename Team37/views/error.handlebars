@@ -1,25 +1,30 @@
 {{#if blacklisted}}
-    <div>
-        <h1>{{message}}</h1>
-        <a href="/" class="button"> Return to Store</a>
-    </div>
+<div>
+    <h1>{{message}}</h1>
+    <a href="/" class="button"> Return to Store</a>
+</div>
 {{/if}}
 
 {{#if admin}}
-    <div>
-        <h1>{{message}}</h1>
-        <a href="/" class="button"> Return to Store</a>
-        <a href="/accounts/login" class="button"> Go to login</a>
-    </div>
+<div>
+    <h1>{{message}}</h1>
+    <a href="/" class="button"> Return to Store</a>
+    <a href="/accounts/login" class="button"> Go to login</a>
+</div>
 {{/if}}
 
 {{#if auth}}
-    <div>
-        <h1>{{message}}</h1>
-        <a href="/" class="button"> Return to Store</a>
-        <a href="/accounts/login" class="button">Go to login</a>
-    </div>
+<div>
+    <h1>{{message}}</h1>
+    <a href="/" class="button"> Return to Store</a>
+    <a href="/accounts/login" class="button">Go to login</a>
+</div>
 {{/if}}
 
-
-
+{{#if error}}
+<div>
+    <h1>{{message}}</h1>
+    <a href="/" class="button"> Return to Store</a>
+    <a href="/accounts/login" class="button">Go to login</a>
+</div>
+{{/if}}

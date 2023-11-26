@@ -114,7 +114,6 @@ async function initAdmins() {
             let user = await User.findOne({email:adminEmail});
             if (user) {
                 console.log("Admin user already exists");
-                continue;
             } else {
                 const newUser = new User({
                     email: adminEmail,
