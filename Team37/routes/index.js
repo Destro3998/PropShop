@@ -7,6 +7,7 @@ const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
 const sgMail = require('@sendgrid/mail');
+
 require('dotenv').config();
 
 
@@ -224,14 +225,23 @@ router.get("/cart", isBlacklisted, async (req, res) => {
 		}
 	}
 
+	try {
+		const config = await Configuration.findOne({});
+		const depositPercentage = config ? config.depositPercentage : 10;
+
 	res.render("cart.handlebars", {
 		name: "My Cart",
 		cartItems: JSON.stringify(detailedCart),
 		cartActive: true,
 		authenticated: authenticated,
 		userId: userId,
-		admin: admin
+		admin: admin,
+		depositPercentage: depositPercentage 
 	});
+} catch (error) {
+	console.error("Error:", error);
+	res.status(500).send("Internal Server Error");
+}
 });
 
 
@@ -281,31 +291,53 @@ router.post("/cart/clear", isAuth, async (req, res) => {
   });
 
 
-  //delete from cart - autheticated users only
-router.delete("/cart/remove/:itemId", isAuth, async (req, res) => {
+// Delete from cart - authenticated users only ( not working, need to bug fix)
+router.post("/cart/remove", isAuth, async (req, res) => {
+    console.log("Remove from cart route hit");
     if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const itemId = req.params.itemId;
+    if (req.isAuthenticated()) {
+        try {
+            const user = await User.findById(req.user._id);
 
-    try {
-        let user = await User.findById(req.user._id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            console.log("User's cart before removal:", user.cart);
+
+            const objectId = mongoose.Types.ObjectId(itemId);
+            const updatedCart = user.cart.filter(item => !item.itemId.equals(objectId));
+
+            if (user.cart.length === updatedCart.length) {
+                return res.status(404).json({ message: "Item not found in cart" });
+            }
+
+            user.cart = updatedCart;
+            await user.save();
+
+            console.log("User's cart after removal:", user.cart);
+
+            res.json({ message: "Item removed from cart", cart: user.cart });
+        } catch (error) {
+            if (error instanceof mongoose.Error.CastError) {
+                res.status(400).json({ message: "Invalid item ID format" });
+            } else {
+                console.error("Error removing item:", error);
+                res.status(500).json({ message: "Internal Server Error" });
+            }
         }
+    }});
 
-        const objectId = mongoose.Types.ObjectId(itemId);
-        user.cart = user.cart.filter(item => !item.itemId.equals(objectId));
-        
-        await user.save();
-        res.json({ message: "Item removed from cart" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
+// for updating deposit percentage
+router.post('/update-deposit-percentage', async (req, res) => {
+    const depositPercentage = req.body.depositPercentage;
+    await Configuration.updateOne({}, { depositPercentage: depositPercentage });
+    req.flash("success", "Setting successfully updated");
+    res.redirect('/admin/config'); 
 });
-
 
 
 // This allows other files to import the router

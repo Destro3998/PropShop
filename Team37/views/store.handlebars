@@ -97,6 +97,18 @@
             });
     }
 
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000); 
+    }
+
     // add to cart
 
     function addToCart(event, propId) {
@@ -110,6 +122,7 @@
                         if (!response.ok) {
                             throw new Error("Server-side error");
                         }
+                        updateCartCount();
                         console.log("Added to User cart successfully");
                     })
                     .catch((error) => {
@@ -119,6 +132,8 @@
             cart.push(propId);
             let updatedCart = JSON.stringify(cart);
             localStorage.setItem("cart", updatedCart);
+            showNotification("Prop added to cart successfully", 'success');
+            updateCartCount();
             console.log("Added to local storage cart successfully");
         });
     }

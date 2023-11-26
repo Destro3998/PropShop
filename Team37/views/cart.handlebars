@@ -16,7 +16,7 @@
 
         <p id="dayCount">Booking for: <span>0</span> days</p>
         <p id="costPerDay">Total Amount: <span>$0.00</span></p>
-        <p id="totalPropAmount">Reserve Amount: <span>$0.00</span> per day</p>
+        <p id="totalPropAmount">Reserve Amount: <span>$0.00</span></p>
         <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>  
 
         <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
@@ -26,6 +26,7 @@
         </form>
     </div>
 </div>
+
 
 <script>
 
@@ -43,9 +44,10 @@
 
             dayCountSpan.textContent = dayDifference > 0 ? dayDifference : 0;
 
-            // Now update the deposit amount as well
+            // update the deposit amount
             const totalAmount = parseFloat(document.getElementById('costPerDay').querySelector('span').textContent.replace('$', ''));
-            const reserveAmount = totalAmount * 0.10;
+            const depositPercentage = {{depositPercentage}}; // Fetch from the server
+            const reserveAmount = totalAmount * (depositPercentage * 0.01);
             updateDepositAmount(reserveAmount);
         }
 
@@ -60,27 +62,26 @@
 
 
         function renderCartItem(data, cartList, authenticated) {
-        let listItem = document.createElement('li');
-        listItem.classList.add('cart-item');
-        listItem.innerHTML = `
-                <span class="prop-name">Name: ${data.item.name}</span>
-                <span class="prop-description">Description: ${data.item.description}</span>
-                <span class="prop-quantity">Quantity: ${data.quantity}</span>
-                <span class="prop-cost">Cost: $${data.item.price}</span> 
-                <button class="remove-btn" data-id="${data.item.id}">Remove</button>
-            `;
-                
-        console.log("cart item with ID:", data.item.id);
 
-        console.log("cart item with ID:", data.item._id);
+            let itemId = data.item._id;
 
+            let listItem = document.createElement('li');
+            listItem.classList.add('cart-item');
 
-        cartList.appendChild(listItem);
-        listItem.querySelector('.remove-btn').addEventListener('click', () => {
-        removeCartItem(data.item.id, authenticated);
-    });
-        updateTotalAmount();
-    }
+            listItem.innerHTML = `
+                    <span class="prop-name">Name: ${data.item.name}</span>
+                    <span class="prop-description">Description: ${data.item.description}</span>
+                    <span class="prop-quantity">Quantity: ${data.quantity}</span>
+                    <span class="prop-cost">Cost: $${data.item.price}</span> 
+                    <button class="remove-btn" data-id="${itemId}">Remove</button>
+                `;
+
+            cartList.appendChild(listItem);
+            listItem.querySelector('.remove-btn').addEventListener('click', () => {
+                removeCartItem(itemId, authenticated);
+        });
+            updateTotalAmount();
+        }
 
     // Populating cart page implementation
     const authenticated = {{{ authenticated }}};
@@ -121,37 +122,59 @@
 
     function removeCartItem(itemId, authenticated) {
         if (authenticated) {
-            fetch(`/cart/remove/${itemId}`, { method: 'DELETE' })
+                fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ itemId: itemId })
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.message === "Item removed from cart") {
-                    const itemElement = document.querySelector(`[data-id="${itemId}"]`).parentElement;
-                    itemElement.remove();
-                    updateTotalAmount();
-                } else {
-                    console.error('Item was not removed:', data.message);
-                }
-            })
-
+                        const itemElement = document.querySelector(`[data-id="${itemId}"]`).parentElement;
+                        itemElement.remove();
+                        updateTotalAmount();
+                        updateCartCount();
+                        location.reload();
+                    } else {
+                        console.error('Item was not removed:', data.message);
+                    }
+                })
                 .catch(error => {
                     console.error('There was an error:', error);
                 });
         } else {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart = cart.filter(item => item._id !== itemId); 
+            cart = cart.filter(id => id !== itemId); 
             localStorage.setItem('cart', JSON.stringify(cart));
             document.querySelector(`[data-id="${itemId}"]`).parentElement.remove();
+            updateTotalAmount();
+            updateCartCount();
+            location.reload();
         }
     }
 
-    // Function to calculate and update total amount
-    function updateTotalAmount() {
+    
+    async function updateTotalAmount() {
         const cartItems = authenticated ? serverCartItems : localCart;
+
         let totalAmount = 0;
 
-        cartItems.forEach(item => {
-            totalAmount += item.item.price * item.quantity;
-        });
+        if (!authenticated) {
+            // For unauthenticated users, cartItems are just IDs.
+            const promises = cartItems.map(propId => fetch(`/api/getProp/${propId}`).then(resp => resp.json()));
+            const props = await Promise.all(promises);
+
+            props.forEach(prop => {
+                totalAmount += prop.price; 
+            });
+        } else {
+            // For authenticated users, cartItems are full objects
+            cartItems.forEach(item => {
+                totalAmount += item.item.price * item.quantity;
+            });
+        }
 
         document.getElementById('costPerDay').querySelector('span').textContent = `$${totalAmount.toFixed(2)}`;
         updateReserveAmount(totalAmount);
@@ -159,7 +182,8 @@
 
     // Function to calculate and update reserve amount
     function updateReserveAmount(totalAmount) {
-        const reserveAmount = totalAmount * 0.10;
+        const depositPercentage = {{depositPercentage}}; // Fetch from the server
+        const reserveAmount = totalAmount * (depositPercentage * 0.01);
         document.getElementById('totalPropAmount').querySelector('span').textContent = `$${reserveAmount.toFixed(2)} per day`;
         updateDepositAmount(reserveAmount);
     }
@@ -174,6 +198,7 @@
     }
 
     });
+
 
 </script>
 

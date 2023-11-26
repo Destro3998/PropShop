@@ -21,7 +21,7 @@
         rel="stylesheet">
     <script src="/scripts/script.js"></script>
 </head>
-<body>
+<body data-authenticated="{{authecticated}}">
     <header>
         <nav class="navbar">
             <div class="navbar-logo">
@@ -119,9 +119,9 @@
         </div>
     </footer>
 
-    <script>
-        // prop count near cart favicon update globally accross all pages
-        let authenticated = {{{ authenticated }}};
+<script>
+    // prop count near cart favicon update globally accross all pages
+    let authenticated = {{{ authenticated }}};
 
         function updateCartCount() {
             const cartCountElement = document.getElementById('cart-count');

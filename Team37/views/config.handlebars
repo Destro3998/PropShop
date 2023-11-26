@@ -45,11 +45,11 @@
     <input type="submit" class="config-button">
 </form>
 
-<form action="" method="post" class="config-form">
+<form action="/update-deposit-percentage" method="post" class="config-form">
     <fieldset class="config-fieldset">
         <legend>Payment Settings</legend>
         <label for="" class="config-label">Deposit percentage</label>
-        <input type="number" step="0.01" class="config-input"> % of total price
+        <input type="number" step="0.01" name="depositPercentage" class="config-input"> % of total price
         <p>Concerning payments</p>
     </fieldset>
     <input type="submit" value="Submit" class="config-button">
@@ -72,6 +72,7 @@
 </form>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
     
     // General settings form
@@ -120,78 +121,3 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 </script>
-
-<!-- Will move below CSS to styles.css after -->
-
-<style>
-
-.config-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-.config-form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-}
-
-.config-fieldset {
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-.config-legend {
-    font-weight: bold;
-    color: #333;
-}
-
-.config-label {
-    margin-top: 10px;
-    display: block;
-    color: #555;
-}
-
-.config-input[type="text"], input[type="color"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #555;
-}
-
-.config-button {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.config-button:hover {
-    background-color: #0056b3;
-}
-
-.config-button:disabled {
-    background-color: #b3c7e0;
-    cursor: not-allowed;
-}
-
-.config-p {
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-</style>
