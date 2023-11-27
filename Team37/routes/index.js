@@ -45,7 +45,7 @@ router.get("/contact", async (req, res) => {
 
 		if (!config) {
 			console.error("No configuration found in the database");
-			res.render("error.handlebars", {error:true, message:"No configuration found in the database"});
+			res.render("error.handlebars", { error: true, message: "No configuration found in the database" });
 			// return res.status(404).send("Configuration not found");
 		}
 
@@ -63,7 +63,7 @@ router.get("/contact", async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		// res.status(500).json({ message: "Internal server error" });
-		res.render("error.handlebars", {error:true, message:"Internal Server Error"});
+		res.render("error.handlebars", { error: true, message: "Internal Server Error" });
 	}
 });
 
@@ -229,35 +229,35 @@ router.get("/cart", isBlacklisted, async (req, res) => {
 		const config = await Configuration.findOne({});
 		const depositPercentage = config ? config.depositPercentage : 10;
 
-	res.render("cart.handlebars", {
-		name: "My Cart",
-		cartItems: JSON.stringify(detailedCart),
-		cartActive: true,
-		authenticated: authenticated,
-		userId: userId,
-		admin: admin,
-		depositPercentage: depositPercentage 
-	});
-} catch (error) {
-	console.error("Error:", error);
-	res.status(500).send("Internal Server Error");
-}
+		res.render("cart.handlebars", {
+			name: "My Cart",
+			cartItems: JSON.stringify(detailedCart),
+			cartActive: true,
+			authenticated: authenticated,
+			userId: userId,
+			admin: admin,
+			depositPercentage: depositPercentage
+		});
+	} catch (error) {
+		console.error("Error:", error);
+		res.status(500).send("Internal Server Error");
+	}
 });
 
 
 router.get("/api/getCartCount", async (req, res) => {
 	let count = 0;
-  
+
 	if (req.isAuthenticated()) {
-	  const userCart = req.user.cart;
-	  count = userCart.reduce((acc, item) => acc + item.quantity, 0);
+		const userCart = req.user.cart;
+		count = userCart.reduce((acc, item) => acc + item.quantity, 0);
 	} else {
-	  count = req.session.cart ? req.session.cart.length : 0;
+		count = req.session.cart ? req.session.cart.length : 0;
 	}
-  
+
 	res.json({ count });
-  });
-  
+});
+
 
 
 router.get("/api/getProp/:propId", async (req, res) => {
@@ -278,65 +278,85 @@ router.get("/api/getProp/:propId", async (req, res) => {
 
 router.post("/cart/clear", isAuth, async (req, res) => {
 	if (req.isAuthenticated()) {
-	  try {
-		await User.findOneAndUpdate({ _id: req.user._id }, { cart: [] });
-		res.json({ message: "Cart successfully cleared" });
-	  } catch (error) {
-		console.error(error);
-		res.status(500).json({ message: "Internal Server Error" });
-	  }
+		try {
+			await User.findOneAndUpdate({ _id: req.user._id }, { cart: [] });
+			res.json({ message: "Cart successfully cleared" });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ message: "Internal Server Error" });
+		}
 	} else {
-	  res.status(401).json({ message: "User not authenticated" });
+		res.status(401).json({ message: "User not authenticated" });
 	}
-  });
+});
 
 
 // Delete from cart - authenticated users only ( not working, need to bug fix)
 router.post("/cart/remove", isAuth, async (req, res) => {
-    console.log("Remove from cart route hit");
-    if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "User not authenticated" });
-    }
+	console.log("Remove from cart route hit");
+	if (!req.isAuthenticated()) {
+		return res.status(401).json({ message: "User not authenticated" });
+	}
 
-    if (req.isAuthenticated()) {
-        try {
-            const user = await User.findById(req.user._id);
+	if (req.isAuthenticated()) {
+		try {
+			const user = await User.findById(req.user._id);
 
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
-            }
+			if (!user) {
+				return res.status(404).json({ message: "User not found" });
+			}
 
-            console.log("User's cart before removal:", user.cart);
+			console.log("User's cart before removal:", user.cart);
 
-            const objectId = mongoose.Types.ObjectId(itemId);
-            const updatedCart = user.cart.filter(item => !item.itemId.equals(objectId));
+			const objectId = mongoose.Types.ObjectId(itemId);
+			const updatedCart = user.cart.filter(item => !item.itemId.equals(objectId));
 
-            if (user.cart.length === updatedCart.length) {
-                return res.status(404).json({ message: "Item not found in cart" });
-            }
+			if (user.cart.length === updatedCart.length) {
+				return res.status(404).json({ message: "Item not found in cart" });
+			}
 
-            user.cart = updatedCart;
-            await user.save();
+			user.cart = updatedCart;
+			await user.save();
 
-            console.log("User's cart after removal:", user.cart);
+			console.log("User's cart after removal:", user.cart);
 
-            res.json({ message: "Item removed from cart", cart: user.cart });
-        } catch (error) {
-            if (error instanceof mongoose.Error.CastError) {
-                res.status(400).json({ message: "Invalid item ID format" });
-            } else {
-                console.error("Error removing item:", error);
-                res.status(500).json({ message: "Internal Server Error" });
-            }
-        }
-    }});
+			res.json({ message: "Item removed from cart", cart: user.cart });
+		} catch (error) {
+			if (error instanceof mongoose.Error.CastError) {
+				res.status(400).json({ message: "Invalid item ID format" });
+			} else {
+				console.error("Error removing item:", error);
+				res.status(500).json({ message: "Internal Server Error" });
+			}
+		}
+	}
+});
+
+
+router.post("/cart/remove/:propId", isAuth, async (req, res) => {
+	let propId = req.params.propId;
+	try {
+		let user = req.user;
+		for (let index = 0; index < user.cart.length; index++) {
+			const element = user.cart[index];
+			if (element.itemId.toString() === propId.toString()) {
+				user.cart.splice(index, 1);
+				await user.save();
+			}
+		}
+		await user.save();
+		res.status(200).json("success");
+	} catch (error) {
+		res.render("error.handlebars", { error: true, message: "Error attempting to delete item from cart" })
+	}
+});
 
 // for updating deposit percentage
 router.post('/update-deposit-percentage', async (req, res) => {
-    const depositPercentage = req.body.depositPercentage;
-    await Configuration.updateOne({}, { depositPercentage: depositPercentage });
-    req.flash("success", "Setting successfully updated");
-    res.redirect('/admin/config'); 
+	const depositPercentage = req.body.depositPercentage;
+	await Configuration.updateOne({}, { depositPercentage: depositPercentage });
+	req.flash("success", "Setting successfully updated");
+	res.redirect('/admin/config');
 });
 
 

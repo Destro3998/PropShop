@@ -17,7 +17,7 @@
         <p id="dayCount">Booking for: <span>0</span> days</p>
         <p id="costPerDay">Total Amount: <span>$0.00</span></p>
         <p id="totalPropAmount">Reserve Amount: <span>$0.00</span></p>
-        <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>  
+        <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>
 
         <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
             <div id="card-element"></div>
@@ -30,7 +30,21 @@
 
 <script>
 
-    document.addEventListener('DOMContentLoaded', function () {     
+    // This function checks if the current user is authenticated
+    function checkAuthentication(callback) {
+        fetch("/api/authenticated", { method: "GET" })
+            .then((response) => response.json())
+            .then((data) => {
+                const isAuthenticated = data.authenticated;
+                callback(isAuthenticated); // returns true to the callback function if the user is authenticated. False otherwise.
+            })
+            .catch((error) => {
+                console.error("Error checking authentication: ", error);
+                callback(false); // Assume the user is not authenticated if there is an error
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
 
         const checkInDateInput = document.getElementById('checkInDate');
         const checkOutDateInput = document.getElementById('checkOutDate');
@@ -101,7 +115,6 @@
     if (authenticated) {
         serverCartItems.forEach(item => renderCartItem(item, cartList));
         updateTotalAmount();
-
     }
 
     if (!authenticated) {
@@ -121,37 +134,67 @@
     }
 
     function removeCartItem(itemId, authenticated) {
-        if (authenticated) {
-                fetch('/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ itemId: itemId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message === "Item removed from cart") {
-                        const itemElement = document.querySelector(`[data-id="${itemId}"]`).parentElement;
-                        itemElement.remove();
+
+        checkAuthentication((isAuthenticated) => {
+            if (isAuthenticated) {
+                fetch(`/cart/remove/${itemId}`, { method: "POST" })
+                    .then((response) => {
+                        if (!response.ok) {
+                            // TODO: handle the error
+                        }
+                        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                        cart = cart.filter(id => id !== itemId);
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        document.querySelector(`[data-id="${itemId}"]`).parentElement.remove();
                         updateTotalAmount();
                         updateCartCount();
-                        location.reload();
-                    } else {
-                        console.error('Item was not removed:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('There was an error:', error);
-                });
-        } else {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart = cart.filter(id => id !== itemId); 
-            localStorage.setItem('cart', JSON.stringify(cart));
-            document.querySelector(`[data-id="${itemId}"]`).parentElement.remove();
-            updateTotalAmount();
-            updateCartCount();
-            location.reload();
+                        //location.reload();
+                        console.log("successfully removed item from cart");
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
+        });
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart = cart.filter(id => id !== itemId);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.querySelector(`[data-id="${itemId}"]`).parentElement.remove();
+        updateTotalAmount();
+        updateCartCount();
+        //location.reload();
+        {
+            /* if (authenticated) {
+                    fetch('/cart/remove', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === "success") {
+                                const itemElement = document.querySelector(`[data-id="${itemId}"]`).parentElement;
+                                itemElement.remove();
+                                updateTotalAmount();
+                                updateCartCount();
+                                location.reload();
+                            } else {
+                                console.error('Item was not removed:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('There was an error:', error);
+                        });
+                } else {
+                    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    cart = cart.filter(id => id !== itemId);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    document.querySelector(`[data-id="${itemId}"]`).parentElement.remove();
+                    updateTotalAmount();
+                    updateCartCount();
+                    location.reload();
+                } */
         }
     }
 
