@@ -15,9 +15,13 @@
         <input type="date" id="checkOutDate" name="checkOutDate">
 
         <p id="dayCount">Booking for: <span>0</span> days</p>
-        <p id="costPerDay">Total Amount: <span>$0.00</span></p>
-        <p id="totalPropAmount">Reserve Amount: <span>$0.00</span></p>
-        <p id="deposit">Deposit amount: <span>$0.00</span> for <span id="dayCount">0</span> days</p>
+        <p id="costPerDay">Total Rental Rate: <span>$0.00</span> per day</p>
+
+        <p id="estimatedTotalCost">Estimated Total Cost: <span>$0.00</span> for <span id="estimatedDays">0</span> days</p>
+
+    <!-- <p id="totalPropAmount">Reserve Amount: <span>$0.00</span></p> -->
+
+        <p id="deposit">Reservation Fee: <span>$0.00</span> for <span id="dayCount">0</span> days</p>
 
         <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
             <div id="card-element"></div>
@@ -56,7 +60,19 @@
             const timeDifference = checkOutDate - checkInDate;
             const dayDifference = timeDifference / (1000 * 3600 * 24); // milliseconds to days
 
+            const days = dayDifference > 0 ? dayDifference : 0;
+            dayCountSpan.textContent = days;
+
             dayCountSpan.textContent = dayDifference > 0 ? dayDifference : 0;
+
+            // Estimated Total Cost
+            const costPerDay = parseFloat(document.getElementById('costPerDay').querySelector('span').textContent.replace('$', ''));
+            const estimatedTotalCost = costPerDay * days;
+            document.getElementById('estimatedTotalCost').querySelector('span').textContent = `$${estimatedTotalCost.toFixed(2)}`;
+
+            // days count in Estimated Total Cost
+            const estimatedDaysSpan = document.getElementById('estimatedDays');
+            estimatedDaysSpan.textContent = days;
 
             // update the deposit amount
             const totalAmount = parseFloat(document.getElementById('costPerDay').querySelector('span').textContent.replace('$', ''));

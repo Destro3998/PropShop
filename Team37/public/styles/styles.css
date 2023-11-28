@@ -814,7 +814,7 @@ h1 {
 
 .cart-container {
     /* Cart page - My cart container */
-    flex: 3;
+    flex: 4;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
@@ -897,7 +897,7 @@ model-viewer {
 
 .checkout-container {
     /* Cart page - checkout container */
-    flex: 1;
+    flex: 1 0 150px;
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
