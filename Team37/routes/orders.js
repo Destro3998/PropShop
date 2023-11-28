@@ -203,6 +203,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 router.get('/:orderId', isAuth, async function (req, res) {
     let orderId = req.params.orderId;
     let authenticated = req.isAuthenticated();
+    let admin = req.user.admin;
     let userId = req.user && req.user._id ? req.user._id : undefined;
     let pendingDisabled = false, completeDisabled = false, progressDisabled = false;
 
@@ -255,6 +256,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
             progressDisabled: progressDisabled,
             completeDisabled: completeDisabled,
             user: user,
+            admin: admin
         });
 
     } catch (error) {
