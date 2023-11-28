@@ -58,7 +58,10 @@
     async function setStatePending() {
         let reserved = document.getElementsByClassName("pending-items-group");
         if (reserved.length === 0) {
-            confirm("Are you sure you want to set status to pending when there are no elements that are pending?")
+            let userResponse = confirm("Are you sure you want to set status to pending when there are no elements that are pending?");
+            if (!userResponse){
+                return;
+            }
         }
         // A fetch request
         try {
@@ -98,7 +101,10 @@
     async function setStateComplete() {
         let reserved = document.getElementsByClassName("pending-items-group");
         if (reserved.length !== 0) {
-            confirm("Are you sure you want to set status to completed when there are still pending items?")
+            let userResponse = confirm("Are you sure you want to set status to completed when there are still pending items?");
+            if (!userResponse){
+                return;
+            }
         }
         // A fetch request
         try {
