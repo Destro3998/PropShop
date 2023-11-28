@@ -5,6 +5,7 @@
     <p>Status: {{order.status}}</p>
 </div>
 
+{{#if authenticated}}
 <div>
     <div class="order-status-group">
         <div>
@@ -53,6 +54,7 @@
     <button type="button" class="button" {{#if completeDisabled}} disabled {{/if}}
         onclick="setStateComplete()">Complete</button>
 </div>
+{{/if}}
 
 <script>
     async function setStatePending() {
