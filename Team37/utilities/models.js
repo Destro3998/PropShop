@@ -7,14 +7,6 @@ const cartItemSchema = new mongoose.Schema({
 	quantity: { type: Number, default: 1 }
 });
 
-const employeeSchema = new mongoose.Schema({
-	name: { type: String, required: true },
-	email: { type: String, required: true },
-	phone: Number,
-	address: String,
-	password: { type: String, required: true },
-});
-
 const propSchema = new mongoose.Schema({
 	name: { type: String, required: true },
 	price: { type: Number, required: true }, // Setting this to false for now until the server/frontend is setup to handle this value
@@ -68,6 +60,7 @@ const userSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
 	price: Number,
+	depositAmount: Number,
 	datePlaced: { type: Date, default: Date.now() },
 	status: { // using enum behaviour to restrict possible values
 		type: String,
@@ -76,15 +69,6 @@ const orderSchema = new mongoose.Schema({
 	},
 	user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 	items: [cartItemSchema]
-});
-
-const clientSchema = new mongoose.Schema({
-	name: { type: String, required: true },
-	email: String,
-	phone: Number,
-	address: String,
-	rentHistory: propSchema,
-	userAccount: userSchema
 });
 
 const configSchema = new mongoose.Schema({
@@ -103,9 +87,7 @@ const configSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
-const Employee = mongoose.model('Employee', employeeSchema);
 const Prop = mongoose.model('Prop', propSchema);
-const Client = mongoose.model('Client', clientSchema);
 const CartItem = mongoose.model('CartItem', cartItemSchema);
 const Configuration = mongoose.model('Configuration', configSchema);
 
@@ -114,9 +96,7 @@ const Configuration = mongoose.model('Configuration', configSchema);
 //User.collection.dropIndexes()
 
 module.exports = {
-	Employee,
 	Prop,
-	Client,
 	User,
 	Order,
 	CartItem,

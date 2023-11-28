@@ -147,7 +147,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             console.log("reserved " + cartitem.itemId.name)
 
             // add prop to the order
-            await models.Order.findByIdAndUpdate({ _id: order[0].id }, { $push: { items: cartitem } }).session(session);
+            await Order.findByIdAndUpdate({ _id: order[0].id }, { $push: { items: cartitem } }).session(session);
             console.log("added to order " + cartitem.itemId.name)
 
             // remove prop from the user's cart
@@ -158,8 +158,12 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             totalPrice += (cartitem.itemId.price * cartitem.quantity)
         }
 
-        //** TODO: add payment processing step here */
+        // Update the order price and depositAmount
+        await Order.findByIdAndUpdate({ _id: order[0].id }, { price: totalPrice }).session(session);
+
         depositAmount = totalPrice * 0.10; //TODO: replace 0.10 with reservation fee set by config page
+        await Order.findByIdAndUpdate({ _id: order[0].id }, { depositAmount: depositAmount }).session(session);
+
         depositAmount = parseInt(depositAmount * 100) // convert $ to cents and parse as integer for stripe
         if (isNaN(depositAmount) || depositAmount <= 0) {
             throw new Error("Invalid deposit amount");

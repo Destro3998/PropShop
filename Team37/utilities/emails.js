@@ -98,8 +98,8 @@ async function sendOrderConfirmationEmail(orderId, host) {
         
         <p><br><strong>Order Summary:</strong></p>
         <p>Order Date: ${order.datePlaced}</p>
-        <p>Cost per Day: $${order.price}</p>
-        <p>Paid Deposit: $${order.price * 0.10}</p>
+        <p>Paid Deposit: $${order.depositAmount.toFixed(2)}</p>
+        <p>Total Rental Cost: $${order.price.toFixed(2)} per day</p>
         `
     }
 
