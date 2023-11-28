@@ -6,7 +6,9 @@ const { isAuth, isBlacklisted } = require("../utilities/authMiddleware.js");
 const getProps = utilities.getProps;
 const propExists = utilities.propExists;
 const getProp = utilities.getProp;
+const { sendCustomerMessageEmail } = require("../utilities/emails");
 const sgMail = require('@sendgrid/mail');
+
 
 require('dotenv').config();
 
@@ -67,29 +69,13 @@ router.get("/contact", async (req, res) => {
 	}
 });
 
-
+/**
+ * This route is for when the user submits the "Message Us" form on the contact page
+ */
 router.post("/contact", isBlacklisted, (req, res) => {
 
-	sgMail.setApiKey(process.env.SENDGRID_KEY);
-
-	// Creates email message and info (other "from" emails must be verifies in SendGrid before they can be used)
-	const msg = {
-		to: 'team37db@gmail.com',
-		from: 'team37db@gmail.com',
-		subject: 'Message from Customer',
-		text: `Name: ${req.body.name}\nEmail: ${req.body.email}\nBusiness: ${req.body.business}\nMessage:\n${req.body.message}`,
-		html:
-			`
-		<p><strong>Name:<\strong> ${req.body.name}</p>
-		<p><strong>Email:<\strong> ${req.body.email}</p>
-		<p><strong>Business:<\strong> ${req.body.business}</p>
-		<p><strong>Message:<\strong></p>
-		<p>${req.body.message}</p>
-		`,
-	};
-
-	// Sends the email
-	sgMail.send(msg)
+	// Send email to company with the user's message
+	sendCustomerMessageEmail(req.body.name, req.body.email, req.body.business, req.body.message)
 		.then(() => {
 			console.log('Email sent successfully!');
 			req.flash("success", "Message sent");
@@ -329,25 +315,6 @@ router.post("/cart/remove", isAuth, async (req, res) => {
 				res.status(500).json({ message: "Internal Server Error" });
 			}
 		}
-	}
-});
-
-
-router.post("/cart/remove/:propId", isAuth, async (req, res) => {
-	let propId = req.params.propId;
-	try {
-		let user = req.user;
-		for (let index = 0; index < user.cart.length; index++) {
-			const element = user.cart[index];
-			if (element.itemId.toString() === propId.toString()) {
-				user.cart.splice(index, 1);
-				await user.save();
-			}
-		}
-		await user.save();
-		res.status(200).json("success");
-	} catch (error) {
-		res.render("error.handlebars", { error: true, message: "Error attempting to delete item from cart" })
 	}
 });
 

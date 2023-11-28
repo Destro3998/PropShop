@@ -8,6 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const mongoose = require("mongoose");
 const { Order } = require("../utilities/models");
 const { getUserOrders } = require("../utilities/dbUtilities");
+const { sendOrderConfirmationEmail } = require("../utilities/emails");
 
 
 /** get all orders in the database, for admin dashboard */
@@ -43,6 +44,15 @@ router.post('/new-order/:userId', isAuth, async function (req, res) {
         if (!orderId) {
             throw new Error('Failed to create order.');
         }
+
+        // If order is valid, send confirmation email
+        await sendOrderConfirmationEmail(orderId, req.headers.host)
+            .then(() => {
+                console.log('Confirmation email sent successfully.');
+            })
+            .catch((error) => {
+                console.error('Error sending email:', error);
+            })
 
         res.json({ orderId: orderId, redirectIRL: "/store" }); // send order ID in the response
     } catch (error) {
@@ -244,7 +254,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
             pendingDisabled: pendingDisabled,
             progressDisabled: progressDisabled,
             completeDisabled: completeDisabled,
-            user: user, 
+            user: user,
         });
 
     } catch (error) {

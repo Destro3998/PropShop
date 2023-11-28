@@ -6,7 +6,7 @@ const { DisplayUser, getUserOrders, getDisplayUsers, getDisplayUser } = require(
 const { Order } = require("../utilities/models");
 const generatePassword = require("../utilities/password").generatePassword;
 const User = require("../utilities/models").User
-const { isVerified, sendVerificationEmail } = require("../utilities/emailVerification");
+const { isVerified, sendVerificationEmail } = require("../utilities/emails");
 
 const router = express.Router();
 
