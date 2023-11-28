@@ -96,10 +96,10 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 
     try {
         // create order 
-        let order = await models.Order.create([{
+        order = await models.Order.create([{
             user: userId,
         }], { session: session }); // set the session for this operation so that it remains isolated to this transaction
-
+        console.log('Created order object', order);
 
         // get all the props referenced in the users cart
         let user = await models.User.findById(userId).populate('cart.itemId').session(session);
