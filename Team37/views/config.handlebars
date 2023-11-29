@@ -25,14 +25,14 @@
 <form id="visualCustomizationForm" class="config-form" action="/admin/config" method="post" enctype="multipart/form-data">
     <fieldset class="config-fieldset">
         <legend class="config-legend">Visual Customization</legend>
-        <label class="config-label" for="main-color">Main Color</label>
+        {{!-- <label class="config-label" for="main-color">Main Color</label>
         <input type="color" name="main-color" id="main-color" class="config-input">
 
         <label class="config-label" for="background-color">Background Color</label>
         <input type="color" name="background-color" id="background-color" class="config-input">
 
         <label class="config-label" for="accent-color">Accent Color</label>
-        <input type="color" name="accent-color" id="accent-color" class="config-input">
+        <input type="color" name="accent-color" id="accent-color" class="config-input"> --}}
         
         <label for="landing-visual" class="config-label">Landing Page Visual</label>
         <input type="file" accept=".png, .jpg, .jpeg, .mp4, .mov, .flv" size="1000000" name="landing" id="landing-visual">
@@ -50,7 +50,7 @@
         <legend>Payment Settings</legend>
         <label for="" class="config-label">Deposit percentage</label>
         <input type="number" step="0.01" name="depositPercentage" class="config-input"> % of total price
-        <p>Concerning payments</p>
+        {{!-- <p>Concerning payments</p> --}}
     </fieldset>
     <input type="submit" value="Submit" class="config-button">
 </form>

@@ -111,7 +111,7 @@ a {
 
 .nav-link {
     /* margin: 0 0.25em; */
-    padding: 0.75em;
+    padding: 0.5em;
 }
 
 .footer {
@@ -906,11 +906,9 @@ h1 {
 
 .navbar-account-actions {
     display: flex;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 0.5em;
+    /* gap: 0.5em; */
+    align-items: center;
 }
 
 model-viewer {
@@ -1046,8 +1044,18 @@ model-viewer {
 }
 
 .landing {
+    display: none;
     width: 100%;
     max-height: 60rem;
+}
+
+.search-submit-button{
+    border-radius: var(--border-radius);
+    border: var(--gray-border);
+    background-color: white;
+    cursor: pointer;
+    transition: all ease-in-out 250ms;
+    padding: 1.14rem;
 }
 
 .landing>img {
@@ -1209,15 +1217,15 @@ model-viewer {
     margin: 20px auto;
     padding: 20px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    border-radius: var(--border-radius);
 }
 
 .config-fieldset {
-    border: 1px solid #e0e0e0;
+    border: var(--gray-border);
     padding: 20px;
     margin-bottom: 20px;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
 }
 
 .config-legend {
@@ -1232,12 +1240,10 @@ model-viewer {
 }
 
 .config-input[type="text"], input[type="color"] {
-    width: 100%;
+    width: 90%;
     padding: 10px;
     margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    border: var(--gray-border);
     color: #555;
 }
 
@@ -1249,12 +1255,12 @@ model-viewer {
 .config-button[type="submit"] {
     background-color: #007BFF;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
+    padding: 1rem;
+    /* border: none; */
+    border-radius: var(--border-radius);
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.5s ease-in-out;
 }
 
 .config-button[type="submit"]:hover {

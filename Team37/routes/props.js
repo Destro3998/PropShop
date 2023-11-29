@@ -43,6 +43,14 @@ router.get('/loadmore', async (req, res) => {
 router.get('/search', async (req, res) => {
     let authenticated = req.isAuthenticated();
     const searchQuery = req.query.q; //extract query
+    let userId, admin;
+    if (req.user && req.user._id) {
+		userId = req.user._id;
+		admin = req.user.admin;
+	} else {
+		userId = undefined;
+		admin = false;
+	}
     try {
         let props = await models.Prop.find({  // Database search
             $or: [
@@ -56,7 +64,7 @@ router.get('/search', async (req, res) => {
             displayProps.push(new DisplayProp(prop));
         });
 
-        res.render('store', {props: displayProps, authenticated: authenticated});  // Render the store template with the search results
+        res.render("store.handlebars", {props: displayProps, authenticated: authenticated, storeActive:true, userId:userId, admin:admin});  // Render the store template with the search results
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');
