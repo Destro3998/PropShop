@@ -183,7 +183,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             throw new Error("Payment failed with status: " + paymentIntent.status);
         }
 
-        Order.findByIdAndUpdate(order[0].id, { paymentIntentId: paymentIntent.id }).session(session);
+        Order.findByIdAndUpdate(order[0].id, { paymentIntentId: paymentIntent.id, price: depositAmount}).session(session);
 
 
 

@@ -296,7 +296,7 @@ a {
     padding: 1em;
 }
 
-.button {
+.button, .remove-btn {
     border-radius: var(--border-radius);
     /* box-shadow: var(--box-shadow); */
     padding: 1rem;
@@ -679,6 +679,7 @@ ol {
     margin-bottom: 2em;
     transition: all ease-in-out 250ms;
     width: 20%;
+    /* overflow: scroll; */
 }
 
 
@@ -688,11 +689,15 @@ ol {
     /* transform: translateY(2em) translateX(3em); */
 }
 
-.p-flex {
+.p-flex, .clear-cart-flex {
     display: flex;
     justify-content: space-between;
     gap: 0.75em;
     align-items: center;
+}
+
+.clear-cart-flex > button{
+    margin-right: 1rem;
 }
 
 #update-fname-form,
@@ -840,61 +845,58 @@ h1 {
     /* Cart page - My cart container */
     flex: 4;
     background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    padding: 20px;
-
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    border-radius: var(--border-radius);
+    padding: 2rem;
 }
 
 .cart-items-list {
     list-style: none;
     padding: 0;
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .cart-item {
-    position: relative; 
+    position: relative;
     display: flex;
-    flex-direction: column;
-    padding: 15px 10px;
-    margin: 10px 0;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
+    flex-direction: row;
+    padding: 1rem;
+    margin: 0.75rem 0;
+    /* border: 1px solid #e0e0e0; */
+    border-radius: var(--border-radius);
     background-color: #fdfdfd;
     transition: background-color 0.3s ease;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .remove-btn {
-    position: absolute; 
-    top: 50%; 
-    right: 30px; 
-    padding: 5px 10px; 
-    font-size: 0.8em; 
-    cursor: pointer; 
-    background-color: grey; 
-    color: white; 
-    border-radius: 5px; 
-    transition: background-color 0.3s ease; 
+    background-color: rgba(241, 96, 114, 0.75);
+    border: none;
 }
 
 .remove-btn:hover {
-    background-color: #cc0000; 
+    background-color: #cc0000;
+    color: white;
 }
 
 
 .cart-item:hover {
-    background-color: #f0f0f0;
+    /*background-color: #f0f0f0;*/
 }
 
 .cart-item span {
-    margin: 5px 0;
+    margin: 0.25rem 0;
     display: block;
 }
 
 .prop-name {
-    font-size: 1.1em;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 0.25rem;
 }
 
 .prop-description {
@@ -930,7 +932,6 @@ model-viewer {
 
 .cart-svg {
     display: flex;
-    align-items: center;
     background: var(--mineshaft);
     padding: 0.8em 1em;
     border-radius: var(--border-radius);
@@ -942,9 +943,9 @@ model-viewer {
     /* Cart page - checkout container */
     flex: 1 0 150px;
     background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    padding: 1rem;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -958,15 +959,16 @@ model-viewer {
 .checkout-container input[type="date"] {
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    /* border: 1px solid #ccc; */
+    /* border-radius: 5px; */
+    border-radius: calc(var(--border-radius)/2);
 }
 
 .checkout-container p {
     background-color: #f7f7f7;
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
+    border-radius: calc(var(--border-radius)/2);
+    /* margin-bottom: 15px; */
 }
 
 .checkout-container span {
@@ -984,8 +986,11 @@ model-viewer {
     transition: background-color 0.3s ease;
 }
 
+.checkout-button{width: 100%}
+
 .checkout-container .checkout-button:hover {
     background-color: #0056b3;
+    border: none;
 }
 
 .order-items {
@@ -1088,6 +1093,10 @@ model-viewer {
     .footer {
         padding: 1em;
     }
+}
+
+@media screen and (max-width: 992px) {
+    
 }
 
 /* Style for the Stripe card element container */

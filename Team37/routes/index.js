@@ -277,46 +277,24 @@ router.post("/cart/clear", isAuth, async (req, res) => {
 });
 
 
-// Delete from cart - authenticated users only ( not working, need to bug fix)
-router.post("/cart/remove", isAuth, async (req, res) => {
-	console.log("Remove from cart route hit");
-	if (!req.isAuthenticated()) {
-		return res.status(401).json({ message: "User not authenticated" });
-	}
-
-	if (req.isAuthenticated()) {
-		try {
-			const user = await User.findById(req.user._id);
-
-			if (!user) {
-				return res.status(404).json({ message: "User not found" });
-			}
-
-			console.log("User's cart before removal:", user.cart);
-
-			const objectId = mongoose.Types.ObjectId(itemId);
-			const updatedCart = user.cart.filter(item => !item.itemId.equals(objectId));
-
-			if (user.cart.length === updatedCart.length) {
-				return res.status(404).json({ message: "Item not found in cart" });
-			}
-
-			user.cart = updatedCart;
-			await user.save();
-
-			console.log("User's cart after removal:", user.cart);
-
-			res.json({ message: "Item removed from cart", cart: user.cart });
-		} catch (error) {
-			if (error instanceof mongoose.Error.CastError) {
-				res.status(400).json({ message: "Invalid item ID format" });
-			} else {
-				console.error("Error removing item:", error);
-				res.status(500).json({ message: "Internal Server Error" });
+router.post("/cart/remove/:propId", isAuth, async (req, res) => {
+	let propId = req.params.propId;
+	try {
+		let user = req.user;
+		for (let index = 0; index < user.cart.length; index++) {
+			const element = user.cart[index];
+			if (element.itemId.toString() === propId.toString()) {
+				user.cart.splice(index, 1);
+				await user.save();
 			}
 		}
+		await user.save();
+		res.status(200).json("success");
+	} catch (error) {
+		res.render("error.handlebars", { error: true, message: "Error attempting to delete item from cart" })
 	}
 });
+
 
 // for updating deposit percentage
 router.post('/update-deposit-percentage', async (req, res) => {

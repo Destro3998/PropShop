@@ -1,13 +1,12 @@
 <div class="main-container">
-
-    <div class="cart-container">
+    <div class="cart-container container">
         <h1>My Cart</h1>
         <ul class="cart-items-list">
         </ul>
-        <p class="p-flex">Clear Cart <button class="button" onclick="clearCart()">Clear</button></p>
+        <p class="clear-cart-flex">Clear Cart <button type="button" class="button" onclick="clearCart()">Clear</button></p>
     </div>
 
-    <div class="checkout-container">
+    <div class="checkout-container container">
         <label for="checkOutDate">Check-Out Date:</label>
         <input type="date" id="checkInDate" name="checkInDate">
 
@@ -96,14 +95,17 @@
             let itemId = data.item._id;
 
             let listItem = document.createElement('li');
-            listItem.classList.add('cart-item');
+            listItem.classList.add('cart-item', "container");
 
             listItem.innerHTML = `
-                    <span class="prop-name">Name: ${data.item.name}</span>
-                    <span class="prop-description">Description: ${data.item.description}</span>
-                    <span class="prop-quantity">Quantity: ${data.quantity}</span>
-                    <span class="prop-cost">Cost: $${data.item.price}</span> 
-                    <button class="remove-btn" data-id="${itemId}">Remove</button>
+                    <div>
+                        <span class="prop-name">${data.item.name}</span>
+                        <span class="prop-description">${data.item.description}</span>
+                        <span class="prop-quantity">Quantity: ${data.quantity}</span>
+                        <span class="prop-cost">$ ${data.item.price} / day</span>
+                    </div>
+                        <button class="remove-btn" data-id="${itemId}">Remove</button>
+
                 `;
 
             cartList.appendChild(listItem);
