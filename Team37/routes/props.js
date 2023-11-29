@@ -178,11 +178,12 @@ router.route("/:propId/:instanceId/edit")
 		res.status(200).redirect(redirectUrl);
 	});
 
-router.route("/:propId/qrcode")
+router.route("/:propId/:instanceId/qrcode")
     .get(isAdmin, async (req, res) => {
         let propId = req.params.propId;
+        let instanceId = req.params.instanceId;
         // URL the QR code image will link when scanned
-        let propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/pickup`;
+        let propUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/${propId}/${instanceId}/pickup`;
         // Generate a data URL for the QR code image corresponding to the propUrl
         qrCode.toDataURL(propUrl, function (error, url) {
             if (error) {
