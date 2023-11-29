@@ -262,22 +262,26 @@ router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
         orderIds.push(element._id);
     });
 
-    res.render("pickup.handlebars", {prop: prop, authenticated: authenticated, userId: userId, orderIds: orderIds});
+    res.render("pickup.handlebars", {prop: prop, instanceId: req.params.instanceId, authenticated: authenticated, userId: userId, orderIds: orderIds});
 });
 
 router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
-    console.log(req.body);
+    console.log("manamejeff")
+    //console.log(req.body);
     let condition = req.body.condition;
     let status = "";
     let redirectUrl = req.header('referer') || '/admin/dashboard';
     try {
         let prop = await getProp(req.params.propId);
         let instance;
-
+        console.log(prop)
         for (const inst of prop.instance) {
-            if (inst._id === req.params.instanceId)
+            console.log(inst)
+            if (inst.id === req.params.instanceId){
+                console.log("foundfoundofundoufndEAIJFWERIGFJNWERGJ")
                 instance = inst
                 break
+            }
         }
 
         if (!instance) { // if instance wasn't found
@@ -297,7 +301,9 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
         // update numOfReserved for the prop if it was reserved for this order
         // can just subtract without checking for now, but there must be checks added in the future if
         // allowing admins to check out additional props to an order that were not originally reserved
-        prop.numOfReserved -= 1
+        if (req.body.inOut === "outgoing") {
+            prop.numOfReserved -= 1
+        }
 
         prop.status = status;
         await prop.save();

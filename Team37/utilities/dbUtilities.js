@@ -92,11 +92,11 @@ async function getOrders(skip = 0, limit = 0) {
 		//.populate('items.0.itemId').exec();
 		orders.forEach(order => {
 
-			console.log(order.items)
+			//console.log(order.items)
 			displayOrders.push(new DisplayOrder(order))// for each prop in the database make it a displayProp object and add it to the list.
 		});
 
-		console.log(orders)
+		///console.log(orders)
 		return displayOrders;
 	} catch (error) {
 		console.log(error);
@@ -302,7 +302,7 @@ async function searchProps(searchTerm_2) {
             name: regex  
         });
         
-        console.log("DB returned props:", props);
+        //console.log("DB returned props:", props);
         
         let displayProps = [];
         props.forEach(prop => {

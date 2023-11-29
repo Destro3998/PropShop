@@ -10,7 +10,7 @@
     <p><strong>Status: </strong>{{prop.status}}</p>
 </div>
 
-<form action="/prop/{{prop.propId}}/pickup" method="post" class="vertical-form">
+<form action="/prop/{{prop.propId}}/{{instanceId}}/pickup" method="post" class="vertical-form">
     <label for="order-selection"><strong>For order:</strong></label>
     <select id="order-selection" class="order-selection" name="orderSelect" required>
         {{#each orderIds}}
