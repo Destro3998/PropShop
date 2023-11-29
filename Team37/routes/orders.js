@@ -39,11 +39,13 @@ router.post('/new-order/:userId', isAuth, async function (req, res) {
     }
 
     try {
-        const orderId = await newOrderTransaction(req.params.userId, paymentMethodId, depositAmount);
-        // if the orderId is not null or undefined
-        if (!orderId) {
-            throw new Error('Failed to create order.');
+        const result = await newOrderTransaction(req.params.userId, paymentMethodId, depositAmount);
+        // if the order was created successfully
+        if (!result.success) {
+            throw result.error
         }
+
+        orderId = result.orderId
 
         // If order is valid, send confirmation email
         await sendOrderConfirmationEmail(orderId, req.headers.host)
@@ -60,33 +62,6 @@ router.post('/new-order/:userId', isAuth, async function (req, res) {
         res.status(500).json({ error: error.message });
     }
 });
-/*
-let usermodel = await models.User.findById(req.params.userId); // get the user placing the order
-
-
-try {
-    models.Order.create({
-        price: req.body.price,
-        //datePlaced: new Date(),
-        status: req.body.status,
-        user: req.params.userId,
-        items: usermodel.cart // might be better to go through the cart items one by one, calling reserve and then adding to the order
-    })                      // (in case one or more items have become unavailable since adding to cart)
-                                // this would be done in this route method, but after already constructing the order
-} catch (error) {
-    console.log(error)
-}  */
-
-/*if (!orderId) { // if transaction failed
-    res.status(500);
-    res.send()
-    res.redirect("/store");
-} else {
-    res.status(200);
-    res.redirect("/store"); // TODO: change this to route to the order page? or some success screen
-    //res.redirect(`/orders/${orderId}`) // THIS DOES NOT WORK
-}
-})*/
 
 
 /**
@@ -103,7 +78,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     const session = await mongoose.startSession(); // Start a new session for transaction
     session.startTransaction(); // Start the transaction
     let order;
-
+    let result;
     try {
         // create order 
         order = await models.Order.create([{
@@ -116,7 +91,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 
         //console.log(user)
         if (user.cart.length < 1) { // if cart is empty, abort transaction
-            throw new Error("Attempting to reserve empty cart")
+            throw new Error("Attempting to reserve empty cart.")
         }
 
         console.log(user.cart.length + " item(s) detected in cart")
@@ -128,9 +103,9 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             console.log("reserving " + cartitem.itemId.name)
 
             // change status/quantity of prop in the store
-            if (cartitem.itemId.numOfAvailable > 0) { // first check if prop is available
+            if (cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved > 0) { // first check if prop is available
                 console.log("is available" + cartitem.itemId.name)
-                if (cartitem.itemId.numOfAvailable >= cartitem.quantity) { // if there is more than enough of this prop available
+                if (cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved >= cartitem.quantity) { // if there is more than enough of this prop available
                     console.log("enough available " + cartitem.itemId.name)
                     await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
                         numOfReserved: cartitem.itemId.numOfReserved + cartitem.quantity // just lower the number of available props
@@ -138,10 +113,11 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
                 }
                 else {
                     console.log("not enough" + cartitem.itemId.name)
-                    throw new Error("not enough of this item available")
+                    throw new Error(`Requested ${cartitem.itemId.quantity} ${cartitem.itemId.name},
+                     but only ${cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved} available to reserve.`)
                 }
             } else { // if not available don't reserve it
-                throw new Error("item is not available to reserve")
+                throw new Error(`${cartitem.itemId.name} is not available to reserve.`)
             }
 
             console.log("reserved " + cartitem.itemId.name)
@@ -166,7 +142,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 
         depositAmount = parseInt(depositAmount * 100) // convert $ to cents and parse as integer for stripe
         if (isNaN(depositAmount) || depositAmount <= 0) {
-            throw new Error("Invalid deposit amount");
+            throw new Error("Invalid deposit amount.");
         }
 
         const paymentIntent = await stripe.paymentIntents.create({
@@ -190,16 +166,17 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
         // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
         console.log("transaction committed")
+        result = {success: true, orderId: order[0]._id }
     } catch (error) {
         await session.abortTransaction();
         console.log("transaction failed")
-        throw error;
+        result = { success: false, error: error }
     } finally {
         session.endSession();
         console.log("session ended")
     }
 
-    return order ? order[0]._id : null; // Return the ID of the created order
+    return result
 }
 
 

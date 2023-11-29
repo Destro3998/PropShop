@@ -40,7 +40,6 @@ propSchema.pre('save', function (next) {
 		}
 		return count;
 	}, 0);
-	this.numOfReserved = this.quantity - this.numOfAvailable;
 	next(); // Allow rest of the operation to continue
 });
 

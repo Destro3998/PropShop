@@ -320,9 +320,9 @@
                     .then(result => {
                         // process result
                         if (result.error) {
-                            console.error(result.error.message);
                             // display errors on the page
-                            document.getElementById('card-errors').textContent = result.error.message;
+                            alert('Could not reserve item(s): ' + result.error); 
+                            //document.getElementById('card-errors').textContent = result.error.message;
                         } else {
                             // display message and re-drirect when order gets successful
                             alert('Payment successful! Your order has been placed.'); 
