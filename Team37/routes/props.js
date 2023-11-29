@@ -246,7 +246,7 @@ router.get("/:propId/reserve", async (req, res) => {
     }
 })
 
-router.get("/:propId/pickup", isAdmin, async (req, res) => {
+router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     let authenticated = req.isAuthenticated();
     let propId = req.params.propId; // getting the propId from the url
     let prop = await getDisplayProp(propId);
@@ -265,23 +265,40 @@ router.get("/:propId/pickup", isAdmin, async (req, res) => {
     res.render("pickup.handlebars", {prop: prop, authenticated: authenticated, userId: userId, orderIds: orderIds});
 });
 
-router.post("/:propId/pickup", isAdmin, async (req, res) => {
+router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     console.log(req.body);
     let condition = req.body.condition;
     let status = "";
     let redirectUrl = req.header('referer') || '/admin/dashboard';
     try {
         let prop = await getProp(req.params.propId);
+        let instance;
+
+        for (const inst of prop.instance) {
+            if (inst._id === req.params.instanceId)
+                instance = inst
+                break
+        }
+
+        if (!instance) { // if instance wasn't found
+            throw new Error(`Instance could not be found of ${prop.name}`)
+        }
 
         if (req.body.inOut === "incoming") {
             // the item has been returned.
-            status = "available";
+            instance.status = "available";
         } else if (req.body.inOut === "outgoing") {
             // The item is being taken out
-            status = "checked out"
+            instance.status = "unavailable"
         } else {
             throw new Error("Form submission incomplete");
         }
+
+        // update numOfReserved for the prop if it was reserved for this order
+        // can just subtract without checking for now, but there must be checks added in the future if
+        // allowing admins to check out additional props to an order that were not originally reserved
+        prop.numOfReserved -= 1
+
         prop.status = status;
         await prop.save();
         res.redirect(`/orders/${req.body.orderSelect}`)

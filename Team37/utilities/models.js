@@ -21,7 +21,7 @@ const propSchema = new mongoose.Schema({
 		{
 			status: { // Using enum behaviour to restrict possible values
 				type: String,
-				enum: ["available", "reserved"],
+				enum: ["available", "unavailable"],
 				required: true
 			},
 			location: { type: String },
