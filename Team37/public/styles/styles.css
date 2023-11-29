@@ -710,7 +710,31 @@ ol {
     flex-direction: column;
     border-radius: var(--border-radius);
     width: 20%;
+    max-height: 700px; 
+    overflow-y: auto;
 }
+
+.user-orders .head-text {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.user-orders .order {
+    border: 1px solid #e0e0e0; 
+    padding: 10px; 
+    margin-bottom: 15px; 
+    border-radius: 10px;
+    background-color: #f9f9f9; 
+}
+
+
+.order p {
+    margin: 0.5em 0;
+    font-size: 0.95em;
+    line-height: 1.4; 
+}
+
 
 .load-more-container {
     margin: 1em 0;
@@ -974,6 +998,7 @@ model-viewer {
     padding: 1rem;
     margin-bottom: 2rem;
 }
+
 
 .order-item {
     padding: 0.5rem;
