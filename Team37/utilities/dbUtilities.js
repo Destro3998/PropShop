@@ -10,7 +10,7 @@ class DisplayProp {  // This is a class used to display props on the site
 		this.name = prop.name;
 		this.description = prop.description;
 		this.quantity = prop.quantity;
-		this.numOfAvailable = prop.numOfAvailable;
+		this.numOfAvailable = prop.numOfAvailable - prop.numOfReserved;
 		this.numOfReserved = prop.numOfReserved;
 		this.image = prop.image;
 		this.model3d = prop.model3d;

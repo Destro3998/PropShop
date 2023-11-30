@@ -14,13 +14,14 @@
         <input type="date" id="checkOutDate" name="checkOutDate">
 
         <p id="dayCount">Booking for: <span>0</span> days</p>
-        <p id="costPerDay">Total Rental Rate: <span>$0.00</span> per day</p>
 
-        <p id="estimatedTotalCost">Estimated Total Cost: <span>$0.00</span> for <span id="estimatedDays">0</span> days</p>
+         <p id="estimatedTotalCost">Estimated Total Cost: <span>$0.00</span> <!--for <span id="estimatedDays">0</span> days--></p>
+
+        <p id="costPerDay">Total Rental Rate: <span>$0.00</span> per day</p>
 
     <!-- <p id="totalPropAmount">Reserve Amount: <span>$0.00</span></p> -->
 
-        <p id="deposit">Reservation Fee: <span>$0.00</span> for <span id="dayCount">0</span> days</p>
+        <p id="deposit">Reservation Fee: <span>$0.00</span> <!-- for <span id="dayCount">0</span> days--></p>
 
         <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
             <div id="card-element"></div>
@@ -73,11 +74,12 @@
             const estimatedDaysSpan = document.getElementById('estimatedDays');
             estimatedDaysSpan.textContent = days;
 
-            // update the deposit amount
+           /* // update the deposit amount
             const totalAmount = parseFloat(document.getElementById('costPerDay').querySelector('span').textContent.replace('$', ''));
             const depositPercentage = {{depositPercentage}}; // Fetch from the server
-            const reserveAmount = totalAmount * (depositPercentage * 0.01);
-            updateDepositAmount(reserveAmount);
+            const reserveAmount = costPerDay * (depositPercentage * 0.01);
+            console.log(reserveAmount + "im gay")
+            updateDepositAmount(reserveAmount);*/
         }
 
         checkOutDateInput.addEventListener('change', function () {
@@ -245,18 +247,20 @@
     function updateReserveAmount(totalAmount) {
         const depositPercentage = {{depositPercentage}}; // Fetch from the server
         const reserveAmount = totalAmount * (depositPercentage * 0.01);
-        document.getElementById('totalPropAmount').querySelector('span').textContent = `$${reserveAmount.toFixed(2)} per day`;
-        updateDepositAmount(reserveAmount);
+        //document.getElementById('totalPropAmount').querySelector('span').textContent = `$${reserveAmount.toFixed(2)} per day`;
+        //updateDepositAmount(reserveAmount);
+        document.getElementById('deposit').querySelectorAll('span')[0].textContent = `$${reserveAmount.toFixed(2)}`;
     }
 
+    /*
     // Function to calculate and update deposit amount
     function updateDepositAmount(reserveAmount) {
-        const daysCountForDeposit = parseInt(document.getElementById('dayCount').querySelector('span').textContent, 10);
-        const depositAmount = reserveAmount * daysCountForDeposit;
+        //const daysCountForDeposit = parseInt(document.getElementById('dayCount').querySelector('span').textContent, 10);
+        const depositAmount = reserveAmount //* daysCountForDeposit;
 
         document.getElementById('deposit').querySelectorAll('span')[0].textContent = `$${depositAmount.toFixed(2)}`;
         document.getElementById('deposit').querySelectorAll('span')[1].textContent = daysCountForDeposit;
-    }
+    }*/
 
     });
 

@@ -80,6 +80,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
     let order;
     let result;
     try {
+        config = await models.Configuration.findOne()
         // create order 
         order = await models.Order.create([{
             user: userId,
@@ -137,7 +138,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
         // Update the order price and depositAmount
         await Order.findByIdAndUpdate({ _id: order[0].id }, { price: totalPrice }).session(session);
 
-        depositAmount = totalPrice * 0.10; //TODO: replace 0.10 with reservation fee set by config page
+        depositAmount = totalPrice * (config.depositPercentage/100.0);
         await Order.findByIdAndUpdate({ _id: order[0].id }, { depositAmount: depositAmount }).session(session);
 
         depositAmount = parseInt(depositAmount * 100) // convert $ to cents and parse as integer for stripe
