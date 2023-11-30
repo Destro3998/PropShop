@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 
 const cartItemSchema = new mongoose.Schema({
 	itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Prop", required: true },
-	quantity: { type: Number, default: 1 }
+	quantity: { type: Number, default: 1 },
+	instanceId: { type: mongoose.Schema.Types.ObjectId, default: null }
 });
 
 const propSchema = new mongoose.Schema({

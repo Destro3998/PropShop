@@ -207,12 +207,19 @@ router.get('/:orderId', isAuth, async function (req, res) {
         order.items.forEach((item) => {
             //console.log(item)
             scanned = 0
-            for (const inst of item.itemId.instance){
-                console.log(inst.order)
-                if (inst.order){
-                    if (inst.order.toString() === req.params.orderId){
-                        //checkedItems.push(item.toObject());
-                        scanned += 1
+            if (item.instanceId){
+                for (const inst of item.itemId.instance){
+                    //console.log(inst.order)
+                    if (inst.order){
+                        //console.log("found prop tied to order")
+                        if (inst.order.toString() === req.params.orderId){
+                            //console.log("found matching order id")
+                            if (item.instanceId.toString() === inst.id.toString()){
+                                //console.log("found matching instance id in order")
+                                //checkedItems.push(item.toObject());
+                                scanned += 1
+                            }
+                        }
                     }
                 }
             }
@@ -221,12 +228,6 @@ router.get('/:orderId', isAuth, async function (req, res) {
             } else {
                 reservedItems.push(item.toObject());
             }
-            /*
-            if (item.status === "unavailable") {
-                checkedItems.push(item.toObject());
-            } else {
-                reservedItems.push(item.toObject());
-            }*/
         });
         // Converting Mongoose document to a plain object
         let orderObj = order.toObject();

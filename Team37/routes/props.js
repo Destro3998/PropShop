@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const models = require("../utilities/models.js");
-const {getProps, getProp, getDisplayProp, DisplayProp} = require("../utilities/dbUtilities.js");
+const {getProps, getProp, getOrder, getDisplayProp, DisplayProp} = require("../utilities/dbUtilities.js");
 const {isAdmin} = require("../utilities/authMiddleware.js");
 const qrCode = require('qrcode');
 
@@ -325,7 +325,6 @@ router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
 });
 
 router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
-    console.log("manamejeff")
     //console.log(req.body);
     let condition = req.body.condition;
     let status = "";
@@ -333,6 +332,7 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     let redirectUrl = req.header('referer') || '/admin/dashboard';
     try {
         let prop = await getProp(req.params.propId);
+        let order = await getOrder(orderId);
         let instance;
         console.log(prop)
         for (const inst of prop.instance) {
@@ -355,19 +355,31 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
             // The item is being taken out
             instance.status = "unavailable"
             instance.order = orderId;
+            // find the order cartItem to match the given instance to
+            let orderItem;
+            for (const item of order.items) {
+                //console.log(item)
+                if (item.itemId.toString() === req.params.propId && item.instanceId === null){
+                    console.log("yesyes")
+                    orderItem = item;
+                    //item.instanceId = instance._id
+                    break;
+                }
+            }
+            if (!orderItem) { // if instance wasn't found
+                throw new Error(`This ${prop.name} is not reserved within this order`)
+            } else {
+                orderItem.instanceId = req.params.instanceId;
+                // update numOfReserved for the prop if it was reserved for this order
+                prop.numOfReserved -= 1;
+            }
         } else {
             throw new Error("Form submission incomplete");
         }
-
-        // update numOfReserved for the prop if it was reserved for this order
-        // can just subtract without checking for now, but there must be checks added in the future if
-        // allowing admins to check out additional props to an order that were not originally reserved
-        if (req.body.inOut === "outgoing") {
-            prop.numOfReserved -= 1
-        }
         
-        prop.status = status;
+        //prop.status = status;
         await prop.save();
+        await order.save();
         res.redirect(`/orders/${orderId}`)
     } catch (error) {
         console.error(error.message);
