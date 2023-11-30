@@ -48,7 +48,7 @@ Once that is installed on your system open a terminal and run.
 node --version
 ```
 
-if this gives you no errors, then you have successfully installed nodeJS onto your system.
+If this gives you no errors, then you have successfully installed nodeJS onto your system.
 
 ### Step 3
 
@@ -71,7 +71,7 @@ Once this is complete you will have all the dependencies necessary to run the pr
 
 Create a `.env` file in the `370-project-fall-2023/Team37` directory.
 
-in this file add the following:
+In this file add the following:
 
 ```env
 DB_PASSWORD=admin@370
@@ -91,13 +91,13 @@ Once you have this copied into the .env file you are good to start the server.
 
 Start the server
 
-In your terminal window that is in the `370-project-fall-2023/Team37` directory run the command `npm start`. This command will start teh server on port 3000.
+In your terminal window that is in the `370-project-fall-2023/Team37` directory run the command `npm start`. This command will start the server on port 3000.
 
 In your browser navigate to <locahost:3000> or <http://127.0.0.1:3000/>
 
 ### Step 6
 
-You're in.
+You should now have the capability to explore the website's code.
 
 ## Credits
 
@@ -112,4 +112,4 @@ The Team of developers that worked on this project:
 
 ## Thank you
 
-Thank you to you for taking the time to look at this project.
+Thank you for taking the time to look at this project.
