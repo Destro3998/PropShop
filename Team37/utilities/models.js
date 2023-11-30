@@ -24,6 +24,7 @@ const propSchema = new mongoose.Schema({
 				enum: ["available", "unavailable"],
 				required: true
 			},
+			order: {type: mongoose.Schema.Types.ObjectId, ref: "Order", default: null}, // the order that the instance is attached to, if unavailable
 			location: { type: String },
 			condition: { type: String },
 			rentHistory: [String]

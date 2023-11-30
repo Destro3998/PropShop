@@ -71,6 +71,56 @@ router.get('/search', async (req, res) => {
     }
 });
 
+// this is used by the form submission
+router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
+	name: 'model3d',
+	maxCount: 1
+}]), function (req, res) {
+	authenticated = req.isAuthenticated();
+
+	// req.files holds the image(s)
+	// req.body will hold the text fields
+
+	// CHECK IF IMAGES/3D MODELS WERE UPLOADED FIRST
+	if (req.files.model3d !== undefined) {
+		filename3d = req.files.model3d[0].filename
+	} else {
+		filename3d = null
+	}
+	if (req.files.image !== undefined) {
+		filenameimg = req.files.image[0].filename
+
+	} else {
+		filenameimg = null
+	}
+	try {
+
+		instances = []
+		for (let i = 0; i < req.body.quantity; i++){
+			let newInstance = {
+				status: "available",
+				rentHistory: [],
+			};
+			instances.push(newInstance)
+		}
+
+		models.Prop.create({ // this creates entries in the database
+			name: req.body.name,
+			description: req.body.description,
+			quantity: req.body.quantity,
+			status: "available", // TESTING -- REMOVE THIS LATER
+			image: filenameimg,
+			model3d: filename3d,
+			price: req.body.price,
+			instance: instances
+		});
+	} catch (error) {
+		console.log(error)
+	}
+	res.status(200);
+	res.redirect("/admin/dashboard"); // send the user back to the dashboard -- this assumes that adding props can only be done by admins.
+});
+
 
 // "/:propId" this syntax allows for any value that follows the "/" to be read as the propId
 router.get("/:propId", async (req, res) => {
@@ -261,10 +311,10 @@ router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     let prop = await getDisplayProp(propId);
     let userId;
     userId = req.user && req.user._id ? req.user._id : undefined;
-    console.log(prop);
+    //console.log(prop);
 
     let orders = await models.Order.find();
-    console.log(orders);
+    //console.log(orders);
     orderIds = [];
 
     orders.forEach(element => {
@@ -279,6 +329,7 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     //console.log(req.body);
     let condition = req.body.condition;
     let status = "";
+    let orderId = req.body.orderSelect
     let redirectUrl = req.header('referer') || '/admin/dashboard';
     try {
         let prop = await getProp(req.params.propId);
@@ -287,7 +338,6 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
         for (const inst of prop.instance) {
             console.log(inst)
             if (inst.id === req.params.instanceId){
-                console.log("foundfoundofundoufndEAIJFWERIGFJNWERGJ")
                 instance = inst
                 break
             }
@@ -300,9 +350,11 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
         if (req.body.inOut === "incoming") {
             // the item has been returned.
             instance.status = "available";
+            instance.order = null
         } else if (req.body.inOut === "outgoing") {
             // The item is being taken out
             instance.status = "unavailable"
+            instance.order = orderId;
         } else {
             throw new Error("Form submission incomplete");
         }
@@ -313,10 +365,10 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
         if (req.body.inOut === "outgoing") {
             prop.numOfReserved -= 1
         }
-
+        
         prop.status = status;
         await prop.save();
-        res.redirect(`/orders/${req.body.orderSelect}`)
+        res.redirect(`/orders/${orderId}`)
     } catch (error) {
         console.error(error.message);
         res.redirect(redirectUrl);

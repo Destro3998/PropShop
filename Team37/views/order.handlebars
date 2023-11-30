@@ -9,35 +9,33 @@
 <div>
     <div class="order-status-group">
         <div>
-            <h2>Pending Items</h2>
+            <h2>In Shop</h2>
             <div class="order-pending-group container">
                 {{#if reservedItems}}
                 {{#each reservedItems}}
                 <div class="pending-items-group container">
                     <p>item name: {{this.itemId.name}}</p>
                     <p>item description: {{this.itemId.description}}</p>
-                    <p>Status: {{this.itemId.status}}</p>
                 </div>
                 {{/each}}
                 {{else}}
-                <p>There are no items that have not been scanned</p>
+                <p>All order items have been checked out.</p>
                 {{/if}}
 
             </div>
         </div>
         <div>
-            <h2>Scanned Items</h2>
+            <h2>Checked Out</h2>
             <div class="order-completed-group container">
                 {{#if checkedItems}}
                 {{#each checkedItems}}
                 <div class="completed-items-group container">
                     <p>item name: {{this.itemId.name}}</p>
                     <p>item description: {{this.itemId.description}}</p>
-                    <p>Status: {{this.itemId.status}}</p>
                 </div>
                 {{/each}}
                 {{else}}
-                <p>There are no items that have been scanned</p>
+                <p>No order items currently checked out.</p>
                 {{/if}}
 
             </div>

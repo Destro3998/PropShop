@@ -204,11 +204,28 @@ router.get('/:orderId', isAuth, async function (req, res) {
         let reservedItems = [];
         let checkedItems = []
         order.items.forEach((item) => {
-            if (item.status === "checked out") {
+            //console.log(item)
+            scanned = 0
+            for (const inst of item.itemId.instance){
+                console.log(inst.order)
+                if (inst.order){
+                    if (inst.order.toString() === req.params.orderId){
+                        //checkedItems.push(item.toObject());
+                        scanned += 1
+                    }
+                }
+            }
+            if (scanned > 0){ // integer instead of a bool for when multiple quantites are being scanned
                 checkedItems.push(item.toObject());
             } else {
                 reservedItems.push(item.toObject());
             }
+            /*
+            if (item.status === "unavailable") {
+                checkedItems.push(item.toObject());
+            } else {
+                reservedItems.push(item.toObject());
+            }*/
         });
         // Converting Mongoose document to a plain object
         let orderObj = order.toObject();

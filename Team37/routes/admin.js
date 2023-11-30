@@ -8,13 +8,13 @@ const fs = require("fs"); // for editing filenames
 const multer = require("multer"); // for file upload
 
 
-const imagedir = './public/3dmodels'; // file location to store/retrieve 3d models and images from
+const imagedir = './public/images';
 var storage = multer.diskStorage({ // setting up file uploads
 	destination: function (req, file, cb) {
 		cb(null, imagedir)
 	},
 	filename: function (req, file, cb) {
-		cb(null, Date.now() + file.originalname) // add date.now() to make uploaded props have unique file names and to not risk getting mixed up in the folder
+		cb(null, "logo.png") // this is being used to change the logo
 	}
 })
 var upload = multer({storage: storage})
@@ -86,55 +86,7 @@ router.get("/add-user", isAdmin, (req, res) => {
 });
 
 
-// this is used by the form submission
-router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
-	name: 'model3d',
-	maxCount: 1
-}]), function (req, res) {
-	authenticated = req.isAuthenticated();
 
-	// req.files holds the image(s)
-	// req.body will hold the text fields
-
-	// CHECK IF IMAGES/3D MODELS WERE UPLOADED FIRST
-	if (req.files.model3d !== undefined) {
-		filename3d = req.files.model3d[0].filename
-	} else {
-		filename3d = null
-	}
-	if (req.files.image !== undefined) {
-		filenameimg = req.files.image[0].filename
-
-	} else {
-		filenameimg = null
-	}
-	try {
-
-		instances = []
-		for (let i = 0; i < req.body.quantity; i++){
-			let newInstance = {
-				status: "available",
-				rentHistory: [],
-			};
-			instances.push(newInstance)
-		}
-
-		models.Prop.create({ // this creates entries in the database
-			name: req.body.name,
-			description: req.body.description,
-			quantity: req.body.quantity,
-			status: "available", // TESTING -- REMOVE THIS LATER
-			image: filenameimg,
-			model3d: filename3d,
-			price: req.body.price,
-			instance: instances
-		});
-	} catch (error) {
-		console.log(error)
-	}
-	res.status(200);
-	res.redirect("/admin/dashboard"); // send the user back to the dashboard -- this assumes that adding props can only be done by admins.
-});
 
 // Render Configuration page
 router.get("/config", isAdmin, async (req, res) => {
@@ -143,6 +95,27 @@ router.get("/config", isAdmin, async (req, res) => {
     res.render("config.handlebars", { config });
 });
 
+router.post("/config/visual", isAdmin, upload.fields(
+	[{name: 'logo', maxCount: 1}]),  //{name: 'landing', maxCount: 1 }]), 
+	async (req, res) => {
+	try {
+		/*let config = await Configuration.findOne();
+		if (req.files !== undefined){
+			if (req.files.logo !== undefined) {
+				config.logo = req.files.logo[0].filename 
+			}
+			if (req.files.landing !== undefined) {
+				config.landing = req.files.landing[0].filename 
+			}
+		}
+        await config.save();*/
+		req.flash("success", "Logo successfully updated");
+        res.redirect("/admin/config"); 
+	} catch (error) {
+	console.error(error);
+	res.status(500).send("Internal Server Error");
+	}
+});
 
 // Handle Configuration form submission
 router.post("/config", isAdmin, async (req, res) => {
@@ -173,27 +146,7 @@ router.post("/config", isAdmin, async (req, res) => {
 		}
 });
 
-router.post("/config/visual", isAdmin, upload.fields(
-	[{name: 'logo', maxCount: 1}, {name: 'landing', maxCount: 1 }]), 
-	async (req, res) => {
-	try {
-		let config = await Configuration.findOne();
-		if (req.files !== undefined){
-			if (req.files.logo !== undefined) {
-				config.logo = req.files.logo[0].filename 
-			}
-			if (req.files.landing !== undefined) {
-				config.landing = req.files.landing[0].filename 
-			}
-		}
-        await config.save();
-		req.flash("success", "Setting successfully updated");
-        res.redirect("/admin/config"); 
-	} catch (error) {
-	console.error(error);
-	res.status(500).send("Internal Server Error");
-	}
-});
+
 
 
 // Dashboard User Search
