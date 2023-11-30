@@ -1,7 +1,7 @@
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
 
 
-<div class="prop-details">
+<div class="pickup-details">
     <h3 class="title-text">{{ prop.name }}</h3>
     <img src="/3dmodels/{{prop.propId}}.jpg">
     <p><strong>Description: </strong>{{ prop.description }}</p>
@@ -10,7 +10,7 @@
     <p><strong>Status: </strong>{{prop.status}}</p>
 </div>
 
-<form action="/prop/{{prop.propId}}/{{instanceId}}/pickup" method="post" class="vertical-form">
+<form action="/prop/{{prop.propId}}/{{instanceId}}/pickup" method="post" class="pickup-form">
     <label for="order-selection"><strong>For order:</strong></label>
     <select id="order-selection" class="order-selection" name="orderSelect" required>
         {{#each orderIds}}

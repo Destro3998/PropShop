@@ -266,15 +266,20 @@ router.get('/:orderId', isAuth, async function (req, res) {
 
 });
 
-router.get("/:userId/orders", async (req, res) => {
+router.get("/:userId/orders", isAdmin, async (req, res) => {
     try {
         let authenticated = req.isAuthenticated();
+        let user = req.user.toObject();
         let userId = req.params.userId;
-        let orders = await getUserOrders(userId);
+        let ordersNonObject = await Order.find({ user: userId }).populate("user");
+        // ordersNonObject.forEach((order) => order.items.forEach((item) => item.populate("itemId")));
+        let orders = [];
+        ordersNonObject.forEach((order) => orders.push(order.toObject()));
         let ordersLength = orders.length;
-        res.render("orders.handlebars", { orders: orders, ordersLength: ordersLength, authenticated: authenticated })
+        res.render("orders.handlebars", { orders: orders, ordersLength: ordersLength, authenticated: authenticated, user:user })
     } catch (error) {
-        res.render("error.handlebars", { error: true, message: "Failed to get the order page for that user." })
+        console.error(error);
+        res.render("error.handlebars", { error: true, message: "Failed to get the order page for that user.", admin_user:true})
     }
 });
 
@@ -287,7 +292,7 @@ router.post("/:orderId/inProgress", isAdmin, async (req, res) => {
         req.flash("success", "state successfully changed");
         res.status(200).json({ message: "State changed successfully" });
     } catch (e) {
-        res.render("error.handlebars", { error: true, message: "Failed to update the order status to 'in progress'" });
+        res.render("error.handlebars", { error: true, message: "Failed to update the order status to 'in progress'" , admin_user:true});
     }
 });
 

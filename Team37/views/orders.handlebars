@@ -1,18 +1,24 @@
 <div>
-    <h1 class="title-text">{{name}}</h1>
+    <h1 class="title-text">{{user.fname}} {{user.lname}}'s Orders</h1>
     {{#if ordersLength}}
     <div class="order-list">
         {{#each orders}}
         <div class="order container">
             <a href="/orders/{{this.orderId}}">
-                <h2>Order id: {{this.orderId}}</h2>
+                <h2>Order id: {{this._id}}</h2>
                 <div>
-                    <h3>User: {{this.userFname}} {{this.userLname}} - {{this.userEmail}}</h3>
+                    <h3>User: {{this.user.fname}} {{this.user.lname}} - {{this.user.email}}</h3>
                     <h3>Date Placed: {{this.datePlaced}}</h3>
                     <h3>Status: {{this.status}}</h3>
                 </div>
                 <div class="order-items">
-                    <h4>{{this.numItems}} item(s)</h4>
+                    <h4>{{this.items.length}} item(s)</h4>
+                    {{#each this.items}}
+                    <div class="order-list-item">
+                        <a href="/prop/{{this.itemId}}">Prop: {{this.itemId}}</a>
+                        <p>Quantity: {{this.quantity}}</p>
+                    </div>
+                    {{/each}}
                 </div>
             </a>
 
