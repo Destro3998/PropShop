@@ -883,10 +883,10 @@ h1 {
     color: white;
 }
 
-
+/*
 .cart-item:hover {
-    /*background-color: #f0f0f0;*/
-}
+    background-color: #f0f0f0;
+}*/
 
 .cart-item span {
     margin: 0.25rem 0;
@@ -1287,4 +1287,112 @@ model-viewer {
 
 .notification.notification-error {
     background-color: red;
+}
+
+
+/* Mobile View - Media query for screens with a maximum width of 400px */
+@media (max-width: 400px) {
+    .navbar {
+        padding: 0.25em;
+        width: 100%;
+    }
+
+    .navbar-logo {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 0.5em;
+        margin: 0.25em;
+    }
+
+    .title-group {
+        margin-top: 1rem; 
+        align-items: stretch; 
+    }
+
+    .strong-text {
+        font-size: 3rem; 
+    }
+
+    .title-text {
+        font-size: 2rem; 
+        margin-block-end: 0.5em; 
+        margin-block-start: 0.5em; 
+    }
+
+    .title-group form {
+        margin-left: 80px;
+        width: auto; 
+    }
+
+    .search-submit-button {
+        padding: 0.5rem; 
+    }
+
+
+    .store-inner {
+        grid-template-columns: repeat(auto-fill, minmax(15em, 1fr)); 
+        margin: 1rem 0; 
+    }
+
+    .store-card {
+        width: 20rem; 
+    }
+
+    .store-item-image {
+        height: auto; 
+        object-fit: cover; 
+    }
+
+    .store-item-info {
+        padding: 0.5em; 
+    }
+
+    .load-more-container {
+        margin: 1em 0; 
+    }
+
+    .prop-container {
+        display: flex;
+        flex-direction: column; 
+        padding: 1rem; 
+        align-items: center; 
+        gap: 2rem; 
+    }
+
+    .prop-image {
+        width: 100%; 
+        height: auto; 
+        flex: none; 
+        margin-bottom: 1rem; 
+    }
+
+    .model-toggle-note {
+        position: absolute; 
+        bottom: -0.5rem; 
+        left: 50%;
+        transform: translateX(-60%); 
+        width: 75%; 
+        padding: 0.5rem; 
+        font-size: 0.8rem; 
+    }
+
+    .prop-details {
+        width: 100%; 
+        align-items: center; 
+        text-align: center; 
+    }
+
+    .prop-details > p {
+        margin: 0.5em 0; 
+    }
+
+    .addToCartBtn {
+        padding: 8px 12px; 
+        font-size: 16px; 
+        width: auto; 
+        margin: 2rem 0; 
+    }
+
 }
