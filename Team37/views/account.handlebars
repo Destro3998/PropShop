@@ -74,11 +74,13 @@
     <h3 class="head-text">Your Orders</h3>
     {{#if orders}}
         {{#each orders}}
-            <div class="order">
-                <p>Order ID: {{this.orderId}}</p>
-                <p>Date Placed: {{this.datePlaced}}</p>
-                <p>Status: {{this.status}}</p>
-            </div>
+            <a href="/orders/{{this.orderId}}">
+                <div class="order">
+                    <p>Order ID: {{this.orderId}}</p>
+                    <p>Date Placed: {{this.datePlaced}}</p>
+                    <p>Status: {{this.status}}</p>
+                </div>
+            </a>
         {{/each}}
     {{else}}
         <p>You haven't ordered anything yet.<br>Order something in the <a href="/store" style="text-decoration: underline;">store</a></p>
