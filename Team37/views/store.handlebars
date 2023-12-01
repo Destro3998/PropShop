@@ -56,8 +56,9 @@
             .then(response => response.json())
             .then(data => {   // Iterate over and display the props
                 let propsContainer = document.querySelector('.store-inner');
+                let loadMoreButton = document.getElementById("loadMoreButton");
 
-                data.forEach(prop => {
+                data.props.forEach(prop => {
                     let propDiv = document.createElement('div');
                     propDiv.classList.add('store-card', 'container');
 
@@ -77,8 +78,13 @@
 
                     propsContainer.appendChild(propDiv);
                 });
+                // hide the Load More button if no more items are available
+            if (!data.moreAvailable) {
+                loadMoreButton.style.display = 'none';
+            }
 
             })
+
             .catch(error => {
                 console.error("There was an error fetching more props:", error);
             });

@@ -20,18 +20,17 @@ var upload = multer({storage: storage})
 
 // load-more functionality
 router.get('/loadmore', async (req, res) => {
-    let limit = parseInt(req.query.limit) || 6;  // Default to 6 if not provided
-    let skip = parseInt(req.query.skip) || 0;     // Default to 0 if not provided
+    let limit = parseInt(req.query.limit) || 6;
+    let skip = parseInt(req.query.skip) || 0;
 
     try {
+        let totalProps = await models.Prop.countDocuments(); // Get total count of props
         let props = await models.Prop.find().skip(skip).limit(limit);
+        
+        let displayProps = props.map(prop => new DisplayProp(prop));
+        let moreAvailable = (skip + limit) < totalProps; // Check if more items are available
 
-        let displayProps = [];  // Convert the mongoose documents to Display Prop objects
-        props.forEach(prop => {
-            displayProps.push(new DisplayProp(prop));
-        });
-
-        res.json(displayProps);
+        res.json({ props: displayProps, moreAvailable });
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');

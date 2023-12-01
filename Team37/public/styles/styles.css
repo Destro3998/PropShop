@@ -1000,9 +1000,9 @@ model-viewer {
     border: none;
 }
 
-.order-items {
-    /* padding: 1em; */
-}
+/*.order-items {
+     padding: 1em; 
+}*/
 
 .order {
     border-radius: var(--border-radius);
