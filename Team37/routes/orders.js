@@ -13,15 +13,38 @@ const { sendOrderConfirmationEmail } = require("../utilities/emails");
 
 /** get all orders in the database, for admin dashboard */
 router.get('/all', isAdmin, async function (req, res) {
-    let all_orders = await getOrders();
+    let ordersNonObject = await Order.find({}).populate("user").populate('items.itemId');//await getOrders()
+    //console.log(allOrders)
     authenticated = req.isAuthenticated();
-    /* code below assumes an implementation of a separate page for all orders on the dashboard,
-    so this code would not apply if the order list is integrated into the main dashboard page */
 
-    res.render("orders.handlebars", {
+    let orders = [];
+    ordersNonObject.forEach((order) => {
+        let uniqueItems = [];
+        // combine all quantities of the same prop
+        for (const item of order.items){
+            unique = true
+            for (const uniqueItem of uniqueItems){
+                if (item.itemId === uniqueItem.itemId){
+                    uniqueItem.quantity += 1
+                    unique = false
+                }
+            }
+            if (unique){
+                uniqueItems.push(item)
+            }
+        }
+        
+        numItems = order.items.length // count the number of items (including mutliple quantities)
+        order.items = uniqueItems // replace order items with unique items
+        order = order.toObject() // convert to object before next line or it won't save it (not part of original schema)
+        order.numItems = numItems 
+        orders.push(order)
+    });
+    
+    res.render("ordersAll.handlebars", {
         name: "All Orders",
-        orders: all_orders,
-        ordersLength: all_orders.length,
+        orders: orders,
+        ordersLength: orders.length,
         authenticated: authenticated,
     });
 })
@@ -271,12 +294,36 @@ router.get("/:userId/orders", isAdmin, async (req, res) => {
         let authenticated = req.isAuthenticated();
         let user = req.user.toObject();
         let userId = req.params.userId;
-        let ordersNonObject = await Order.find({ user: userId }).populate("user");
-        // ordersNonObject.forEach((order) => order.items.forEach((item) => item.populate("itemId")));
+        let ordersNonObject = await Order.find({ user: userId }).populate("user").populate("items.itemId");
+        
         let orders = [];
-        ordersNonObject.forEach((order) => orders.push(order.toObject()));
-        let ordersLength = orders.length;
-        res.render("orders.handlebars", { orders: orders, ordersLength: ordersLength, authenticated: authenticated, user:user })
+        ordersNonObject.forEach((order) => {
+            let uniqueItems = [];
+            // combine all quantities of the same prop
+            for (const item of order.items){
+                unique = true
+                for (const uniqueItem of uniqueItems){
+                    if (item.itemId === uniqueItem.itemId){
+                        uniqueItem.quantity += 1
+                        unique = false
+                    }
+                }
+                if (unique){
+                    uniqueItems.push(item)
+                }
+            }
+            
+            numItems = order.items.length // count the number of items (including mutliple quantities)
+            order.items = uniqueItems // replace order items with unique items
+            order = order.toObject() // convert to object before next line or it won't save it (not part of original schema)
+            order.numItems = numItems 
+            orders.push(order)
+        });
+        res.render("orders.handlebars", { 
+            orders: orders, 
+            ordersLength: orders.length, 
+            authenticated: 
+            authenticated, user:user })
     } catch (error) {
         console.error(error);
         res.render("error.handlebars", { error: true, message: "Failed to get the order page for that user.", admin_user:true})

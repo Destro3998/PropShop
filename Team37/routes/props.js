@@ -359,7 +359,6 @@ router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
             for (const item of order.items) {
                 //console.log(item)
                 if (item.itemId.toString() === req.params.propId && item.instanceId === null){
-                    console.log("yesyes")
                     orderItem = item;
                     //item.instanceId = instance._id
                     break;

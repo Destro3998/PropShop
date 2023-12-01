@@ -77,8 +77,6 @@ const configSchema = new mongoose.Schema({
 	companyAddress: String,
 	companyEmail: String,
 	companyPhone: String,
-	logo: String, // logo on site header
-	landing: String, // landing image to site catalog
 	depositPercentage: {
 		type: Number,
 		required: true,
