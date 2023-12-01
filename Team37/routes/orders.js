@@ -8,7 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const mongoose = require("mongoose");
 const { Order } = require("../utilities/models");
 const { getUserOrders } = require("../utilities/dbUtilities");
-const { sendOrderConfirmationEmail } = require("../utilities/emails");
+const { sendOrderConfirmationEmails } = require("../utilities/emails");
 
 
 /** get all orders in the database, for admin dashboard */
@@ -48,9 +48,9 @@ router.post('/new-order/:userId', isAuth, async function (req, res) {
         orderId = result.orderId
 
         // If order is valid, send confirmation email
-        await sendOrderConfirmationEmail(orderId, req.headers.host)
+        await sendOrderConfirmationEmails(orderId, req.headers.host)
             .then(() => {
-                console.log('Confirmation email sent successfully.');
+                console.log('Confirmation emails sent successfully.');
             })
             .catch((error) => {
                 console.error('Error sending email:', error);
@@ -138,7 +138,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
         // Update the order price and depositAmount
         await Order.findByIdAndUpdate({ _id: order[0].id }, { price: totalPrice }).session(session);
 
-        depositAmount = totalPrice * (config.depositPercentage/100.0);
+        depositAmount = totalPrice * (config.depositPercentage / 100.0);
         await Order.findByIdAndUpdate({ _id: order[0].id }, { depositAmount: depositAmount }).session(session);
 
         depositAmount = parseInt(depositAmount * 100) // convert $ to cents and parse as integer for stripe
@@ -160,14 +160,14 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             throw new Error("Payment failed with status: " + paymentIntent.status);
         }
 
-        Order.findByIdAndUpdate(order[0].id, { paymentIntentId: paymentIntent.id, price: depositAmount}).session(session);
+        Order.findByIdAndUpdate(order[0].id, { paymentIntentId: paymentIntent.id, price: depositAmount }).session(session);
 
 
 
         // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
         console.log("transaction committed")
-        result = {success: true, orderId: order[0]._id }
+        result = { success: true, orderId: order[0]._id }
     } catch (error) {
         await session.abortTransaction();
         console.log("transaction failed")
@@ -207,14 +207,14 @@ router.get('/:orderId', isAuth, async function (req, res) {
         order.items.forEach((item) => {
             //console.log(item)
             scanned = 0
-            if (item.instanceId){
-                for (const inst of item.itemId.instance){
+            if (item.instanceId) {
+                for (const inst of item.itemId.instance) {
                     //console.log(inst.order)
-                    if (inst.order){
+                    if (inst.order) {
                         //console.log("found prop tied to order")
-                        if (inst.order.toString() === req.params.orderId){
+                        if (inst.order.toString() === req.params.orderId) {
                             //console.log("found matching order id")
-                            if (item.instanceId.toString() === inst.id.toString()){
+                            if (item.instanceId.toString() === inst.id.toString()) {
                                 //console.log("found matching instance id in order")
                                 //checkedItems.push(item.toObject());
                                 scanned += 1
@@ -223,7 +223,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
                     }
                 }
             }
-            if (scanned > 0){ // integer instead of a bool for when multiple quantites are being scanned
+            if (scanned > 0) { // integer instead of a bool for when multiple quantites are being scanned
                 checkedItems.push(item.toObject());
             } else {
                 reservedItems.push(item.toObject());
@@ -276,10 +276,10 @@ router.get("/:userId/orders", isAdmin, async (req, res) => {
         let orders = [];
         ordersNonObject.forEach((order) => orders.push(order.toObject()));
         let ordersLength = orders.length;
-        res.render("orders.handlebars", { orders: orders, ordersLength: ordersLength, authenticated: authenticated, user:user })
+        res.render("orders.handlebars", { orders: orders, ordersLength: ordersLength, authenticated: authenticated, user: user })
     } catch (error) {
         console.error(error);
-        res.render("error.handlebars", { error: true, message: "Failed to get the order page for that user.", admin_user:true})
+        res.render("error.handlebars", { error: true, message: "Failed to get the order page for that user.", admin_user: true })
     }
 });
 
@@ -292,7 +292,7 @@ router.post("/:orderId/inProgress", isAdmin, async (req, res) => {
         req.flash("success", "state successfully changed");
         res.status(200).json({ message: "State changed successfully" });
     } catch (e) {
-        res.render("error.handlebars", { error: true, message: "Failed to update the order status to 'in progress'" , admin_user:true});
+        res.render("error.handlebars", { error: true, message: "Failed to update the order status to 'in progress'", admin_user: true });
     }
 });
 

@@ -74,26 +74,18 @@ async function sendVerificationEmail(user, host) {
 }
 
 /**
- * Sends a confirmation email to a user after they place an order
+ * Sends a confirmation email to a user after they place an order. Also sends a new order notification
+ * to the admin email
  * @param {OrderId} orderId the id of the order that was placed by user
  * @param {String} host the host name of the website; pass req.headers.host
  */
-async function sendOrderConfirmationEmail(orderId, host) {
+async function sendOrderConfirmationEmails(orderId, host) {
     // Find user to send the email to
     const order = await Order.findById(orderId);
     const user = await User.findById(order.user);
 
-    // Order confirmation email
-    const msg = {
-        from: FROM_EMAIL,
-        to: user.email,
-        subject: `${COMPANY} - Reservation Confirmation`,
-        text: `
-        This is a confirmation of your reservation.
-        `,
-        html: `
-        <h1>${COMPANY} - Reservation Confirmation</h1>
-
+    // Order summary message used in both confirmation and admin notification emails
+    orderSummary = `
         <p><br><strong>Order ID: </strong><a href="http://${host}/orders/${orderId}">${orderId}</a></p>
         
         <p><br><strong>Order Summary:</strong></p>
@@ -101,11 +93,35 @@ async function sendOrderConfirmationEmail(orderId, host) {
         <p>Paid Deposit: $${order.depositAmount.toFixed(2)}</p>
         <p>Total Rental Cost: $${order.price.toFixed(2)} per day</p>
         `
+
+    // Create the user confirmation email
+    const userMsg = {
+        from: FROM_EMAIL,
+        to: user.email,
+        subject: `${COMPANY} - Reservation Confirmation`,
+        text: `This a confirmation of your order.`,
+        html: `
+        <h1>${COMPANY} - Reservation Confirmation</h1>
+        ` + orderSummary
     }
 
-    // Send the order confirmation email
+    // Create the admin new order notification email
+    const adminMsg = {
+        from: FROM_EMAIL,
+        to: FROM_EMAIL,
+        subject: `${COMPANY} - New Reservation Made`,
+        text: `${user.fname} ${user.lname} made a new reservation.`,
+        html: `
+        <h1>${COMPANY} - New Reservation</h1>
+        <p><strong>Customer:</strong> ${user.fname} ${user.lname}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        ` + orderSummary
+    }
+
+    // Send the order confirmation and admin notification emails
     sgMail.setApiKey(process.env.SENDGRID_KEY);
-    await sgMail.send(msg);
+    await sgMail.send(userMsg);
+    await sgMail.send(adminMsg);
 }
 
 /**
@@ -141,6 +157,6 @@ async function sendCustomerMessageEmail(name, email, business, message) {
 module.exports = {
     isVerified: isVerified,
     sendVerificationEmail: sendVerificationEmail,
-    sendOrderConfirmationEmail: sendOrderConfirmationEmail,
+    sendOrderConfirmationEmails: sendOrderConfirmationEmails,
     sendCustomerMessageEmail: sendCustomerMessageEmail
 };
