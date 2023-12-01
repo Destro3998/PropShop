@@ -1,4 +1,3 @@
-
 # Myriad Studios E-commerce website
 
 ## Team 37 - Fall 2023 CMPT 370 Project
@@ -19,21 +18,14 @@ This project is an e-commerce platform that allows users to view items, add them
 
 In a terminal shell perform a git clone.
 
-Use:
+Use to clone with HTTPS: 
 
 ```bash
 git clone https://git.cs.usask.ca/bjf403/370-project-fall-2023.git
 ```
 
-to clone with HTTPS.
+We do not support cloning with SSH at the moment.
 
-Use:
-
-```bash
-git@git.cs.usask.ca:bjf403/370-project-fall-2023.git
-```
-
-to clone with SSH.
 
 ### Step 2
 
