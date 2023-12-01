@@ -1190,7 +1190,7 @@ model-viewer {
 }
 
 .navbar-logo{
-    width: 25%;
+    width: 30%;
 }
 
 
@@ -1489,4 +1489,13 @@ input[type="color"] {
     flex-direction: column;
     align-items: center;
     margin: 1rem 0;
+}
+
+.checkout-button:disabled{
+    background-color: rgba(25, 25, 25, 0.5);
+    cursor: auto;
+}
+
+.checkout-button:disabled:hover{
+    background-color: rgba(25, 25, 25, 0.5);
 }

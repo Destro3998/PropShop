@@ -26,8 +26,12 @@
         <form id="payment-form" action="routes/orders/new-order/{{userId}}" method="post">
             <div id="card-element"></div>
             <div id="card-errors" role="alert"></div>
-            <input type="submit" class="checkout-button" value="Reserve Props">
+            <input type="submit" class="checkout-button" value="Reserve Props" {{#if authenticated}}{{else}}disabled="disabled"{{/if}}>
         </form>
+        {{#if authenticated}}
+        {{else}}
+            <p style="background-color: rgba(255, 0, 0, 0.35)">You must be authenticated to reserve props<br><br><a href="/accounts/login" style="text-decoration: underline 1px black">Go To Login</a></p>
+        {{/if}}
     </div>
 </div>
 

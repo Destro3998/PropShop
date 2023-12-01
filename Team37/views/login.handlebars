@@ -1,6 +1,8 @@
 <h1 class="title-text">Login</h1>
 <div>
-    <form action="/accounts/login" method="post" class="auth-form">
+    <form action="/accounts/login" method="post" class="auth-form" id="login-form">
+        <input type="hidden" name="cart" id="cart">
+
         <label for="email">Enter your email address</label>
         <input type="email" name="email" id="email" required>
 
@@ -12,3 +14,14 @@
     </form>
 
 </div>
+
+<script>
+    document.getElementById("login-form").addEventListener("submit", (e) =>{
+        if (localStorage.getItem("cart")){
+            //get the values from the user's cart and add them to the form that will be submitted.
+            document.getElementById("cart").value = localStorage.getItem("cart");
+        }else{
+            // if there is no cart....what do we do?
+        }
+    });
+</script>
