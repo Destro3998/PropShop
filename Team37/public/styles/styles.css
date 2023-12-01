@@ -1179,6 +1179,10 @@ model-viewer {
     gap: 1.5rem;
 }
 
+.navbar-logo{
+    width: 25%;
+}
+
 
 /* Style for the Stripe card element container */
 .checkout-container #card-element {
