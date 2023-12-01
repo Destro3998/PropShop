@@ -31,7 +31,11 @@
                     <h3 class="head-text">{{ this.name }}</h3>
                 </a>
                 <p>{{ this.description }}</p>
+                {{#if this.isAvailable }}
                 <p>Quantity: {{this.numOfAvailable}}</p>
+                {{else}}
+                <p>Out of stock</p>
+                {{/if}}
                 <p>CA$ {{this.price}} / day</p>
                 <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
             </div>

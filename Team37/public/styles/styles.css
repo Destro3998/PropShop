@@ -813,6 +813,16 @@ button {
     background-color: #45a049;
 }
 
+.addToCartBtn:disabled {
+    background-color: #41454188;
+    color: #00000088;
+}
+
+.addToCartBtn:disabled:hover {
+    background-color: #41454188;
+    border: none;
+}
+
 
 .model-toggle-note {
     /* position: absolute; */

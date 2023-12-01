@@ -12,10 +12,15 @@
     <div class="prop-details">
         <h1>{{prop.name}}</h1>
         <p>Description: {{prop.description}}</p>
-        <p>Status: {{prop.status}}</p>
-        <p>Quantity: {{ prop.numOfAvailable }}</p><br>
-        <p>CA$ {{prop.price}}/day</p>
-    <button class="addToCartBtn button" onclick="addToCart('{{prop.propId}}')">Add To Cart</button>
+         <p>CA$ {{prop.price}}/day</p>
+        {{#if prop.isAvailable }}
+            <p>Quantity: {{prop.numOfAvailable}} available</p>
+            <button class="addToCartBtn button" onclick="addToCart('{{prop.propId}}')">Add To Cart</button>
+        {{else}}
+            <button class="addToCartBtn button" disabled onclick="addToCart('{{prop.propId}}')">Out of stock</button>
+        {{/if}}
+       
+    
 </div>
 </div>
 
