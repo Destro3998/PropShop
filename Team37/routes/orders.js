@@ -212,81 +212,126 @@ router.get('/:orderId', isAuth, async function (req, res) {
     let userId = req.user && req.user._id ? req.user._id : undefined;
     let pendingDisabled = false, completeDisabled = false, progressDisabled = false;
 
-    try {
-        let order = await Order.findById(orderId)
+    if (admin){
+        try {
+            let order = await Order.findById(orderId)
 
-            .populate({
-                path: 'items',
-                populate: { path: 'itemId' }
-            })
-            .exec();
+                .populate({
+                    path: 'items',
+                    populate: { path: 'itemId' }
+                })
+                .exec();
 
-        if (!order) {
-            return res.status(404).send('Order not found');
-        }
-        let user = (await getUser(order.user)).toObject();
-        let reservedItems = [];
-        let checkedItems = []
-        order.items.forEach((item) => {
-            //console.log(item)
-            scanned = 0
-            if (item.instanceId) {
-                for (const inst of item.itemId.instance) {
-                    //console.log(inst.order)
-                    if (inst.order) {
-                        //console.log("found prop tied to order")
-                        if (inst.order.toString() === req.params.orderId) {
-                            //console.log("found matching order id")
-                            if (item.instanceId.toString() === inst.id.toString()) {
-                                //console.log("found matching instance id in order")
-                                //checkedItems.push(item.toObject());
-                                scanned += 1
+            if (!order) {
+                return res.status(404).send('Order not found');
+            }
+            let user = (await getUser(order.user)).toObject();
+            let reservedItems = [];
+            let checkedItems = []
+            order.items.forEach((item) => {
+                // check to see if this item has already been scanned
+                scanned = 0
+                if (item.instanceId) {
+                    for (const inst of item.itemId.instance) {
+                        if (inst.order) {
+                            if (inst.order.toString() === req.params.orderId) {
+                                if (item.instanceId.toString() === inst.id.toString()) {
+                                    scanned += 1
+                                }
                             }
                         }
                     }
                 }
-            }
-            if (scanned > 0) { // integer instead of a bool for when multiple quantites are being scanned
-                checkedItems.push(item.toObject());
-            } else {
-                reservedItems.push(item.toObject());
-            }
-        });
-        // Converting Mongoose document to a plain object
-        let orderObj = order.toObject();
+                if (scanned > 0) { // integer instead of a bool for when multiple quantites are being scanned
+                    checkedItems.push(item.toObject());
+                } else {
+                    reservedItems.push(item.toObject());
+                }
+            });
+            // Converting Mongoose document to a plain object
+            let orderObj = order.toObject();
 
-        switch (order.status) {
-            case ("pending"): {
-                pendingDisabled = true;
-                break;
+            switch (order.status) {
+                case ("pending"): {
+                    pendingDisabled = true;
+                    break;
+                }
+                case ("in progress"): {
+                    progressDisabled = true;
+                    break;
+                }
+                case ("complete"): {
+                    completeDisabled = true;
+                    break;
+                }
             }
-            case ("in progress"): {
-                progressDisabled = true;
-                break;
-            }
-            case ("complete"): {
-                completeDisabled = true;
-                break;
-            }
+            res.render("order.handlebars", {
+                order: orderObj,
+                authenticated: authenticated,
+                userId: userId,
+                reservedItems: reservedItems,
+                checkedItems: checkedItems,
+                pendingDisabled: pendingDisabled,
+                progressDisabled: progressDisabled,
+                completeDisabled: completeDisabled,
+                user: user,
+                admin: admin
+            });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
         }
-        res.render("order.handlebars", {
-            order: orderObj,
-            authenticated: authenticated,
-            userId: userId,
-            reservedItems: reservedItems,
-            checkedItems: checkedItems,
-            pendingDisabled: pendingDisabled,
-            progressDisabled: progressDisabled,
-            completeDisabled: completeDisabled,
-            user: user,
-            admin: admin
-        });
+    } else {
+        try {
+            let order = await Order.findById(orderId)
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+                .populate({
+                    path: 'items',
+                    populate: { path: 'itemId' }
+                })
+                .exec();
+
+            if (!order) {
+                return res.status(404).send('Order not found');
+            }
+            let user = (await getUser(order.user)).toObject();
+            let uniqueItems = [];
+            // combine all quantities of the same prop
+            for (const item of order.items) {
+                unique = true
+                for (const uniqueItem of uniqueItems) {
+                    console.log(item)
+                    console.log(uniqueItem)
+                    if (item.itemId === uniqueItem.itemId) {
+                        console.log("wowowowow")
+                        uniqueItem.quantity += 1
+                        unique = false
+                    }
+                }
+                if (unique) {
+                    uniqueItems.push(item)
+                }
+            }
+
+            numItems = order.items.length // count the number of items (including mutliple quantities)
+            order.items = uniqueItems // replace order items with unique items
+            order = order.toObject() // convert to object before next line or it won't save it (not part of original schema)
+            order.numItems = numItems
+
+            res.render("order.handlebars", {
+                order: order,
+                authenticated: authenticated,
+                userId: userId,
+                user: user,
+                admin: admin
+            });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
     }
-
 });
 
 router.get("/:userId/orders", isAdmin, async (req, res) => {

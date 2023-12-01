@@ -3,6 +3,19 @@
     <a href="/accounts/{{user._id}}/edit">Ordered by: {{user.fname}} {{user.lname}}</a>
     <p>Date Placed: {{order.datePlaced}}</p>
     <p>Status: {{order.status}}</p>
+
+    {{#if admin}}
+    {{else}}
+        <div class="order-items">
+        <h4>{{order.numItems}} item(s)</h4>
+        {{#each order.items}}
+        <div class="order-list-item">
+            <a href="/prop/{{this.itemId._id}}">Prop: {{this.itemId.name}}</a>
+            <p>Quantity: {{this.quantity}}</p>
+        </div>
+    {{/each}}
+    {{/if}}
+</div>
 </div>
 
 {{#if admin}}
