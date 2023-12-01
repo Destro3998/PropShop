@@ -25,20 +25,19 @@
             <a href="/prop/{{this.propId}}">
                 <img src="/3dmodels/{{this.image}}" alt="The prop's image" class="store-item-image"
                     onerror="this.onerror=null; this.src='/3dmodels/default.jpg'">
-            </a>
+            
             <div class="store-item-info">
-                <a href="/prop/{{this.propId}}">
-                    <h3 class="head-text">{{ this.name }}</h3>
-                </a>
+                <h3 class="head-text">{{ this.name }}</h3>
                 <p>{{ this.description }}</p>
+                <p>CA$ {{this.price}} / day</p>
                 {{#if this.isAvailable }}
                 <p>Quantity: {{this.numOfAvailable}}</p>
+                <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
                 {{else}}
                 <p>Out of stock</p>
                 {{/if}}
-                <p>CA$ {{this.price}} / day</p>
-                <button class="button" onclick="addToCart(event, '{{this.propId}}')">Add To Cart</button>
             </div>
+            </a>
 
         </div>
         {{/each}}

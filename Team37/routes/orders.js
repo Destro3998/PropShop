@@ -108,7 +108,7 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
         order = await models.Order.create([{
             user: userId,
         }], { session: session }); // set the session for this operation so that it remains isolated to this transaction
-        console.log('Created order object', order);
+        //console.log('Created order object', order);
 
         // get all the props referenced in the users cart
         let user = await models.User.findById(userId).populate('cart.itemId').session(session);
@@ -118,25 +118,25 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
             throw new Error("Attempting to reserve empty cart.")
         }
 
-        console.log(user.cart.length + " item(s) detected in cart")
+        //console.log(user.cart.length + " item(s) detected in cart")
         // go through items in user cart one by one,
         // checking if able to reserve, and then reserving
         // also verifying costs before processing payment
         totalPrice = 0
         for (const cartitem of user.cart) {
-            console.log("reserving " + cartitem.itemId.name)
+            //console.log("reserving " + cartitem.itemId.name)
 
             // change status/quantity of prop in the store
             if (cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved > 0) { // first check if prop is available
-                console.log("is available" + cartitem.itemId.name)
+                //console.log("is available" + cartitem.itemId.name)
                 if (cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved >= cartitem.quantity) { // if there is more than enough of this prop available
-                    console.log("enough available " + cartitem.itemId.name)
+                    //console.log("enough available " + cartitem.itemId.name)
                     await models.Prop.findByIdAndUpdate(cartitem.itemId.id, {
                         numOfReserved: cartitem.itemId.numOfReserved + cartitem.quantity // just lower the number of available props
                     }).session(session);
                 }
                 else {
-                    console.log("not enough" + cartitem.itemId.name)
+                    //console.log("not enough" + cartitem.itemId.name)
                     throw new Error(`Requested ${cartitem.itemId.quantity} ${cartitem.itemId.name},
                      but only ${cartitem.itemId.numOfAvailable - cartitem.itemId.numOfReserved} available to reserve.`)
                 }
@@ -144,15 +144,15 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
                 throw new Error(`${cartitem.itemId.name} is not available to reserve.`)
             }
 
-            console.log("reserved " + cartitem.itemId.name)
+            //console.log("reserved " + cartitem.itemId.name)
 
             // add prop to the order
             await Order.findByIdAndUpdate({ _id: order[0].id }, { $push: { items: cartitem } }).session(session);
-            console.log("added to order " + cartitem.itemId.name)
+            //console.log("added to order " + cartitem.itemId.name)
 
             // remove prop from the user's cart
             await models.User.findByIdAndUpdate({ _id: userId }, { $pull: { cart: { _id: cartitem.id } } }).session(session);
-            console.log("removed from cart " + cartitem.itemId.name)
+            //console.log("removed from cart " + cartitem.itemId.name)
 
             // add cost of the prop to the total price for the order
             totalPrice += (cartitem.itemId.price * cartitem.quantity)
@@ -189,15 +189,15 @@ async function newOrderTransaction(userId, paymentMethodId, depositAmount) {
 
         // if every step completed successfully, finalize the transaction
         await session.commitTransaction();
-        console.log("transaction committed")
+        //console.log("transaction committed")
         result = { success: true, orderId: order[0]._id }
     } catch (error) {
         await session.abortTransaction();
-        console.log("transaction failed")
+        //console.log("transaction failed")
         result = { success: false, error: error }
     } finally {
         session.endSession();
-        console.log("session ended")
+        //console.log("session ended")
     }
 
     return result
@@ -301,10 +301,9 @@ router.get('/:orderId', isAuth, async function (req, res) {
             for (const item of order.items) {
                 unique = true
                 for (const uniqueItem of uniqueItems) {
-                    console.log(item)
-                    console.log(uniqueItem)
+                    //console.log(item)
+                    //console.log(uniqueItem)
                     if (item.itemId === uniqueItem.itemId) {
-                        console.log("wowowowow")
                         uniqueItem.quantity += 1
                         unique = false
                     }
@@ -334,6 +333,7 @@ router.get('/:orderId', isAuth, async function (req, res) {
     }
 });
 
+/** display all orders for a specific user */
 router.get("/:userId/orders", isAdmin, async (req, res) => {
     try {
         let authenticated = req.isAuthenticated();
@@ -376,6 +376,7 @@ router.get("/:userId/orders", isAdmin, async (req, res) => {
     }
 });
 
+/** admins setting an order status to in progress */
 router.post("/:orderId/inProgress", isAdmin, async (req, res) => {
     let orderId = req.params.orderId;
     try {
@@ -389,6 +390,7 @@ router.post("/:orderId/inProgress", isAdmin, async (req, res) => {
     }
 });
 
+/** admins setting an order status to complete */
 router.post("/:orderId/complete", isAdmin, async (req, res) => {
     let orderId = req.params.orderId;
     try {
@@ -402,6 +404,7 @@ router.post("/:orderId/complete", isAdmin, async (req, res) => {
     }
 });
 
+/** admins setting an order status to pending */
 router.post("/:orderId/pending", isAdmin, async (req, res) => {
     let orderId = req.params.orderId;
     try {

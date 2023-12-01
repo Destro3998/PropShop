@@ -107,7 +107,6 @@ router.post("/add-prop", isAdmin, upload.fields([{name: 'image', maxCount: 1}, {
 			name: req.body.name,
 			description: req.body.description,
 			quantity: req.body.quantity,
-			status: "available", // TESTING -- REMOVE THIS LATER
 			image: filenameimg,
 			model3d: filename3d,
 			price: req.body.price,
@@ -304,6 +303,7 @@ router.get("/:propId/reserve", async (req, res) => {
     }
 })
 
+/** load page for admins scanning in/out a prop */
 router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     let authenticated = req.isAuthenticated();
     let propId = req.params.propId; // getting the propId from the url
@@ -323,8 +323,8 @@ router.get("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
     res.render("pickup.handlebars", {prop: prop, instanceId: req.params.instanceId, authenticated: authenticated, userId: userId, orderIds: orderIds});
 });
 
+/** post changes to prop status after admin scanning in/out a prop */
 router.post("/:propId/:instanceId/pickup", isAdmin, async (req, res) => {
-    //console.log(req.body);
     let condition = req.body.condition;
     let status = "";
     let orderId = req.body.orderSelect
