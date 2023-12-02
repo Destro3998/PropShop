@@ -94,7 +94,7 @@ In your browser navigate to <locahost:3000> or <http://127.0.0.1:3000/>
 You should now have the capability to explore the website's code.
 
 *Important Note:- 
-- At login, use admin login Email: palash.roy@usask.ca with Password: Sam@3998
+- At login, use admin login Email: palash.roy@usask.ca with Password: Palash@2023
 
 - To test stripe payment at cart checkout page use the following test credit card info: ![credit_card_test](Team37/public/images/credit_card_test.png)
 
