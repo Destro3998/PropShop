@@ -16,6 +16,8 @@ This project is an e-commerce platform that allows users to view items, add them
 
 ### Step 1
 
+Prerequisite: Git installed in your computer.
+
 In a terminal shell perform a git clone.
 
 Use to clone with HTTPS: 
