@@ -77,6 +77,8 @@ STRIPE_SECRET_KEY=sk_test_51OAKPjCUWYKakee9pIKRZMiWhoLnOtrcchprN2KTVab8A05zDhLLJ
 STRIPE_PUBLISHABLE_KEY=pk_test_51OAKPjCUWYKakee9uqX1PvVQxvgjxne676F0d7c6ujYg3uxu2r5qCUz8y1jlSRDkz73xPtgD7Etpyf0M1RCualDF00L2JYGtbh
 ```
 
+.env Example: ![env_image](Team37/public/images/env_image.png)
+
 Once you have this copied into the .env file you are good to start the server.
 
 ### Step 5
@@ -90,6 +92,8 @@ In your browser navigate to <locahost:3000> or <http://127.0.0.1:3000/>
 ### Step 6
 
 You should now have the capability to explore the website's code.
+
+*Note: To test stripe payment at cart checkout page use the following test credit card info: ![credit_card_test](Team37/public/images/credit_card_test.png)
 
 ## Credits
 
