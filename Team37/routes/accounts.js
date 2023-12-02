@@ -170,7 +170,8 @@ router.get("/logout", isAuth, (req, res, next) => {
             return next(err);
         }
         req.flash("success", "Logged out Successfully");
-        res.redirect(req.get("referer"));
+        let fromUrl = req.get("referer").includes("accounts") ? "/": req.get("referer");
+        res.redirect(fromUrl);
     });
 });
 
